@@ -1,0 +1,48 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "nguoilaoi.vercel.app"
+        }
+      ],
+      "destination": "https://lamthan.vercel.app/",
+      "permanent": true
+    },
+    {
+      "source": "/:path+",
+      "has": [
+        {
+          "type": "host",
+          "value": "nguoilaoi.vercel.app"
+        }
+      ],
+      "destination": "https://lamthan.vercel.app/:path+",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "nguoi-la-thanh-quen.vercel.app"
+        }
+      ],
+      "destination": "https://lamthan.vercel.app/",
+      "permanent": true
+    },
+    {
+      "source": "/:path+",
+      "has": [
+        {
+          "type": "host",
+          "value": "nguoi-la-thanh-quen.vercel.app"
+        }
+      ],
+      "destination": "https://lamthan.vercel.app/:path+",
+      "permanent": true
+    }
+  ]
+}

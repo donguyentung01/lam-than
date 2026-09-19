@@ -1,0 +1,927 @@
+<title>làm thân</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Lora:ital,wght@0,700;1,600&family=Pacifico&family=Bungee&display=swap">
+<style>
+  /* Themes ("giao diện"): each skin redefines tokens only. Default = Sơn Mài. */
+  :root{
+    --bg:#15100e; --bg-glow:#2a1c17; --surface:#211815; --field:#211815; --placeholder:#6f6254;
+    --text:#ede3cf; --muted:#a39380;
+    --accent:#c9a24a; --accent-soft:#8a7040; --on-accent:#1a120d;
+    --line:rgba(201,162,74,.28); --line-strong:rgba(201,162,74,.55); --tint:rgba(237,227,207,.04);
+    --c1:#b3301e; --c1-ink:#ede3cf;      /* cấp 1 — son đỏ */
+    --c2:#6e1a14; --c2-ink:#ede3cf;      /* cấp 2 — cánh gián */
+    --c3:#1f1714; --c3-ink:#ede3cf;      /* cấp 3 — sơn then */
+    --debate:#2d4254; --debate-ink:#ede3cf;
+    --wild:#c9a24a; --wild-ink:#1a120d; --final:#ede3cf; --final-ink:#2a1a14;
+    --deck-3:#8c5a2b;
+    --back-base:#1f1714; --back-rule:#c9a24a; --tap:#ede3cf;
+    --seal-bg:#15100e; --seal-ink:#c9a24a; --seal-sub:#ede3cf; --seal-glow:none; --seal-size:20px;
+    --veil:rgba(10,7,6,.82); --shadow:rgba(0,0,0,.5);
+    --display:"Cormorant Garamond", "Iowan Old Style", Georgia, serif; --display-style:italic; --display-weight:500; --mark-size:20px;
+    --sans:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --card-font:var(--sans); --card-weight:800; --radius:18px;
+    color-scheme:dark;
+  }
+  /* Đông Hồ — giấy điệp, màu khắc gỗ tự nhiên */
+  :root[data-skin="dongho"]{
+    --bg:#efe6d2; --bg-glow:#faf4e6; --surface:#faf5ea; --field:#fffaf0; --placeholder:#a3977f;
+    --text:#221d17; --muted:#6d6250;
+    --accent:#b0392a; --accent-soft:#dcaa9e; --on-accent:#fff8ec;
+    --line:rgba(34,29,23,.16); --line-strong:rgba(34,29,23,.4); --tint:rgba(34,29,23,.03);
+    --c1:#dfa73c; --c1-ink:#221d17; --c2:#b0392a; --c2-ink:#fff4e2; --c3:#2d5a4b; --c3-ink:#f6eedd;
+    --debate:#2b3f6b; --debate-ink:#f6eedd;
+    --wild:#221d17; --wild-ink:#efe6d2; --final:#fffaf0; --final-ink:#221d17;
+    --deck-3:#6f8a3c;
+    --back-base:#ece1c8; --back-rule:#221d17; --tap:#221d17;
+    --seal-bg:#b0392a; --seal-ink:#fff4e2; --seal-sub:#fff4e2; --seal-size:19px;
+    --veil:rgba(52,42,30,.5); --shadow:rgba(70,50,25,.22);
+    --display:"Lora", Georgia, serif; --display-style:italic; --display-weight:600; --mark-size:19px;
+    --card-font:"Lora", Georgia, serif; --card-weight:700; --radius:6px;
+    color-scheme:light;
+  }
+  /* Tết — lì xì đỏ, mai vàng, đào hồng */
+  :root[data-skin="tet"]{
+    --bg:#6a0e15; --bg-glow:#9c1c24; --surface:#7c1720; --field:#560a11; --placeholder:#c78a80;
+    --text:#fff1dc; --muted:#efb6a4;
+    --accent:#ffc93c; --accent-soft:#b9853a; --on-accent:#5a0c12;
+    --line:rgba(255,201,60,.3); --line-strong:rgba(255,201,60,.6); --tint:rgba(255,241,220,.05);
+    --c1:#ffc93c; --c1-ink:#5a0c12; --c2:#f59ab0; --c2-ink:#5a0c12; --c3:#3a0a0f; --c3-ink:#ffe3a3;
+    --debate:#1f5b4a; --debate-ink:#fff1dc;
+    --wild:#fff1dc; --wild-ink:#a3141d; --final:#ffc93c; --final-ink:#5a0c12;
+    --deck-3:#e0612e;
+    --back-base:#a3141d; --back-rule:#ffc93c; --tap:#fff1dc;
+    --seal-bg:#ffc93c; --seal-ink:#8c0f18; --seal-sub:#8c0f18; --seal-size:18px;
+    --veil:rgba(40,4,8,.78); --shadow:rgba(30,0,4,.45);
+    --display:"Pacifico", "Brush Script MT", cursive; --display-style:normal; --display-weight:400; --mark-size:18px;
+    --radius:14px;
+    color-scheme:dark;
+  }
+  /* Sài Gòn Đêm — biển hiệu neon, phố khuya */
+  :root[data-skin="saigon"]{
+    --bg:#0b1322; --bg-glow:#1c2c4d; --surface:#121d34; --field:#0f192d; --placeholder:#5b6a88;
+    --text:#e8eefb; --muted:#8e9fbf;
+    --accent:#ff5c93; --accent-soft:#8f3a5d; --on-accent:#0b1322;
+    --line:rgba(142,159,191,.24); --line-strong:rgba(255,92,147,.6); --tint:rgba(232,238,251,.03);
+    --c1:#ff5c93; --c1-ink:#0b1322; --c2:#2ec4b6; --c2-ink:#062320; --c3:#18223d; --c3-ink:#ffd166;
+    --debate:#7b5cff; --debate-ink:#ffffff;
+    --wild:#ffd166; --wild-ink:#0b1322; --final:#e8eefb; --final-ink:#0b1322;
+    --deck-3:#ffd166;
+    --back-base:#101a30; --back-rule:#2ec4b6; --tap:#e8eefb;
+    --seal-bg:#0b1322; --seal-ink:#ff5c93; --seal-sub:#2ec4b6; --seal-glow:0 0 10px rgba(255,92,147,.85); --seal-size:13px;
+    --veil:rgba(5,9,18,.82); --shadow:rgba(0,0,0,.55);
+    --display:"Bungee", "Arial Black", Impact, sans-serif; --display-style:normal; --display-weight:400; --mark-size:14px;
+    --radius:12px;
+    color-scheme:dark;
+  }
+
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    background-image:radial-gradient(120% 70% at 50% 0%, var(--bg-glow) 0%, var(--bg) 60%);
+    color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .3s;
+  }
+  .app{max-width:560px;margin:0 auto;padding:0 16px;min-height:100%;display:flex;flex-direction:column}
+  button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+  button:focus-visible,input:focus-visible,.deck:focus-visible,.card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .screen{flex:1;display:flex;flex-direction:column;padding-block:20px 28px}
+  .display{font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight)}
+
+  /* ---------- shared ---------- */
+  .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;font-weight:600;font-size:15px;transition:transform .15s,background .2s,opacity .2s}
+  .btn:active{transform:scale(.97)}
+  .btn-gold{background:var(--accent);color:var(--on-accent)}
+  .btn-ghost{border:1px solid var(--line-strong);color:var(--text)}
+  .btn[disabled]{opacity:.35;pointer-events:none}
+  .link{color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:3px}
+
+  /* ---------- home ---------- */
+  .brand{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:4px 0}
+  .brand .mark{font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight);font-size:var(--mark-size);color:var(--accent);line-height:1.2}
+  .hero{padding-block:34px 26px}
+  .hero h1{font-family:var(--sans);font-weight:800;font-size:clamp(34px,10vw,48px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 12px;text-wrap:balance}
+  .hero h1 em{font-family:var(--display);font-weight:var(--display-weight);font-style:var(--display-style);color:var(--accent);letter-spacing:0}
+  .hero p{color:var(--muted);margin:0;max-width:36ch}
+  .decks{display:grid;gap:12px}
+  .deck{display:grid;grid-template-columns:62px 1fr auto;gap:16px;align-items:center;text-align:left;padding:14px 16px 14px 14px;border:1px solid var(--line);border-radius:14px;background:var(--tint);transition:background .2s,border-color .2s}
+  .deck:hover{border-color:var(--line-strong)}
+  .mini{width:62px;aspect-ratio:5/7;border-radius:min(var(--radius),6px);position:relative;box-shadow:0 6px 14px var(--shadow)}
+  .mini::after{content:"";position:absolute;inset:4px;border:1px solid var(--line-strong);border-radius:3px}
+  .deck h3{margin:0 0 2px;font-size:17px;font-weight:600}
+  .deck p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+  .deck .meta{font-size:12px;color:var(--accent);margin-top:6px;font-variant-numeric:tabular-nums}
+  .deck[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .deck .tick{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;color:transparent;font-size:14px;font-weight:800;transition:all .15s}
+  .deck[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .pickbar{position:sticky;bottom:0;margin-top:14px;padding-block:14px calc(10px + env(safe-area-inset-bottom, 0px));background:linear-gradient(to bottom,transparent,var(--bg) 35%);display:grid;z-index:2}
+  .skins-wrap{margin-top:28px}
+  .skins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+  @media (min-width:520px){.skins{grid-template-columns:repeat(4,1fr)}}
+  .skin{display:grid;gap:8px;padding:8px 8px 10px;border:1px solid var(--line);border-radius:12px;text-align:left;background:var(--tint);transition:border-color .2s}
+  .skin[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .skin .sw{height:70px;border-radius:8px;position:relative;overflow:hidden}
+  .skin .sw i{position:absolute;bottom:-14px;width:34px;height:50px;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+  .skin .sw i:nth-child(1){left:calc(50% - 44px);transform:rotate(-12deg)}
+  .skin .sw i:nth-child(2){left:calc(50% - 17px);bottom:-8px}
+  .skin .sw i:nth-child(3){left:calc(50% + 10px);transform:rotate(12deg)}
+  .skin b{font-size:13.5px;font-weight:600;display:block;line-height:1.2}
+  .skin small{font-size:11.5px;color:var(--muted);line-height:1.3;display:block}
+  .home-foot{margin-top:auto;padding-top:26px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
+
+  /* ---------- setup ---------- */
+  .top{display:flex;align-items:center;gap:10px;min-height:40px}
+  .back{width:40px;height:40px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-size:18px;flex:none}
+  .top .title{font-weight:600}
+  .section{margin-top:24px}
+  .section h2{font-size:13px;font-weight:600;margin:0 0 10px;color:var(--muted)}
+  .players{display:grid;gap:8px}
+  .player{display:flex;gap:8px}
+  .player input{flex:1;min-width:0;height:46px;border-radius:10px;border:1px solid var(--line-strong);background:var(--field);color:var(--text);padding:0 14px;font:inherit}
+  .player input::placeholder{color:var(--placeholder)}
+  .player .rm{width:46px;height:46px;border-radius:10px;border:1px solid var(--line);color:var(--muted);flex:none}
+  .add{margin-top:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:9px 14px;border-radius:999px;border:1px solid var(--line-strong);font-size:14px;transition:all .15s}
+  .chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+  .chip[disabled]{opacity:.3;pointer-events:none}
+  .hint{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+  .roles{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:14px}
+  .roles b{color:var(--accent);font-weight:600}
+  .swap{font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-strong)}
+  .preview{margin-top:24px;padding:18px;border-radius:min(var(--radius),14px);background:var(--c1);color:var(--c1-ink);position:relative}
+  .preview::after{content:"";position:absolute;inset:6px;border:1px solid currentColor;opacity:.25;border-radius:9px;pointer-events:none}
+  .preview .eyebrow{color:inherit;opacity:.7}
+  .preview p{margin:8px 0 0;font-family:var(--card-font);font-weight:var(--card-weight);font-size:20px;line-height:1.3}
+  .setup-go{margin-top:auto;padding-top:24px;display:grid}
+
+  /* ---------- play ---------- */
+  .hud{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .levels{display:flex;gap:6px;align-items:center}
+  .lv{height:6px;width:28px;border-radius:3px;background:var(--line)}
+  .lv.on{background:var(--accent)}
+  .lv.done{background:var(--accent-soft)}
+  .hud .up{font-size:13px;padding:8px 12px;border-radius:999px;border:1px solid var(--line-strong);color:var(--accent)}
+  .turn{text-align:center;margin-top:18px;font-size:14px;color:var(--muted);min-height:22px}
+  .turn b{color:var(--text);font-weight:600}
+  .turn .arrow{color:var(--accent);margin:0 6px}
+  .table{flex:1;display:grid;place-items:center;padding-block:16px;min-height:0}
+  .stack{position:relative;width:min(80vw,330px,calc((100dvh - 280px) * .714));aspect-ratio:5/7;max-width:100%}
+  .ghost,.card{position:absolute;inset:0;border-radius:var(--radius)}
+  .ghost{background:var(--back) center/cover, var(--back-base);box-shadow:0 10px 30px var(--shadow)}
+  .ghost::after{content:"";position:absolute;inset:10px;border:1.5px solid var(--back-rule);border-radius:calc(var(--radius) * .55);opacity:.7}
+  .ghost.g1{transform:translate(6px,8px) rotate(2.5deg);opacity:.75}
+  .ghost.g2{transform:translate(-5px,14px) rotate(-3deg);opacity:.5}
+  .card{perspective:1400px;touch-action:pan-y;user-select:none;-webkit-user-select:none;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+  .card.dragging{transition:none}
+  .card.leave-r{transform:translateX(130%) rotate(16deg);opacity:0}
+  .card.leave-l{transform:translateX(-130%) rotate(-16deg);opacity:0}
+  .card.enter{transform:translateY(10px) scale(.97);opacity:0;transition:none}
+  .card.enter .inner{transition:none}
+  .inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.3,.5,1)}
+  .card.flipped .inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;border-radius:var(--radius);backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;box-shadow:0 18px 40px var(--shadow)}
+  .back-face{background:var(--back) center/cover, var(--back-base);display:grid;place-items:center;cursor:pointer}
+  .back-face::before{content:"";position:absolute;inset:10px;border:1.5px solid var(--back-rule);border-radius:calc(var(--radius) * .55)}
+  .seal{position:relative;background:var(--seal-bg);border:1.5px solid var(--back-rule);border-radius:999px;padding:10px 18px;text-align:center;max-width:calc(100% - 40px)}
+  .seal .t{font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight);font-size:var(--seal-size);color:var(--seal-ink);line-height:1.25;white-space:nowrap;text-shadow:var(--seal-glow)}
+  .seal .s{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--seal-sub);opacity:.8;margin-top:2px}
+  .tap{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:12px;color:var(--tap);opacity:.85}
+  .front-face{transform:rotateY(180deg);display:flex;flex-direction:column;padding:24px 22px 18px;background:var(--c1);color:var(--c1-ink)}
+  .front-face::before{content:"";position:absolute;inset:8px;border:1px solid currentColor;opacity:.25;border-radius:calc(var(--radius) * .67);pointer-events:none}
+  .front-face[data-lv="1"]{background:var(--c2);color:var(--c2-ink)}
+  .front-face[data-lv="2"]{background:var(--c3);color:var(--c3-ink)}
+  .front-face.wild{background:var(--wild);color:var(--wild-ink)}
+  .front-face.debate{background:var(--debate);color:var(--debate-ink)}
+  .front-face.debate .timer{background:var(--debate-ink);color:var(--debate)}
+  .rule{margin:0 0 12px;font-size:13px;line-height:1.45;opacity:.85}
+  .front-face.final{background:var(--final);color:var(--final-ink)}
+  .f-top{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.75}
+  .q{flex:1;display:flex;align-items:center;font-family:var(--card-font);font-weight:var(--card-weight);font-size:clamp(20px,5.8vw,25px);line-height:1.3;letter-spacing:-.01em;text-wrap:pretty;margin:10px 0}
+  .f-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;font-size:11px;opacity:.7}
+  .f-bot .n{font-family:var(--display);font-style:var(--display-style);font-size:15px;white-space:nowrap}
+  .timer{align-self:flex-start;margin-bottom:6px;padding:8px 14px;border-radius:999px;background:var(--wild-ink);color:var(--wild);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+  .actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+  .count{text-align:center;font-size:12px;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
+
+  /* ---------- overlays ---------- */
+  .veil{position:fixed;inset:0;background:var(--veil);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;z-index:10}
+  .sheet{width:100%;max-width:440px;max-height:calc(100% - 32px);overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:24px 22px;box-shadow:0 20px 50px var(--shadow)}
+  .sheet h2{font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight);font-size:30px;margin:6px 0 10px;color:var(--accent);line-height:1.2}
+  .sheet p{margin:0 0 16px}
+  .sheet ol{padding-left:20px;margin:0 0 20px;display:grid;gap:10px}
+  .sheet li::marker{color:var(--accent);font-weight:600}
+  .sheet .btn{width:100%}
+  .interlude{text-align:center}
+  .interlude .num{font-family:var(--display);font-style:var(--display-style);font-size:88px;line-height:1;color:var(--accent)}
+  .interlude h2{font-family:var(--sans);font-style:normal;font-weight:800;color:var(--text);font-size:28px;margin:8px 0}
+  .interlude p{color:var(--muted);max-width:30ch;margin:0 auto 22px}
+
+  @media (prefers-reduced-motion:reduce){
+    .inner,.card,.btn,body{transition:none!important}
+  }
+  /* ---------- debate edition ---------- */
+  .mini{display:block;overflow:hidden}
+  .mini img{display:block;width:100%;height:100%;object-fit:cover}
+  .mini[data-c="0"]{background:var(--c1);color:var(--c1-ink)} .mini[data-c="1"]{background:var(--c2);color:var(--c2-ink)}
+  .mini[data-c="2"]{background:var(--c3);color:var(--c3-ink)} .mini[data-c="3"]{background:var(--debate);color:var(--debate-ink)}
+  .deck{grid-template-columns:68px 1fr auto}
+  .mini{width:68px}
+  .front-face[data-c="1"]{background:var(--c2);color:var(--c2-ink)}
+  .front-face[data-c="2"]{background:var(--c3);color:var(--c3-ink)}
+  .front-face[data-c="3"]{background:var(--debate);color:var(--debate-ink)}
+  /* the count-down button is the card inverted */
+  .front-face[data-c="0"] .timer{background:var(--c1-ink);color:var(--c1)}
+  .front-face[data-c="1"] .timer{background:var(--c2-ink);color:var(--c2)}
+  .front-face[data-c="2"] .timer{background:var(--c3-ink);color:var(--c3)}
+  .front-face[data-c="3"] .timer{background:var(--debate-ink);color:var(--debate)}
+  /* home: topic tiles, two per row, painting fills the square */
+  .decks{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .deck{position:relative;display:block;aspect-ratio:1/1;padding:0;overflow:hidden;border-radius:14px;border:1px solid var(--line-strong);background:#f3ecdf;transition:transform .15s,box-shadow .15s}
+  .deck:hover{transform:translateY(-2px)}
+  .deck .mini{position:absolute;inset:0;width:100%;height:100%;border-radius:0;box-shadow:none}
+  .deck .mini::after{display:none}
+  .deck .mini img{object-position:50% 50%}
+  .deck .cap{position:absolute;left:0;right:0;bottom:0;padding:18px 11px 9px;background:linear-gradient(to top,rgba(243,236,223,1) 0%,rgba(243,236,223,.95) 60%,rgba(243,236,223,0));text-align:left}
+  .deck .cap h3{margin:0;font-size:15px;font-weight:700;line-height:1.2;color:#221d17;text-wrap:balance}
+  .deck .cap .meta{margin-top:2px;font-size:11.5px;color:#8a6f52}
+  .deck .cap p{display:none}
+  .deck .tick{position:absolute;top:8px;right:8px;width:26px;height:26px;background:#fffaf0;border:1.5px solid rgba(42,36,32,.35);color:transparent}
+  .deck[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)}
+  .deck[aria-pressed="true"] .tick{background:var(--accent);color:var(--on-accent)}
+  /* every piece of text renders lowercase */
+  body, body *{text-transform:lowercase !important}
+  .eyebrow{letter-spacing:.04em}
+  .f-top{letter-spacing:.03em}
+  .seal .s{letter-spacing:.06em}
+  .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+</style>
+<script>try{var sk=localStorage.getItem("nltq-skin")||"dongho";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="dongho"}</script>
+
+<div class="app" id="app">
+
+  <!-- HOME -->
+  <section class="screen" id="s-home">
+    <div class="brand">
+      <span class="mark">Làm Thân</span>
+    </div>
+    <div class="hero">
+      <div class="eyebrow">Bộ câu hỏi để hiểu nhau hơn</div>
+      <h1>Càng hỏi,<br><em>càng thân.</em></h1>
+    </div>
+    <div class="decks" id="decks"></div>
+    <div class="skins-wrap">
+      <div class="eyebrow">Giao diện</div>
+      <div class="skins" id="skins"></div>
+    </div>
+    <div class="home-foot">
+      <span></span>
+      <span>v2</span>
+    </div>
+    <div class="pickbar"><button class="btn btn-gold" id="pick-go" disabled>Chọn ít nhất một chủ đề</button></div>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="s-play" hidden>
+    <div class="hud">
+      <button class="back" id="play-back" aria-label="Về trang chủ">←</button>
+      <div class="hud-title" id="hud-title"></div>
+      <span class="hud-count" id="hud-count"></span>
+    </div>
+    <div class="table">
+      <div class="stack">
+        <div class="ghost g2"></div>
+        <div class="ghost g1"></div>
+        <div class="card" id="card" tabindex="0" aria-live="polite">
+          <div class="inner">
+            <div class="face back-face">
+              <div class="seal"><div class="t">Làm Thân</div><div class="s">Hiểu nhau hơn</div></div>
+              <div class="tap">Chạm để lật</div>
+            </div>
+            <div class="face front-face" id="front">
+              <div class="f-top"><span id="f-topic"></span><span>Có hay không?</span></div>
+              <div class="q" id="q"></div>
+              <div class="f-bot"><span>Làm Thân</span><span class="n" id="f-n"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="skip">Đổi câu</button>
+      <button class="btn btn-gold" id="next">Lật bài</button>
+    </div>
+    <div class="count" id="count"></div>
+  </section>
+</div>
+
+<!-- overlays -->
+<div class="veil" id="agegate" hidden>
+  <div class="sheet">
+    <div class="eyebrow">Chỉ dành cho người lớn</div>
+    <h2>Cả nhóm đã đủ 18 tuổi?</h2>
+    <p>Chủ đề Chuyện Ấy có những câu về tình dục. Chỉ chơi khi mọi người đều từ 18 tuổi trở lên và thoải mái với chủ đề này.</p>
+    <div style="display:grid;gap:10px">
+      <button class="btn btn-gold" id="age-ok">Tất cả đều đủ 18 tuổi</button>
+      <button class="btn btn-ghost" id="age-no">Quay lại</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ TOPICS — every card is a debate statement ============
+   Rule of thumb: a real "có nên…?" choice both sides can defend, in the way people actually talk. */
+const TOPICS = [
+ {id:"yeu", name:"Tình Yêu", sub:"Người cũ, ghen tuông, ngoại tình, những luật ngầm khi yêu.", cards:[
+  "Việc yêu người yêu cũ của bạn thân có nên được chấp nhận?",
+  "Bạn thân khác giới có thật sự tồn tại?",
+  "Có nên xem điện thoại của người yêu?",
+  "Yêu nhau thì có nên biết mật khẩu điện thoại của nhau?",
+  "Chia tay rồi có nên unfollow người yêu cũ?",
+  "Ngoại tình tư tưởng có tính là ngoại tình không?",
+  "Đang có bồ mới thì có được đi chơi riêng với người yêu cũ?",
+  "Có nên yêu xa?",
+  "Có nên yêu người hơn mình mười tuổi?",
+  "Con gái có nên tỏ tình trước?",
+  "Nên yêu người yêu mình hơn là người mình yêu?",
+  "Chia tay rồi có làm bạn được không?",
+  "Có nên kể hết chuyện tình cũ cho người yêu mới?",
+  "Không ghen là không yêu?",
+  "Yêu là phải công khai trên mạng?",
+  "Người yêu ngoại tình một lần và xin lỗi thì có thể tha thứ?",
+  "Người yêu thả tim story người cũ thì có phải chuyện lớn?",
+  "Có nên giữ ảnh chụp chung với người yêu cũ?",
+  "Có nên yêu người mà gia đình không thích?",
+  "Có nên cho người yêu đi du lịch chung với hội bạn khác giới?",
+  "Có nên yêu người từng là mối tình đầu của bạn thân?",
+  "Tình yêu sét đánh có thật không?",
+  "Có nên hẹn hò hai người cùng lúc nếu chưa xác định ai chính thức?",
+  "Có nên yêu người từng ly hôn?",
+  "Có nên công khai chuyện tiền bạc hết cho người yêu biết?",
+  "Có nên yêu đồng nghiệp cùng công ty?",
+  "Có nên yêu người có con riêng?",
+  "Có nên để người yêu đọc tin nhắn với bạn thân của mình?",
+  "Yêu nhau lâu rồi có bắt buộc phải cưới?",
+  "Có nên chấp nhận người yêu vẫn giữ liên lạc với người cũ vì công việc?",
+  "Có nên tiếp tục yêu xa vô thời hạn nếu không có ngày đoàn tụ rõ ràng?",
+  "Có nên yêu người từng là trà xanh trong một mối quan hệ khác?",
+  "Có nên chấp nhận người yêu có nhiều bạn thân khác giới?",
+  "Có nên yêu người chưa từng yêu ai trước đó?",
+  "Có nên yêu người có định hướng sự nghiệp khác hẳn mình?",
+  "Có nên yêu người từng là situationship của bạn thân?",
+  "Có nên yêu người vẫn còn ở chung nhà với người yêu cũ vì chưa dọn ra?",
+  "Có nên yêu người kiếm tiền ít hơn mình rất nhiều?",
+  "Có nên tiếp tục yêu người không muốn có con?",
+  "Có nên chọn sự nghiệp thay vì mối tình đang yêu xa?",
+  "Có nên cưới người thu nhập bấp bênh dù rất yêu?",
+  "Có nên yêu người kém mình rất nhiều về học vấn?",
+  "Có nên cưới người mà mình biết mẹ chồng tương lai rất khó tính?",
+  "Có nên yêu người luôn coi bạn thân của mình là ưu tiên số một?",
+  "Có nên yêu người đã từng làm OnlyFans?",
+  "Có nên yêu người có gu ăn mặc hoàn toàn khác gu thẩm mỹ của mình?",
+  "Có nên chấp nhận một situationship nếu mình cũng chưa muốn nghiêm túc?",
+  "Người yêu chưa bao giờ đăng ảnh mình lên story có phải red flag?"
+ ]},
+ {id:"ay", name:"Chuyện Ấy", sub:"Sex, những lần đầu, quan điểm người lớn. Cay nhưng không thô.", adult:true, cards:[
+  "Có nên thử “tình một đêm”?",
+  "Có nên thử có “friends with bún bò”?",
+  "Không hợp “chuyện ấy” thì có nên cưới?",
+  "Trong tình yêu, sex có quan trọng bằng tình cảm không?",
+  "Có nên hỏi body count của người yêu?",
+  "Có nên dạy giáo dục giới tính từ tiểu học?",
+  "Có nên giả vờ “lên đỉnh” cho người yêu vui?",
+  "Con gái có nên chủ động rủ “chuyện ấy” trước thay vì chờ đối phương?",
+  "Có nên nói thẳng khi “chuyện ấy” chưa làm mình thoả mãn?",
+  "Có nên coi “chuyện ấy” nhạt dần là dấu hiệu tình yêu đang nguội?",
+  "Người yêu follow tài khoản OnlyFans trên mạng có chấp nhận được không?",
+  "Có nên chủ động đề nghị đi xét nghiệm trước khi tiến xa hơn?",
+  "Ngoại tình thể xác tệ hơn ngoại tình tinh thần?",
+  "Có nên yêu cầu bạn đời tương lai kể hết chuyện giường chiếu ngày xưa?",
+  "Có nên quen một người đã từng threesome?",
+  "Body count nhiều có nên là red flag khi chọn người nghiêm túc?",
+  "Có nên “chuyện ấy” để làm hoà sau khi cãi nhau to?",
+  "Phát hiện người yêu xem phim người lớn thường xuyên, có nên lo?",
+  "Đang situationship mà đã “chuyện ấy” thì có nên đòi danh phận?"
+ ]},
+ {id:"tien", name:"Tiền Bạc", sub:"Chia bill, lương, vay mượn, phong bì đám cưới.", cards:[
+  "Đi ăn chung thì cứ chia đều cho nhanh?",
+  "Hẹn hò lần đầu thì con trai nên trả tiền?",
+  "Có nên nói lương cho bạn bè biết?",
+  "Cưới rồi có nên gộp chung tiền?",
+  "Có nên đợi mua được nhà rồi mới cưới?",
+  "Có nên cho bạn thân vay tiền?",
+  "Đi làm rồi có nên gửi tiền về cho bố mẹ hàng tháng?",
+  "Tiền có mua được hạnh phúc?",
+  "Có nên trả góp để mua iPhone mới?",
+  "Đi đám cưới có nên mừng theo kiểu “có qua có lại”?",
+  "Còn trẻ thì nên tiêu cho trải nghiệm hơn là tiết kiệm?",
+  "Mới quen đã hỏi lương thì có sao không?",
+  "Có nên lấy người kiếm ít tiền hơn mình?",
+  "Có vợ có chồng rồi có nên giữ quỹ đen?",
+  "Có nên vay tiền để đi du lịch?",
+  "Có nên nhờ người yêu trả tiền khi mình đang thất nghiệp?",
+  "Có nên nhận quà đắt tiền từ người mới quen được vài lần?",
+  "Ở chung, tiền nhà có nên chia theo lương thay vì chia đều?",
+  "Có được góp ý với người yêu không nên dùng tiền hoang phí, dù tiền đấy là của họ?",
+  "Lì xì 10 nghìn có bị coi là keo kiệt?",
+  "Yêu trên một năm rồi thì có nên cho người yêu vay tiền?"
+ ]},
+ {id:"nha", name:"Gia Đình", sub:"Bố mẹ, cưới xin, con cái, những câu hỏi ngày Tết.", cards:[
+  "Cưới xong có nên ra ở riêng?",
+  "Ba mươi tuổi chưa cưới là “ế”?",
+  "Tết có nhất thiết phải về quê?",
+  "Bố mẹ có nên kiểm tra điện thoại của con tuổi teen?",
+  "Có nên sống thử trước khi cưới?",
+  "Cưới rồi có nhất thiết phải sinh con?",
+  "“Thương cho roi cho vọt” còn đúng không?",
+  "Con trai trưởng có phải lo cho bố mẹ nhiều hơn?",
+  "Bố mẹ phản đối người yêu thì có nên chia tay?",
+  "Có nên đi du lịch Tết thay vì đi chúc Tết họ hàng?",
+  "Có nên đưa bố mẹ vào viện dưỡng lão?",
+  "Có nên làm ăn chung với anh chị em ruột?",
+  "Lớn rồi có cần hỏi ý bố mẹ trước những quyết định lớn?",
+  "Có nên cưới dù bố mẹ hai bên không ưa nhau?",
+  "Có nên kể chuyện đang trong một situationship cho bố mẹ nghe?",
+  "Có nên nói thật với bố mẹ về xu hướng tính dục của mình?",
+  "Có nên từ mặt bố mẹ nếu họ toxic quá lâu?",
+  "Có nên để bố mẹ biết mình đang đi trị liệu tâm lý?"
+ ]},
+ {id:"ban", name:"Bạn Bè", sub:"Luật ngầm của tình bạn, nợ nần, bí mật, nhóm chat.", cards:[
+  "Bạn thân có được đọc tin nhắn của nhau?",
+  "Bạn thân cưới mà không mời thì có nên nghỉ chơi?",
+  "Bạn hỏi “mặc thế này đẹp không” thì có nên nói thật?",
+  "Có bồ rồi thì ít đi chơi với bạn là bình thường?",
+  "Bạn mượn tiền mãi không trả thì có nên đòi thẳng?",
+  "Có nên kể bí mật của bạn thân cho người yêu nghe?",
+  "Có nên yêu người trong nhóm bạn thân?",
+  "Bạn thân lâu năm thì không cần gặp nhau thường xuyên?",
+  "Bạn trễ hẹn 30 phút thì có nên về luôn?",
+  "Thấy bồ của bạn thân ngoại tình thì có nên nói?",
+  "Bạn quen qua mạng có thể thành bạn thân?",
+  "Đọc tin nhắn nhóm mà không trả lời thì có sao?",
+  "Có nên hủy kết bạn những người cả năm không nói chuyện?",
+  "Có nên làm bạn với người yêu cũ của bạn thân?",
+  "Biết bạn thân là trà xanh thì có nên tránh xa?",
+  "Biết bạn thân đang nói dối người yêu thì có nên giúp giấu?"
+ ]},
+ {id:"doi", name:"Đời Sống & Mạng", sub:"Giờ cao su, “seen” không rep, sống ảo, phép lịch sự thời nay.", cards:[
+  "Đến trễ 15 phút là chuyện bình thường?",
+  "“Seen” mà không rep là thiếu tôn trọng?",
+  "Có cần hỏi trước khi đăng ảnh có mặt bạn bè?",
+  "Có nên cấm điện thoại trong bữa ăn?",
+  "Có nên đăng chuyện tình cảm lên mạng?",
+  "Gọi điện mà không nhắn trước là bất lịch sự?",
+  "Có nên “cai” mạng xã hội một tháng mỗi năm?",
+  "“Cho điện thoại ăn trước” là phiền người khác?",
+  "Có nên xem tử vi, cung hoàng đạo trước khi yêu?",
+  "Có nên mặc đồ bộ ra đường?",
+  "Có nên “bóc phốt” trên mạng để đòi công bằng?",
+  "Có nên nhắn tin bằng tin nhắn thoại?",
+  "Có nên block người yêu cũ ngay sau khi chia tay?",
+  "Có nên seen tin nhắn crush rồi rep muộn để đỡ dễ dãi?",
+  "Có nên tắt “đang hoạt động” để seen không ai biết?",
+  "Rep tin nhắn nhóm chậm hơn tin nhắn riêng là bình thường?"
+ ]},
+ {id:"viec", name:"Công Việc & Học Hành", sub:"Bằng cấp, nhảy việc, sếp, đồng nghiệp, đam mê hay lương.", cards:[
+  "Có cần học đại học không?",
+  "Có nên bỏ việc ổn định để theo đam mê?",
+  "Sếp nhắn sau 10 giờ tối thì có nên trả lời?",
+  "Có nên nhảy việc mỗi năm để tăng lương?",
+  "Làm ở nhà hiệu quả hơn lên văn phòng?",
+  "Có nên yêu đồng nghiệp?",
+  "Có nên cho con đi học thêm từ tiểu học?",
+  "Có nên nói xấu sếp với đồng nghiệp?",
+  "Ba mươi tuổi mới đổi nghề thì có muộn không?",
+  "Có nên đi làm cho công ty của người nhà?",
+  "So sánh với “con nhà người ta” có giúp con cố gắng hơn?",
+  "Có nên chọn việc lương cao dù không thích?",
+  "Có nên chọn công việc nhàn lương thấp để có thời gian sống cho mình?",
+  "Có nên nhận offer lương cao ở công ty nổi tiếng “toxic”?",
+  "Vẫn xong việc thì đi làm trễ mỗi ngày có sao không?"
+ ]},
+ {id:"triet", name:"Tâm Sự Đêm Khuya", sub:"Những câu không có đáp án đúng, chỉ có cách nghĩ của mỗi người.", cards:[
+  "Có nên nói dối để người khác đỡ buồn?",
+  "Tha thứ nhưng không quên thì có tính là tha thứ?",
+  "Con người có thật sự thay đổi được?",
+  "Thành công chủ yếu nhờ may mắn?",
+  "Nếu được, có nên biết trước ngày mình mất?",
+  "Nhặt được 50 nghìn ngoài đường thì có nên giữ?",
+  "Sống tốt quá thì dễ bị thiệt?",
+  "Hạnh phúc là do mình lựa chọn?",
+  "Có nên sống mặc kệ người khác nghĩ gì?",
+  "Có thể yêu hai người cùng một lúc?",
+  "Có nên trả đũa khi bị chơi xấu?",
+  "Trên đời không có gì là miễn phí?",
+  "Người giàu có trách nhiệm giúp người nghèo?",
+  "Im lặng trước cái sai cũng là một dạng đồng lõa?",
+  "Người tốt có cần được đền đáp mới tiếp tục tốt?",
+  "Có nên yêu bản thân trước rồi mới yêu người khác?",
+  "Đau khổ có phải là điều kiện để trưởng thành?",
+  "Sự thật lúc nào cũng nên được nói ra?",
+  "Càng hiểu đời thì càng cô đơn hơn?",
+  "Số phận đã định sẵn hay do mình tự chọn hết?",
+  "Càng nhiều lựa chọn thì con người càng khó hạnh phúc hơn?",
+  "Biết đủ có phải là một dạng thất bại trong âm thầm?",
+  "Người ta chỉ tốt khi có ai đó đang nhìn thấy?",
+  "Ký ức buồn có nên giữ lại để nhắc mình sống tử tế hơn?",
+  "Tự do thật sự có tồn tại hay chỉ là ảo tưởng dễ chịu?",
+  "Một lời xin lỗi muộn màng có còn giá trị gì không?",
+  "Sống chậm lại có phải là một cách trốn tránh cuộc đời?",
+  "Có phải ai cũng đang diễn một vai nào đó mỗi ngày?",
+  "Buông bỏ có phải lúc nào cũng là lựa chọn khôn ngoan hơn?",
+  "Càng trưởng thành càng mất đi khả năng tin người khác?",
+  "Người thành công có bắt buộc phải đánh đổi sự cô đơn?",
+  "Có phải càng yêu nhiều thì càng dễ đánh mất chính mình?",
+  "Nỗi sợ có phải là thứ giữ con người ta sống đúng đắn?",
+  "Có nên tin vào duyên số thay vì cố gắng hết mình?",
+  "Sự công bằng tuyệt đối có thật sự tồn tại trên đời?",
+  "Có phải người mạnh mẽ nhất là người giấu tổn thương giỏi nhất?",
+  "Ký ức đẹp có làm hiện tại trở nên nhạt nhòa hơn?",
+  "Niềm tin mù quáng có phải cũng là một dạng hạnh phúc?"
+ ]}
+];
+
+/* ============ TOPIC SKETCHES — minimalist ink figures on paper, one colour wash each ============
+   Drawn in a 100×100 space and scaled. Every line is inked twice (a firm pass plus a faint, slightly
+   shifted pencil pass) so it reads as a hand sketch. A seeded RNG keeps each sketch identical on every load. */
+const VG = (() => {
+  const PAPER = "#f3ecdf", INK = "#2a2420";
+  const C = { red:"#c8452f", ochre:"#d9a13a", blue:"#4f7fb8", green:"#6f9446", rose:"#d9837a", grey:"#9a9084" };
+  const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const hash = s => [...s].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261);
+  let ctx, r;
+  const head = (cx, cy, rr) => `M${cx - rr} ${cy}a${rr} ${rr} 0 1 0 ${rr * 2} 0a${rr} ${rr} 0 1 0 ${-rr * 2} 0`;
+
+  function ink(d, w = 1.4){
+    const p = new Path2D(d);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.strokeStyle = INK; ctx.globalAlpha = .9; ctx.lineWidth = w; ctx.stroke(p);
+    ctx.save();                                   // faint pencil echo, slightly off
+    ctx.translate((r() - .5) * 1.2, (r() - .5) * 1.2); ctx.rotate((r() - .5) * .012);
+    ctx.globalAlpha = .3; ctx.lineWidth = w * .55; ctx.stroke(p);
+    ctx.restore(); ctx.globalAlpha = 1;
+  }
+  function wash(d, color, a = .42){               // watercolour: two soft, offset layers
+    const p = new Path2D(d);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = a; ctx.fill(p);
+    ctx.save(); ctx.translate((r() - .5) * 2.4, (r() - .5) * 2.4); ctx.globalAlpha = a * .45; ctx.fill(p); ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  const star = (x, y, s = 2) => ink(`M${x - s} ${y}H${x + s}M${x} ${y - s}V${y + s}`, 1);
+
+  const SCENES = {
+    yeu(){                                         // two people, face to face
+      wash("M50 14c-3-4-9-2-7 3 1 3 7 7 7 7s6-4 7-7c2-5-4-7-7-3z", C.red, .7);
+      ink("M50 14c-3-4-9-2-7 3 1 3 7 7 7 7s6-4 7-7c2-5-4-7-7-3z", 1.1);
+      ink(head(35, 38, 9)); ink("M27 35c1-7 8-11 14-8");
+      ink("M29 46c-4 5-11 9-15 18M41 46c2 5 5 9 6 16");
+      ink(head(65, 37, 9)); ink("M57 33c2-8 13-9 16-2 2 5 1 12 4 20 2 5 5 8 8 10");
+      ink("M59 45c-2 5-5 10-6 17M72 46c5 5 11 9 14 18");
+      wash("M14 64c8-3 16-3 22-2 6 1 11 1 17 0 8-1 20-1 33 2V70H14Z", C.rose, .25);
+    },
+    ay(){                                          // two heads on one pillow, under a blanket
+      wash("M18 44c0-6 32-8 64-4 4 1 4 9 0 10-32 2-62 2-64-6z", C.grey, .18);
+      ink("M18 44c0-6 32-8 64-4 4 1 4 9 0 10-32 2-62 2-64-6z", 1.1);
+      ink(head(39, 41, 8)); ink("M31 39c2-6 10-8 15-4");
+      ink(head(60, 41, 8)); ink("M53 36c5-5 13-3 15 3M67 41c3 3 5 7 9 8");
+      wash("M8 54c26-6 60-6 84 0v18c-26-5-58-5-84 0z", C.red, .38);
+      ink("M8 54c26-6 60-6 84 0M8 54v18M92 54v18M8 72c26-5 58-5 84 0");
+      ink("M30 58c6 3 10 8 12 13M58 57c-2 5-2 10 1 14", 1);
+      star(20, 18, 1.8); star(80, 16, 2.2);
+    },
+    tien(){                                        // holding up a lì xì envelope
+      wash("M60 8h15v20H60z", C.red, .75); ink("M60 8h15v20H60zM60 8l7.5 8 7.5-8", 1.2);
+      ink(head(40, 26, 8)); ink("M33 22c3-5 11-6 14 0");
+      ink("M31 38c5-3 13-3 18 0M49 38c4-4 8-9 12-14M31 38c-3 8-4 15-2 22");
+      ink("M33 38c-1 12 0 22 1 34M47 38c1 12 0 22-1 34M40 52v20", 1.2);
+      wash(head(72, 40, 2.6), C.ochre, .8); wash(head(66, 50, 2.2), C.ochre, .8); wash(head(74, 56, 1.9), C.ochre, .8);
+      ink(head(72, 40, 2.6), .9); ink(head(66, 50, 2.2), .9); ink(head(74, 56, 1.9), .9);
+    },
+    nha(){                                         // parent and child, hand in hand
+      wash(head(76, 18, 8), C.ochre, .5);
+      ink(head(38, 22, 7)); ink("M32 19c2-5 10-6 13-1");
+      ink("M33 30c-2 14-1 26 1 42M43 30c2 14 1 26-1 42M38 48v24", 1.3);
+      ink("M33 32c-4 8-5 14-4 20M43 33c6 9 10 14 15 17");
+      ink(head(62, 42, 5.5)); ink("M58 39c2-4 7-4 9-1");
+      ink("M59 48c-1 8-1 16 0 24M65 48c1 8 1 16 0 24M58 50c0 0-1 0 0 0M65 50c3 5 4 9 4 12", 1.2);
+      ink("M10 72h80", 1);
+    },
+    ban(){                                         // two friends clinking glasses
+      wash("M43 30h8l-1 14h-6zM50 30h8l-2 14h-6z", C.ochre, .6);
+      ink("M43 30h8l-1 14h-6zM50 30h8l-2 14h-6z", 1.1);
+      ink("M50 18v5M44 20l2 4M56 20l-2 4", 1);
+      ink(head(24, 32, 7)); ink("M18 29c2-5 9-6 12-1");
+      ink("M20 39c-4 9-4 18 0 25M27 41c6 3 11 3 16-1");
+      ink(head(76, 32, 7)); ink("M70 28c3-5 10-4 12 1 1 4 0 8 2 11");
+      ink("M80 39c4 9 4 18 0 25M73 41c-6 3-11 3-16-1");
+      ink("M16 64h68M32 64v12M68 64v12", 1.3);
+    },
+    doi(){                                         // hunched over a glowing phone
+      wash(head(58, 50, 11), C.blue, .28);
+      ink(head(46, 28, 8)); ink("M39 25c2-6 11-7 14 0");
+      ink("M40 35c-8 7-11 18-9 35M52 35c3 6 3 11 1 15M31 70h24", 1.3);
+      ink("M42 41c3 8 8 12 14 12M50 40c3 6 6 10 10 11");
+      wash("M55 44l7 1-1 11-7-1z", C.blue, .7); ink("M55 44l7 1-1 11-7-1z", 1.1);
+      ink("M66 14h18c2 0 3 1 3 3v7c0 2-1 3-3 3h-12l-4 4v-4h-2c-2 0-3-1-3-3v-7c0-2 1-3 3-3z", 1.1);
+      ink("M71 20.5h.5M75 20.5h.5M79 20.5h.5", 2);
+    },
+    viec(){                                        // at the laptop, coffee on the side
+      wash("M52 40l6 24H44z", C.blue, .3);
+      ink("M52 40l6 24M40 64h22", 1.4);
+      ink(head(28, 30, 8)); ink("M21 27c2-6 11-7 14-1");
+      ink("M24 38c-4 9-4 18 0 26M31 39c5 9 11 16 19 22");
+      ink("M12 66h76", 1.2); ink("M24 64l-4 12M20 76h12", 1.1);
+      wash("M70 54h10v10c0 2-2 3-5 3s-5-1-5-3z", C.ochre, .55);
+      ink("M70 54h10v10c0 2-2 3-5 3s-5-1-5-3zM80 57c3 0 3 5 0 5", 1.1);
+      ink("M73 50c-2-3 2-4 0-7M77 50c-2-3 2-4 0-7", .9);
+    },
+    vui(){                                         // lifting phở noodles
+      wash("M30 60c0 12 40 12 40 0z", C.ochre, .5);
+      ink("M28 60h44M30 60c0 12 40 12 40 0M44 71v3h12v-3", 1.3);
+      ink(head(50, 24, 8)); ink("M43 21c2-6 11-7 14 0");
+      ink("M36 40c4-5 24-5 28 0M36 40c-3 6-4 12-3 16M64 40c3 3 4 6 2 10");
+      ink("M58 52l8-20M61 53l9-19", 1.1);
+      ink("M52 58c1-4 4-6 6-10M55 58c1-4 4-6 7-10M49 58c1-3 3-5 5-8", .9);
+      ink("M38 54c-2-3 2-5 0-8M44 53c-2-3 2-5 0-8", .8);
+    },
+    triet(){                                       // the thinker under a crescent moon
+      wash("M78 12a9 9 0 1 0 6 16 7 7 0 1 1-6-16z", C.ochre, .65);
+      ink("M78 12a9 9 0 1 0 6 16 7 7 0 1 1-6-16z", 1.1);
+      star(58, 14, 1.8); star(88, 42, 1.6);
+      wash("M20 74c2-10 18-12 26-8 6-2 14 2 16 8z", C.grey, .3);
+      ink("M20 74c2-10 18-12 26-8 6-2 14 2 16 8M16 74h52", 1.2);
+      ink(head(40, 30, 7.5)); ink("M34 27c2-5 10-6 13-1");
+      ink("M35 37c-6 8-7 18-3 26M44 37c3 2 5 4 6 6");
+      ink("M32 63c8-2 16-4 22-2M54 61c0 5 0 9 2 13M34 63c6 2 12 2 18 1");
+      ink("M50 60c2-6 2-12-2-17 0 0-3-1-5 0", 1.3);
+    },
+  };
+
+  const cache = {};
+  return function paint(id, W = 320, H = 320){
+    const key = id + W + "x" + H;
+    if(cache[key]) return cache[key];
+    try{
+      const c = document.createElement("canvas"); c.width = W; c.height = H;
+      ctx = c.getContext("2d"); if(!ctx) return "";
+      r = rng(hash(id));
+      ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W, H);
+      ctx.scale(W / 100, H / 100);
+      for(let i = 0; i < 500; i++){ ctx.fillStyle = r() < .5 ? "rgba(42,36,32,.035)" : "rgba(255,255,255,.35)"; ctx.fillRect(r() * 100, r() * 100, .5, .5); }
+      ctx.translate(0, 4);                        // leave room for the name strip at the bottom
+      ctx.translate(50, 44); ctx.scale(.86, .86); ctx.translate(-50, -44);
+      (SCENES[id] || SCENES.triet)();
+      return (cache[key] = c.toDataURL("image/png"));
+    }catch(e){ return ""; }
+  };
+})();
+
+/* ============ STATE ============ */
+let state;
+const $ = id => document.getElementById(id);
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const picked = () => TOPICS.filter(t => state.picked.includes(t.id));
+const cardCount = ts => ts.reduce((n, t) => n + t.cards.length, 0);
+function freshState(){
+  return { screen:"home", picked:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false };
+}
+
+/* ============ HOME ============ */
+function renderHome(){
+  $("decks").innerHTML = TOPICS.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${state.picked.includes(t.id)}" title="${t.sub}">
+      <span class="mini" data-c="${TOPICS.indexOf(t) % 4}"><img alt="" src="${VG(t.id, 320, 320)}"></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${t.cards.length} câu${t.adult ? " · 18+" : ""}</div></span>
+      <span class="tick" aria-hidden="true">✓</span></button>`).join("");
+  const ts = picked(), btn = $("pick-go");
+  btn.disabled = !ts.length;
+  btn.textContent = !ts.length ? "Chọn ít nhất một chủ đề"
+    : ts.length === 1 ? `Chơi ${ts[0].name} · ${cardCount(ts)} câu →`
+    : `Trộn ${ts.length} chủ đề · ${cardCount(ts)} câu →`;
+}
+$("decks").addEventListener("click", e => {
+  const b = e.target.closest(".deck"); if(!b) return;
+  const id = b.dataset.id;
+  state.picked = state.picked.includes(id) ? state.picked.filter(x => x !== id) : state.picked.concat(id);
+  renderHome();
+});
+$("pick-go").addEventListener("click", () => {
+  const ts = picked(); if(!ts.length) return;
+  if(ts.some(t => t.adult) && !state.adultOk){ $("agegate").hidden = false; $("age-ok").focus(); return; }
+  startGame();
+});
+$("age-ok").addEventListener("click", () => { state.adultOk = true; $("agegate").hidden = true; startGame(); });
+$("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
+
+/* ============ GAME ============ */
+function deal(){
+  state.pile = shuffle(picked().flatMap(t => t.cards.map(text => ({text, topic:t.id}))));
+  state.total = state.pile.length; state.drawn = 0;
+}
+function startGame(){
+  deal(); state.round = 1; state.autoFlip = true;   // cards open face up, no tap needed
+  drawCard(); show("play");
+}
+function drawCard(){
+  if(!state.pile.length){ deal(); state.round++; }       // no final card: reshuffle and keep going
+  state.card = state.pile.shift(); state.drawn++;
+  state.flipped = state.autoFlip;                        // after the first flip, cards arrive face up
+}
+function renderPlay(){
+  const c = state.card, t = TOPICS.find(x => x.id === c.topic), ts = picked();
+  $("hud-title").textContent = ts.length === 1 ? ts[0].name : `${ts.length} chủ đề`;
+  $("hud-count").textContent = `${state.drawn}/${state.total}`;
+  $("front").dataset.c = TOPICS.indexOf(t) % 4;
+  $("f-topic").textContent = t.name;
+  $("q").textContent = c.text;
+  $("f-n").textContent = String(state.drawn).padStart(2, "0");
+  $("card").classList.toggle("flipped", state.flipped);
+  $("skip").disabled = !state.flipped;
+  $("next").textContent = state.flipped ? "Câu tiếp →" : "Lật bài";
+  $("count").textContent = state.round > 1 && state.drawn === 1 ? "Hết một vòng, bộ bài đã được trộn lại." : `Còn ${state.pile.length} câu`;
+}
+function flip(){
+  if(state.flipped) return;
+  state.flipped = true; state.autoFlip = true; renderPlay();
+}
+function advance(dir = "r"){
+  if(!state.flipped){ flip(); return; }
+  const card = $("card");
+  card.classList.remove("dragging"); card.style.transform = "";
+  card.classList.add(dir === "l" ? "leave-l" : "leave-r");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(() => {
+    drawCard();
+    card.classList.remove("leave-l", "leave-r");
+    card.classList.add("enter");
+    renderPlay();
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove("enter")));
+  }, reduce ? 0 : 320);
+}
+$("skip").addEventListener("click", () => {             // skipped statement goes to the bottom of the pile
+  if(!state.flipped) return;
+  state.pile.push(state.card); state.drawn--; advance("l");
+});
+$("next").addEventListener("click", () => advance("r"));
+$("play-back").addEventListener("click", () => show("home"));
+
+
+/* tap to flip, swipe to move on */
+(() => {
+  const card = $("card"); let x0 = null, dx = 0, id = null;
+  card.addEventListener("pointerdown", e => {
+    if(!state.flipped) return;
+    x0 = e.clientX; dx = 0; id = e.pointerId; card.setPointerCapture(id); card.classList.add("dragging");
+  });
+  card.addEventListener("pointermove", e => {
+    if(x0 === null || e.pointerId !== id) return;
+    dx = e.clientX - x0; card.style.transform = `translateX(${dx}px) rotate(${dx/18}deg)`;
+  });
+  const end = () => {
+    if(x0 === null) return;
+    x0 = null; card.classList.remove("dragging");
+    if(Math.abs(dx) > 90) advance(dx > 0 ? "r" : "l"); else card.style.transform = "";
+  };
+  card.addEventListener("pointerup", end); card.addEventListener("pointercancel", end);
+  card.addEventListener("click", () => { if(!state.flipped) flip(); });
+  document.addEventListener("keydown", e => {
+    if(state.screen !== "play" || !$("agegate").hidden) return;
+    if((e.key === " " || e.key === "Enter") && document.activeElement.tagName !== "BUTTON"){ e.preventDefault(); advance("r"); }
+    if(e.key === "ArrowRight") advance("r");
+  });
+})();
+
+/* ============ ROUTER ============ */
+function show(screen){
+  state.screen = screen;
+  ["home","play"].forEach(s => $("s-"+s).hidden = s !== screen);
+  if(screen === "home") renderHome();
+  if(screen === "play") renderPlay();
+  window.scrollTo(0, 0);
+}
+
+/* ============ THEMES ============ */
+const SKINS = [
+  {id:"dongho", name:"Đông Hồ",     note:"Giấy điệp, màu khắc gỗ",             bg:"#efe6d2", sw:["#dfa73c","#b0392a","#2d5a4b"]},
+  {id:"sonmai", name:"Sơn Mài",     note:"Đen then, thếp vàng, khảm vỏ trứng", bg:"#15100e", sw:["#b3301e","#6e1a14","#1f1714"]},
+  {id:"tet",    name:"Tết",         note:"Lì xì đỏ, mai vàng, đào hồng",        bg:"#6a0e15", sw:["#ffc93c","#f59ab0","#3a0a0f"]},
+  {id:"saigon", name:"Sài Gòn Đêm", note:"Biển hiệu neon, phố khuya",           bg:"#0b1322", sw:["#ff5c93","#2ec4b6","#18223d"]}
+];
+const SKIN_KEY = "nltq-skin";
+function currentSkin(){ try{ const s = localStorage.getItem(SKIN_KEY); return SKINS.some(k => k.id === s) ? s : "dongho"; }catch(e){ return "dongho"; } }
+function applySkin(id){
+  const root = document.documentElement;
+  if(id === "sonmai") delete root.dataset.skin; else root.dataset.skin = id;
+  try{ localStorage.setItem(SKIN_KEY, id); }catch(e){}
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", SKINS.find(s => s.id === id).bg);
+  paintBack(id);
+  renderSkins();
+}
+function renderSkins(){
+  const el = $("skins"); if(!el) return;
+  const cur = currentSkin();
+  el.innerHTML = SKINS.map(s => `<button class="skin" data-skin="${s.id}" aria-pressed="${s.id===cur}">
+    <span class="sw" style="background:${s.bg}">${s.sw.map(c => `<i style="background:${c}"></i>`).join("")}</span>
+    <span><b>${s.name}</b></span></button>`).join("");
+}
+$("skins").addEventListener("click", e => {
+  const b = e.target.closest(".skin"); if(b) applySkin(b.dataset.skin);
+});
+
+/* ============ CARD BACKS — one generative motif per theme ============ */
+const BACKS = {
+  /* khảm vỏ trứng — eggshell inlay mosaic */
+  sonmai(g, W, H){
+    g.fillStyle = "#1f1714"; g.fillRect(0,0,W,H);
+    const step = 22, cols = Math.ceil(W/step)+1, rows = Math.ceil(H/step)+1, pts = [];
+    for(let y=0;y<=rows;y++){ pts[y]=[]; for(let x=0;x<=cols;x++)
+      pts[y][x] = [x*step + (Math.random()-.5)*step*.7, y*step + (Math.random()-.5)*step*.7]; }
+    for(let y=0;y<rows;y++) for(let x=0;x<cols;x++){
+      const fade = clearing(x*step, y*step, W, H);
+      if(fade < 1 || Math.random() < .08) continue;
+      const q = [pts[y][x], pts[y][x+1], pts[y+1][x+1], pts[y+1][x]];
+      const mx = q.reduce((s,p)=>s+p[0],0)/4, my = q.reduce((s,p)=>s+p[1],0)/4;
+      g.beginPath();
+      q.forEach((p,i) => { const px = mx+(p[0]-mx)*.84, py = my+(p[1]-my)*.84; i ? g.lineTo(px,py) : g.moveTo(px,py); });
+      g.closePath();
+      g.fillStyle = Math.random() < .12 ? `hsl(40,55%,${48+Math.random()*10}%)` : `hsl(38,${22+Math.random()*14}%,${78+Math.random()*12}%)`;
+      g.globalAlpha = Math.min(1, .35 + (fade-1)*.9); g.fill();
+    }
+  },
+  /* sóng nước — woodblock wave scales on giấy điệp */
+  dongho(g, W, H){
+    g.fillStyle = "#ece1c8"; g.fillRect(0,0,W,H);
+    for(let i=0;i<1400;i++){ g.fillStyle = `rgba(255,255,255,${Math.random()*.5})`; g.fillRect(Math.random()*W, Math.random()*H, 1.5, 1.5); } // điệp shimmer
+    const r = 26; g.lineWidth = 2.4; g.strokeStyle = "#221d17";
+    for(let row=0, y=0; y < H + r; row++, y += r*.55){
+      for(let x = (row%2 ? r : 0) - r; x < W + r; x += r*2){
+        const fade = clearing(x, y, W, H); if(fade < 1) continue;
+        g.globalAlpha = Math.min(.85, (fade-1)*1.4 + .2);
+        g.fillStyle = "#ece1c8"; g.beginPath(); g.arc(x, y, r, Math.PI, 0); g.fill();
+        for(let k=r-3; k>4; k-=6){ g.beginPath(); g.arc(x, y, k, Math.PI, 0); g.stroke(); }
+      }
+    }
+  },
+  /* hoa mai, hoa đào on lì xì red */
+  tet(g, W, H){
+    g.fillStyle = "#a3141d"; g.fillRect(0,0,W,H);
+    const flower = (x, y, s, petal, core, rot) => {
+      for(let p=0;p<5;p++){
+        const a = rot + p*Math.PI*2/5;
+        g.beginPath(); g.ellipse(x+Math.cos(a)*s*.55, y+Math.sin(a)*s*.55, s*.5, s*.34, a, 0, Math.PI*2);
+        g.fillStyle = petal; g.fill();
+      }
+      g.beginPath(); g.arc(x, y, s*.2, 0, Math.PI*2); g.fillStyle = core; g.fill();
+    };
+    for(let i=0;i<150;i++){
+      const x = Math.random()*W, y = Math.random()*H, fade = clearing(x, y, W, H);
+      if(fade < 1.05) continue;
+      g.globalAlpha = Math.min(1, (fade-1)*1.6);
+      const mai = Math.random() < .6;
+      flower(x, y, 9 + Math.random()*13, mai ? "#ffc93c" : "#f7a8bb", mai ? "#e0612e" : "#ffe3a3", Math.random()*6);
+    }
+  },
+  /* đèn phố khuya — neon bokeh and rain */
+  saigon(g, W, H){
+    g.fillStyle = "#101a30"; g.fillRect(0,0,W,H);
+    const hues = ["255,92,147","46,196,182","255,209,102"];
+    g.globalCompositeOperation = "lighter";
+    for(let i=0;i<70;i++){
+      const x = Math.random()*W, y = Math.random()*H, fade = clearing(x, y, W, H);
+      if(fade < 1) continue;
+      const rad = 10 + Math.random()*34, c = hues[i % 3], a = Math.min(.55, (fade-1)*.8);
+      const grd = g.createRadialGradient(x, y, 0, x, y, rad);
+      grd.addColorStop(0, `rgba(${c},${a})`); grd.addColorStop(.7, `rgba(${c},${a*.5})`); grd.addColorStop(1, `rgba(${c},0)`);
+      g.fillStyle = grd; g.beginPath(); g.arc(x, y, rad, 0, Math.PI*2); g.fill();
+    }
+    g.globalCompositeOperation = "source-over";
+    g.strokeStyle = "rgba(232,238,251,.14)"; g.lineWidth = 1;
+    for(let i=0;i<120;i++){ const x = Math.random()*W, y = Math.random()*H, l = 8+Math.random()*16;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x-l*.25, y+l); g.stroke(); }
+  }
+};
+/* >1 outside the oval "window" that keeps the seal readable */
+function clearing(x, y, W, H){ return Math.hypot((x-W/2)/(W*.36), (y-H/2)/(H*.22)); }
+function paintBack(id){
+  try{
+    const W = 500, H = 700, c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    (BACKS[id] || BACKS.sonmai)(g, W, H);
+    document.documentElement.style.setProperty("--back", `url(${c.toDataURL("image/png")})`);
+  }catch(e){ document.documentElement.style.setProperty("--back", "none"); }
+}
+
+/* ============ BOOT ============ */
+function start(saved){
+  applySkin(currentSkin());
+  state = Object.assign(freshState(), saved && saved.screen ? saved : {});
+  state.picked = (state.picked || []).filter(id => TOPICS.some(t => t.id === id));
+  if(state.screen === "play" && !state.card) state.screen = "home";
+  show(state.screen);
+}
+window.claude?.hot?.snapshot?.(() => state);
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
