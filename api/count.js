@@ -24,7 +24,8 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const total = Number(await redis("GET", KEY)) || 0;
-      res.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=300");
+      // cached at the edge, so many pollers share one answer and the database sees ~20 reads a minute
+      res.setHeader("Cache-Control", "public, s-maxage=3, stale-while-revalidate=30");
       return res.status(200).json({ enabled: true, total });
     }
     if (req.method === "POST") {

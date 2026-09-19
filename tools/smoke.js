@@ -28,4 +28,6 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   }
   console.log("leftover old UI:", ["s-setup","interlude","penalty","level-up"].filter(id => $(id)).join(",") || "none");
   console.log("errors:", errors.length ? errors : "none");
+  dom.window.close();          // the page polls on a timer; close it so the script exits
+  process.exit(0);
 })();

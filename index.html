@@ -850,21 +850,55 @@ $("tip-bank").textContent = BANK_LINE;
 })();
 
 /* ============ SHARED COUNTER ============ */
-const vi = n => n.toLocaleString("vi-VN");
-async function showTally(){
+/* One number for everyone: polled every few seconds, cached at the edge, and tweened
+   between values so it reads as live. Cards this group flips bump it straight away. */
+const vi = n => Math.round(n).toLocaleString("vi-VN");
+let tally = {shown:0, target:0, poll:null, raf:null, seen:false};
+
+function paintTally(){
+  const el = $("tally"); if(!el) return;
+  if(!tally.target){ el.hidden = true; return; }
+  el.hidden = false;
+  el.textContent = `${vi(tally.shown)} câu hỏi đã được mở`;
+}
+function tweenTally(){
+  cancelAnimationFrame(tally.raf);
+  const step = () => {
+    const gap = tally.target - tally.shown;
+    if(Math.abs(gap) < 1){ tally.shown = tally.target; paintTally(); return; }
+    tally.shown += gap * 0.18 + Math.sign(gap);
+    paintTally();
+    tally.raf = requestAnimationFrame(step);
+  };
+  tally.raf = requestAnimationFrame(step);
+}
+function setTally(total){
+  if(!total || total < tally.target) return;
+  if(!tally.seen){ tally.seen = true; tally.shown = total; tally.target = total; paintTally(); return; }
+  tally.target = total; tweenTally();
+}
+async function fetchTally(){
+  if(document.hidden) return;
   try{
-    const r = await fetch("/api/count");
-    const d = await r.json();
-    if(!d.enabled || !d.total) return;
-    const el = $("tally");
-    el.textContent = `đã có ${vi(d.total)} câu được lật cùng nhau`;
-    el.hidden = false;
+    const d = await (await fetch("/api/count")).json();
+    if(d.enabled) setTally(d.total);
   }catch(e){}
 }
+function startTally(){
+  clearInterval(tally.poll);
+  fetchTally();
+  tally.poll = setInterval(fetchTally, 3000);          // the edge cache absorbs this
+}
+function stopTally(){ clearInterval(tally.poll); tally.poll = null; }
+document.addEventListener("visibilitychange", () => { if(!document.hidden && tally.poll) fetchTally(); });
+
 function countCard(){
+  if(tally.seen){ tally.target += 1; tweenTally(); }   // our own card shows up at once
   try{
     fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({n:1}), keepalive:true}).catch(() => {});
+      body: JSON.stringify({n:1}), keepalive:true})
+      .then(r => r.json()).then(d => { if(d && d.enabled) setTally(d.total); })
+      .catch(() => {});
   }catch(e){}
 }
 
@@ -872,7 +906,7 @@ function countCard(){
 function show(screen){
   state.screen = screen;
   ["home","play"].forEach(s => $("s-"+s).hidden = s !== screen);
-  if(screen === "home"){ renderHome(); showTally(); }
+  if(screen === "home"){ renderHome(); startTally(); } else stopTally();
   if(screen === "play") renderPlay();
   window.scrollTo(0, 0);
 }
