@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")"
 S=src/app.html
-URL=https://lamthan.vercel.app
+URL=https://lamthan.com
 DESC="Bộ câu hỏi để hiểu nhau hơn, cho những buổi cà phê, họp lớp, team building và những cuộc trò chuyện sâu."
 {
   printf '<!doctype html>\n<html lang="vi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="theme-color" content="#efe6d2">\n'

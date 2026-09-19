@@ -5,10 +5,10 @@
       "has": [
         {
           "type": "host",
-          "value": "nguoilaoi.vercel.app"
+          "value": "lamthan.vercel.app"
         }
       ],
-      "destination": "https://lamthan.vercel.app/",
+      "destination": "https://lamthan.com/",
       "permanent": true
     },
     {
@@ -16,32 +16,10 @@
       "has": [
         {
           "type": "host",
-          "value": "nguoilaoi.vercel.app"
+          "value": "lamthan.vercel.app"
         }
       ],
-      "destination": "https://lamthan.vercel.app/:path+",
-      "permanent": true
-    },
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "nguoi-la-thanh-quen.vercel.app"
-        }
-      ],
-      "destination": "https://lamthan.vercel.app/",
-      "permanent": true
-    },
-    {
-      "source": "/:path+",
-      "has": [
-        {
-          "type": "host",
-          "value": "nguoi-la-thanh-quen.vercel.app"
-        }
-      ],
-      "destination": "https://lamthan.vercel.app/:path+",
+      "destination": "https://lamthan.com/:path+",
       "permanent": true
     }
   ]

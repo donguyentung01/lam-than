@@ -3,7 +3,7 @@
 "càng hỏi, càng thân." A Vietnamese question card game for friends, couples and teams.
 Pick one or more topics, flip a card, everyone answers yes or no at the same time, then each person says why.
 
-Live: https://lamthan.vercel.app
+Live: https://lamthan.com
 
 ## Layout
 
@@ -23,7 +23,7 @@ Live: https://lamthan.vercel.app
 
 ```bash
 ./build.sh                       # rebuild index.html after editing src/app.html
-npx vercel deploy --prod --yes   # deploy to https://lamthan.vercel.app
+npx vercel deploy --prod --yes   # deploy to https://lamthan.com
 cd /tmp && npm i jsdom && node ~/nguoi-la-thanh-quen/tools/smoke.js   # play-test
 ```
 
