@@ -130,6 +130,7 @@
   .hero h1{font-family:var(--sans);font-weight:800;font-size:clamp(34px,10vw,48px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 12px;text-wrap:balance}
   .hero h1 em{font-family:var(--display);font-weight:var(--display-weight);font-style:var(--display-style);color:var(--accent);letter-spacing:0}
   .hero p{color:var(--muted);margin:0;max-width:36ch}
+  .tally{margin:14px 0 0;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
   .decks{display:grid;gap:12px}
   .deck{display:grid;grid-template-columns:62px 1fr auto;gap:16px;align-items:center;text-align:left;padding:14px 16px 14px 14px;border:1px solid var(--line);border-radius:14px;background:var(--tint);transition:background .2s,border-color .2s}
   .deck:hover{border-color:var(--line-strong)}
@@ -304,6 +305,7 @@
     <div class="hero">
       <div class="eyebrow">Bộ câu hỏi để hiểu nhau hơn</div>
       <h1>Càng hỏi,<br><em>càng thân.</em></h1>
+      <p class="tally" id="tally" hidden></p>
     </div>
     <div class="decks" id="decks"></div>
     <div class="skins-wrap">
@@ -801,6 +803,7 @@ function advance(dir = "r"){
   card.classList.remove("dragging"); card.style.transform = "";
   card.classList.add(dir === "l" ? "leave-l" : "leave-r");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  countCard();
   setTimeout(() => {
     drawCard();
     card.classList.remove("leave-l", "leave-r");
@@ -846,11 +849,30 @@ $("tip-bank").textContent = BANK_LINE;
   });
 })();
 
+/* ============ SHARED COUNTER ============ */
+const vi = n => n.toLocaleString("vi-VN");
+async function showTally(){
+  try{
+    const r = await fetch("/api/count");
+    const d = await r.json();
+    if(!d.enabled || !d.total) return;
+    const el = $("tally");
+    el.textContent = `đã có ${vi(d.total)} câu được lật cùng nhau`;
+    el.hidden = false;
+  }catch(e){}
+}
+function countCard(){
+  try{
+    fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({n:1}), keepalive:true}).catch(() => {});
+  }catch(e){}
+}
+
 /* ============ ROUTER ============ */
 function show(screen){
   state.screen = screen;
   ["home","play"].forEach(s => $("s-"+s).hidden = s !== screen);
-  if(screen === "home") renderHome();
+  if(screen === "home"){ renderHome(); showTally(); }
   if(screen === "play") renderPlay();
   window.scrollTo(0, 0);
 }

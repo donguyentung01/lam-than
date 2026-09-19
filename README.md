@@ -17,6 +17,7 @@ Live: https://lamthan.com
 | `tools/smoke.js` | Plays a full game in a simulated browser (jsdom) and reports errors. |
 | `icon.svg`, `icon-*.png`, `apple-touch-icon.png` | App icon. |
 | `site.webmanifest` | Home-screen app settings. |
+| `api/count.js` | Shared counter of cards flipped, stored in Upstash Redis. Hides itself if no database is connected. |
 | `vercel.json` | Redirects the old addresses to lamthan.vercel.app. |
 
 ## Everyday commands
