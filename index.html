@@ -130,8 +130,13 @@
   .hero h1{font-family:var(--sans);font-weight:800;font-size:clamp(34px,10vw,48px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 12px;text-wrap:balance}
   .hero h1 em{font-family:var(--display);font-weight:var(--display-weight);font-style:var(--display-style);color:var(--accent);letter-spacing:0}
   .hero p{color:var(--muted);margin:0;max-width:36ch}
-  .tally{margin:14px 0 0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-  .tally .n{color:var(--accent);font-weight:700;font-size:15px}
+  .tally{margin:14px 0 0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
+  .tally .n{display:inline-flex;color:var(--accent);font-weight:700;font-size:16px;line-height:1.2}
+  .tally .slot{display:inline-block;width:.62em;height:1.2em;overflow:hidden}
+  .tally .col{display:flex;flex-direction:column;will-change:transform}
+  .tally .col span{display:block;height:1.2em;text-align:center}
+  .tally .sep{display:inline-block;width:.32em;text-align:center}
+  @media (prefers-reduced-motion:reduce){ .tally .col{transition:none!important} }
   .decks{display:grid;gap:12px}
   .deck{display:grid;grid-template-columns:62px 1fr auto;gap:16px;align-items:center;text-align:left;padding:14px 16px 14px 14px;border:1px solid var(--line);border-radius:14px;background:var(--tint);transition:background .2s,border-color .2s}
   .deck:hover{border-color:var(--line-strong)}
@@ -306,7 +311,7 @@
     <div class="hero">
       <div class="eyebrow">Bộ câu hỏi để hiểu nhau hơn</div>
       <h1>Càng hỏi,<br><em>càng thân.</em></h1>
-      <p class="tally" id="tally" hidden></p>
+      <p class="tally" id="tally" hidden><span class="n" id="tally-n"></span><span>câu hỏi đã được mở</span></p>
     </div>
     <div class="decks" id="decks"></div>
     <div class="skins-wrap">
@@ -851,33 +856,57 @@ $("tip-bank").textContent = BANK_LINE;
 })();
 
 /* ============ SHARED COUNTER ============ */
-/* One number for everyone: polled every few seconds, cached at the edge, and tweened
-   between values so it reads as live. Cards this group flips bump it straight away. */
+/* One number for everyone: polled every few seconds against an edge-cached endpoint.
+   The digits roll down like a counter wheel, each one starting a little after the one to its right. */
 const vi = n => Math.round(n).toLocaleString("vi-VN");
 const el2 = (tag, props) => Object.assign(document.createElement(tag), props);
-let tally = {shown:0, target:0, poll:null, raf:null, seen:false};
+let tally = {total:0, poll:null, seen:false, slots:[]};
 
-function paintTally(){
-  const el = $("tally"); if(!el) return;
-  if(!tally.target){ el.hidden = true; return; }
-  el.hidden = false;
-  el.replaceChildren(el2("b", {className:"n", textContent:vi(tally.shown)}), " câu hỏi đã được mở");
+function buildSlots(text){
+  const wrap = $("tally-n"); wrap.replaceChildren(); tally.slots = [];
+  for(const ch of text){
+    if(ch < "0" || ch > "9"){ wrap.append(el2("span", {className:"sep", textContent:ch})); continue; }
+    const col = el2("div", {className:"col"});
+    for(let i = 0; i < 20; i++) col.append(el2("span", {textContent:String(i % 10)}));   // 0-9 twice, so it can roll past 9
+    const slot = el2("span", {className:"slot"}); slot.append(col);
+    wrap.append(slot);
+    tally.slots.push({col, at:0});
+  }
 }
-function tweenTally(){
-  cancelAnimationFrame(tally.raf);
-  const step = () => {
-    const gap = tally.target - tally.shown;
-    if(Math.abs(gap) < 1){ tally.shown = tally.target; paintTally(); return; }
-    tally.shown += gap * 0.18 + Math.sign(gap);
-    paintTally();
-    tally.raf = requestAnimationFrame(step);
-  };
-  tally.raf = requestAnimationFrame(step);
+function rollTo(text){
+  const digits = [...text].filter(c => c >= "0" && c <= "9");
+  if(tally.slots.length !== digits.length) buildSlots(text);
+  const spin = tally.seen;                       // first paint lands without rolling
+  let k = tally.slots.length - 1;
+  digits.forEach((d, i) => {
+    const slot = tally.slots[i], want = Number(d);
+    let to = want;
+    if(spin && want <= slot.at % 10) to = want + 10;            // keep the roll moving downward
+    if(!spin){ slot.col.style.transition = "none"; }
+    else {
+      const delay = (k - i) * 70;
+      slot.col.style.transition = `transform .75s cubic-bezier(.22,.85,.2,1) ${delay}ms`;
+    }
+    slot.col.style.transform = `translateY(-${to * 1.2}em)`;
+    if(to >= 10){                                               // after rolling past 9, snap back silently
+      setTimeout(() => {
+        slot.col.style.transition = "none";
+        slot.col.style.transform = `translateY(-${want * 1.2}em)`;
+        slot.at = want;
+      }, 800 + (k - i) * 70);
+    } else slot.at = to;
+  });
+}
+function paintTally(){
+  const el = $("tally");
+  if(!tally.total){ el.hidden = true; return; }
+  el.hidden = false;
+  rollTo(vi(tally.total));
+  tally.seen = true;
 }
 function setTally(total){
-  if(!total || total < tally.target) return;
-  if(!tally.seen){ tally.seen = true; tally.shown = total; tally.target = total; paintTally(); return; }
-  tally.target = total; tweenTally();
+  if(!total || total <= tally.total) return;
+  tally.total = total; paintTally();
 }
 async function fetchTally(){
   if(document.hidden) return;
@@ -895,7 +924,7 @@ function stopTally(){ clearInterval(tally.poll); tally.poll = null; }
 document.addEventListener("visibilitychange", () => { if(!document.hidden && tally.poll) fetchTally(); });
 
 function countCard(){
-  if(tally.seen){ tally.target += 1; tweenTally(); }   // our own card shows up at once
+  if(tally.seen) setTally(tally.total + 1);            // our own card rolls over at once
   try{
     fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({n:1}), keepalive:true})
