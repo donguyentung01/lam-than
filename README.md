@@ -22,10 +22,15 @@ Live: https://lamthan.com
 ## Everyday commands
 
 ```bash
-./build.sh                       # rebuild index.html after editing src/app.html
-npx vercel deploy --prod --yes   # deploy to https://lamthan.com
+./build.sh              # rebuild index.html after editing src/app.html
+./tools/preview.sh      # build + deploy a preview, pointed at https://test.lamthan.com
+./tools/ship.sh         # build + deploy live to https://lamthan.com
 cd /tmp && npm i jsdom && node ~/nguoi-la-thanh-quen/tools/smoke.js   # play-test
 ```
+
+Changes go to the test address first, then live once they look right.
+test.lamthan.com asks for a Vercel login unless you turn preview protection off
+(dashboard: Settings, Deployment Protection).
 
 Regenerate the link-preview image after changing wording or sketches:
 
