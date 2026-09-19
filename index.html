@@ -281,6 +281,11 @@
   .eyebrow{letter-spacing:.04em}
   .f-top{letter-spacing:.03em}
   .seal .s{letter-spacing:.06em}
+  .tip-sheet{text-align:center;justify-items:center}
+  .tip-sheet p{max-width:34ch}
+  .tip-sheet img{width:min(260px,70vw);aspect-ratio:1;object-fit:contain;border-radius:12px;background:#fff;padding:10px;border:1px solid var(--line);margin:2px auto 6px}
+  .tip-bank{font-size:14px;font-weight:600;letter-spacing:.01em}
+  .tip-note{color:var(--muted);font-size:14px}
   .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 </style>
@@ -294,6 +299,7 @@
   <section class="screen" id="s-home">
     <div class="brand">
       <span class="mark">Làm Thân</span>
+      <button class="link" id="tip-open">Ủng hộ</button>
     </div>
     <div class="hero">
       <div class="eyebrow">Bộ câu hỏi để hiểu nhau hơn</div>
@@ -346,6 +352,18 @@
 </div>
 
 <!-- overlays -->
+<div class="veil" id="tip" hidden>
+  <div class="sheet tip-sheet">
+    <div class="eyebrow">Cảm ơn bạn</div>
+    <h2>Mời mình ly cà phê</h2>
+    <p>Làm Thân miễn phí, không quảng cáo. Nếu thấy vui, bạn có thể quét mã để ủng hộ mình làm thêm nhiều bộ câu hỏi mới.</p>
+    <img id="tip-qr" src="/qr.png" alt="Mã QR chuyển khoản">
+    <p class="tip-note" id="tip-note" hidden>Mã QR sẽ được cập nhật sớm.</p>
+    <p class="tip-bank" id="tip-bank"></p>
+    <button class="btn btn-gold" id="tip-close">Đóng</button>
+  </div>
+</div>
+
 <div class="veil" id="agegate" hidden>
   <div class="sheet">
     <div class="eyebrow">Chỉ dành cho người lớn</div>
@@ -707,6 +725,9 @@ const VG = (() => {
   };
 })();
 
+/* Shown under the QR in the support panel. Leave empty to hide it. */
+const BANK_LINE = "";
+
 /* ============ STATE ============ */
 let state;
 const $ = id => document.getElementById(id);
@@ -794,6 +815,10 @@ $("skip").addEventListener("click", () => {             // skipped statement goe
 });
 $("next").addEventListener("click", () => advance("r"));
 $("play-back").addEventListener("click", () => show("home"));
+$("tip-open").addEventListener("click", () => { $("tip").hidden = false; $("tip-close").focus(); });
+$("tip-close").addEventListener("click", () => { $("tip").hidden = true; });
+$("tip-qr").addEventListener("error", () => { $("tip-qr").hidden = true; $("tip-note").hidden = false; });
+$("tip-bank").textContent = BANK_LINE;
 
 
 /* tap to flip, swipe to move on */
