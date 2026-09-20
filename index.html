@@ -145,6 +145,7 @@
   .deck h3{margin:0 0 2px;font-size:17px;font-weight:600}
   .deck p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
   .deck .meta{font-size:12px;color:var(--accent);margin-top:6px;font-variant-numeric:tabular-nums}
+  .deck .played{font-size:12px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
   .deck[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
   .deck .tick{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;color:transparent;font-size:14px;font-weight:800;transition:all .15s}
   .deck[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
@@ -279,6 +280,7 @@
   .deck .cap{position:absolute;left:0;right:0;bottom:0;padding:18px 11px 9px;background:linear-gradient(to top,rgba(243,236,223,1) 0%,rgba(243,236,223,.95) 60%,rgba(243,236,223,0));text-align:left}
   .deck .cap h3{margin:0;font-size:15px;font-weight:700;line-height:1.2;color:#221d17;text-wrap:balance}
   .deck .cap .meta{margin-top:2px;font-size:11.5px;color:#8a6f52}
+  .deck .cap .played{margin-top:1px;font-size:11.5px;color:#7d7266}
   .deck .cap p{display:none}
   .deck .tick{position:absolute;top:8px;right:8px;width:26px;height:26px;background:#fffaf0;border:1.5px solid rgba(42,36,32,.35);color:transparent}
   .deck[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)}
@@ -751,10 +753,11 @@ function freshState(){
 function renderHome(){
   $("decks").innerHTML = TOPICS.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${state.picked.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${TOPICS.indexOf(t) % 4}"><img alt="" src="${VG(t.id, 320, 320)}"></span>
-      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${t.cards.length} câu${t.adult ? " · 18+" : ""}</div></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${t.cards.length} câu${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
   const ts = picked(), btn = $("pick-go");
   btn.disabled = !ts.length;
+  paintTopics();
   btn.textContent = !ts.length ? "Chọn ít nhất một chủ đề"
     : ts.length === 1 ? `Chơi ${ts[0].name} · ${cardCount(ts)} câu →`
     : `Trộn ${ts.length} chủ đề · ${cardCount(ts)} câu →`;
@@ -861,7 +864,7 @@ $("tip-bank").textContent = BANK_LINE;
    The digits roll down like a counter wheel, each one starting a little after the one to its right. */
 const vi = n => Math.round(n).toLocaleString("vi-VN");
 const el2 = (tag, props) => Object.assign(document.createElement(tag), props);
-let tally = {total:0, poll:null, seen:false, slots:[]};
+let tally = {total:0, topics:{}, poll:null, seen:false, slots:[]};
 
 function buildSlots(text){
   const wrap = $("tally-n"); wrap.replaceChildren(); tally.slots = [];
@@ -898,6 +901,19 @@ function rollTo(text){
     } else slot.at = to;
   });
 }
+function paintTopics(){
+  document.querySelectorAll(".deck .played").forEach(el => {
+    const n = tally.topics[el.dataset.t] || 0;
+    el.hidden = !n;
+    if(n) el.textContent = `${vi(n)} lượt trả lời`;
+  });
+}
+function setTopics(topics){
+  if(!topics) return;
+  let moved = false;
+  for(const k in topics) if((topics[k] || 0) > (tally.topics[k] || 0)){ tally.topics[k] = topics[k]; moved = true; }
+  if(moved) paintTopics();
+}
 function paintTally(){
   const el = $("tally");
   if(!tally.total){ el.hidden = true; return; }
@@ -913,7 +929,7 @@ async function fetchTally(){
   if(document.hidden) return;
   try{
     const d = await (await fetch("/api/count")).json();
-    if(d.enabled) setTally(d.total);
+    if(d.enabled){ setTally(d.total); setTopics(d.topics); }
   }catch(e){}
 }
 function startTally(){
@@ -925,10 +941,12 @@ function stopTally(){ clearInterval(tally.poll); tally.poll = null; }
 document.addEventListener("visibilitychange", () => { if(!document.hidden && tally.poll) fetchTally(); });
 
 function countCard(){
+  const topic = state.card && state.card.topic;
   if(tally.seen) setTally(tally.total + 1);            // our own card rolls over at once
+  if(topic) setTopics({[topic]: (tally.topics[topic] || 0) + 1});
   try{
     fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({n:1}), keepalive:true})
+      body: JSON.stringify({n:1, topic}), keepalive:true})
       .then(r => r.json()).then(d => { if(d && d.enabled) setTally(d.total); })
       .catch(() => {});
   }catch(e){}
