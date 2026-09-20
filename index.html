@@ -884,8 +884,8 @@ function rollTo(text){
     if(spin && want <= slot.at % 10) to = want + 10;            // keep the roll moving downward
     if(!spin){ slot.col.style.transition = "none"; }
     else {
-      const delay = (k - i) * 70;
-      slot.col.style.transition = `transform .75s cubic-bezier(.22,.85,.2,1) ${delay}ms`;
+      const delay = (k - i) * 120;
+      slot.col.style.transition = `transform 1.5s cubic-bezier(.2,.8,.2,1) ${delay}ms`;
     }
     slot.col.style.transform = `translateY(-${to * 1.2}em)`;
     if(to >= 10){                                               // after rolling past 9, snap back silently
@@ -893,7 +893,7 @@ function rollTo(text){
         slot.col.style.transition = "none";
         slot.col.style.transform = `translateY(-${want * 1.2}em)`;
         slot.at = want;
-      }, 800 + (k - i) * 70);
+      }, 1550 + (k - i) * 120);
     } else slot.at = to;
   });
 }
