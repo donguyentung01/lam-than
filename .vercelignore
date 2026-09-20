@@ -1,0 +1,7 @@
+# Uploads are decided here, not by .gitignore: keep the key file and local
+# mockups off every deployment.
+dbkey.txt
+mock-tod.html
+node_modules
+.vercel
+.DS_Store
