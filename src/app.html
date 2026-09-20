@@ -734,7 +734,7 @@ function renderHome(){
   state.order = order.map(t => t.id).join(",");
   $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${state.picked.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${TOPICS.indexOf(t) % 4}"><img alt="" src="${VG(t.id, 320, 320)}"></span>
-      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${t.cards.length} câu${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${t.cards.length} câu hỏi${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
   const ts = picked(), btn = $("pick-go");
   btn.disabled = !ts.length;
