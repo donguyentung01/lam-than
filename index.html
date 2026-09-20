@@ -753,8 +753,14 @@ function freshState(){
 }
 
 /* ============ HOME ============ */
+function deckOrder(){                                  // busiest deck first, then the order they were written in
+  return TOPICS.slice().sort((a, b) =>
+    (tally.topics[b.id] || 0) - (tally.topics[a.id] || 0) || TOPICS.indexOf(a) - TOPICS.indexOf(b));
+}
 function renderHome(){
-  $("decks").innerHTML = TOPICS.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${state.picked.includes(t.id)}" title="${t.sub}">
+  const order = deckOrder();
+  state.order = order.map(t => t.id).join(",");
+  $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${state.picked.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${TOPICS.indexOf(t) % 4}"><img alt="" src="${VG(t.id, 320, 320)}"></span>
       <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${t.cards.length} câu${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
@@ -915,7 +921,10 @@ function setTopics(topics){
   if(!topics) return;
   let moved = false;
   for(const k in topics) if((topics[k] || 0) > (tally.topics[k] || 0)){ tally.topics[k] = topics[k]; moved = true; }
-  if(moved) paintTopics();
+  if(!moved) return;
+  const order = deckOrder().map(t => t.id).join(",");
+  if(state.screen === "home" && order !== state.order) renderHome();   // a deck overtook another
+  else paintTopics();
 }
 function paintTally(){
   const el = $("tally");
