@@ -1148,7 +1148,7 @@ $("tod-back").addEventListener("click", () => show("decks"));
    The digits roll down like a counter wheel, each one starting a little after the one to its right. */
 const vi = n => Math.round(n).toLocaleString("vi-VN");
 const el2 = (tag, props) => Object.assign(document.createElement(tag), props);
-let tally = {total:0, topics:{}, poll:null, seen:false, slots:[]};
+let tally = {total:0, topics:{}, poll:null, seen:false, topicsSeen:false, slots:[]};
 
 function buildSlots(text){
   const wrap = $("tally-n"); wrap.replaceChildren(); tally.slots = [];
@@ -1216,7 +1216,7 @@ async function fetchTally(){
   if(document.hidden) return;
   try{
     const d = await (await fetch("/api/count")).json();
-    if(d.enabled){ setTally(d.total); setTopics(d.topics); }
+    if(d.enabled){ setTally(d.total); setTopics(d.topics); tally.topicsSeen = true; }
   }catch(e){}
 }
 function startTally(){
@@ -1229,7 +1229,8 @@ document.addEventListener("visibilitychange", () => { if(!document.hidden && tal
 
 function countCard(topic){
   if(tally.seen) setTally(tally.total + 1);            // our own card rolls over at once
-  if(topic) setTopics({[topic]: (tally.topics[topic] || 0) + 1});
+  // only count up from a real figure: before the first poll, 0 is "unknown", not "never played"
+  if(topic && tally.topicsSeen) setTopics({[topic]: (tally.topics[topic] || 0) + 1});
   try{
     fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({n:1, topic}), keepalive:true})
