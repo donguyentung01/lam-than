@@ -210,7 +210,8 @@
   .f-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;font-size:11px;opacity:.7}
   .f-bot .n{font-family:var(--display);font-style:var(--display-style);font-size:15px;white-space:nowrap}
   .timer{align-self:flex-start;margin-bottom:6px;padding:8px 14px;border-radius:999px;background:var(--wild-ink);color:var(--wild);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
-  .actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+  .actions{display:grid;grid-template-columns:auto 1fr 1.4fr;gap:10px}
+  .btn-narrow{padding:0 16px;font-size:17px}
   .count{text-align:center;font-size:12px;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
 
   /* ---------- overlays ---------- */
@@ -326,7 +327,8 @@
       </div>
     </div>
     <div class="actions">
-      <button class="btn btn-ghost" id="skip">Đổi câu</button>
+      <button class="btn btn-ghost btn-narrow" id="prev" aria-label="Câu trước" title="Câu trước">←</button>
+      <button class="btn btn-ghost" id="skip">Để sau</button>
       <button class="btn btn-gold" id="next">Lật bài</button>
     </div>
     <div class="count" id="count"></div>
@@ -761,6 +763,7 @@ $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
 function deal(){
   state.pile = shuffle(picked().flatMap(t => t.cards.map(text => ({text, topic:t.id}))));
   state.total = state.pile.length; state.drawn = 0;
+  state.history = [];                                    // a reshuffle starts the trail over
 }
 function startGame(){
   deal(); state.round = 1; state.autoFlip = true;   // cards open face up, no tap needed
@@ -768,9 +771,14 @@ function startGame(){
 }
 function drawCard(){
   if(!state.pile.length){ deal(); state.round++; }       // no final card: reshuffle and keep going
+  if(state.card && !state.noRecord) state.history.push(state.card);   // a skipped card goes back in the pile, not the trail
+  state.noRecord = false;
   state.card = state.pile.shift(); state.drawn++;
   state.flipped = state.autoFlip;                        // after the first flip, cards arrive face up
-  countCard();                                           // a question counts the moment it is on the table
+  if(!state.card.counted){                               // a question counts the first time it is on the table
+    state.card.counted = true;
+    countCard();
+  }
 }
 function renderPlay(){
   const c = state.card, t = TOPICS.find(x => x.id === c.topic), ts = picked();
@@ -782,12 +790,29 @@ function renderPlay(){
   $("f-n").textContent = String(state.drawn).padStart(2, "0");
   $("card").classList.toggle("flipped", state.flipped);
   $("skip").disabled = !state.flipped;
+  $("prev").disabled = !state.history.length;
   $("next").textContent = state.flipped ? "Câu tiếp →" : "Lật bài";
   $("count").textContent = state.round > 1 && state.drawn === 1 ? "Hết một vòng, bộ bài đã được trộn lại." : `Còn ${state.pile.length} câu`;
 }
 function flip(){
   if(state.flipped) return;
   state.flipped = true; state.autoFlip = true; renderPlay();
+}
+function goBack(){
+  if(!state.history.length) return;
+  const card = $("card");
+  card.classList.remove("dragging"); card.style.transform = "";
+  card.classList.add("leave-r");                         // it slides out the way it came in
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(() => {
+    state.pile.unshift(state.card);
+    state.card = state.history.pop(); state.drawn--;
+    state.flipped = true;
+    card.classList.remove("leave-r");
+    card.classList.add("enter");
+    renderPlay();
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove("enter")));
+  }, reduce ? 0 : 320);
 }
 function advance(dir = "r"){
   if(!state.flipped){ flip(); return; }
@@ -805,8 +830,9 @@ function advance(dir = "r"){
 }
 $("skip").addEventListener("click", () => {             // skipped statement goes to the bottom of the pile
   if(!state.flipped) return;
-  state.pile.push(state.card); state.drawn--; advance("l");
+  state.pile.push(state.card); state.drawn--; state.noRecord = true; advance("l");
 });
+$("prev").addEventListener("click", goBack);
 $("next").addEventListener("click", () => advance("r"));
 $("play-back").addEventListener("click", () => show("home"));
 $("tip-open").addEventListener("click", () => { $("tip").hidden = false; $("tip-close").focus(); });
