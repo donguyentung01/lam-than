@@ -35,6 +35,8 @@ export default async function handler(req, res) {
       const [total, flat] = await Promise.all([redis("GET", KEY), redis("HGETALL", BY_TOPIC)]);
       // cached at the edge, so many pollers share one answer and the database sees ~20 reads a minute
       res.setHeader("Cache-Control", "public, s-maxage=3, stale-while-revalidate=30");
+      // read-only and already public, so any page may show the number (the portfolio does)
+      res.setHeader("Access-Control-Allow-Origin", "*");
       return res.status(200).json({ enabled: true, total: Number(total) || 0, topics: asTopics(flat) });
     }
     if (req.method === "POST") {
