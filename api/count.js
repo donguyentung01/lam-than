@@ -8,7 +8,8 @@ const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const KEY = "cards:flipped";
 const BY_TOPIC = "cards:by-topic";     // hash, one field per topic id
-const TOPICS = ["yeu", "triet", "ay", "tien", "nha", "ban", "doi", "viec"];
+const TOPICS = ["yeu", "triet", "ay", "tien", "nha", "ban", "doi", "viec",
+                "t-yeu", "t-ay"];   // the thật hay thách decks keep their own tallies
 const LIMIT_PER_MINUTE = 300;          // per address, so one page cannot inflate the count much
 
 async function redis(...cmd) {

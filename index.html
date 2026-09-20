@@ -984,7 +984,7 @@ function drawCard(){
   state.flipped = state.autoFlip;                        // after the first flip, cards arrive face up
   if(!state.card.counted){                               // a question counts the first time it is on the table
     state.card.counted = true;
-    countCard();
+    countCard(state.card.topic);
   }
 }
 function renderPlay(){
@@ -1104,6 +1104,10 @@ function todDraw(kind){
   if(t.card && !t.noRecord) t.history.push(t.card);
   t.noRecord = false;
   t.card = t[kind].shift(); t.drawn++;
+  if(!t.card.counted){                                 // as with a question: counted once, not again on the way back
+    t.card.counted = true;
+    countCard(t.card.topic);
+  }
   renderTod();
 }
 function todBack(){                                    // hand the card back and choose again
@@ -1240,8 +1244,7 @@ function startTally(){
 function stopTally(){ clearInterval(tally.poll); tally.poll = null; }
 document.addEventListener("visibilitychange", () => { if(!document.hidden && tally.poll) fetchTally(); });
 
-function countCard(){
-  const topic = state.card && state.card.topic;
+function countCard(topic){
   if(tally.seen) setTally(tally.total + 1);            // our own card rolls over at once
   if(topic) setTopics({[topic]: (tally.topics[topic] || 0) + 1});
   try{
