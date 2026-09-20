@@ -786,6 +786,7 @@ function drawCard(){
   if(!state.pile.length){ deal(); state.round++; }       // no final card: reshuffle and keep going
   state.card = state.pile.shift(); state.drawn++;
   state.flipped = state.autoFlip;                        // after the first flip, cards arrive face up
+  countCard();                                           // a question counts the moment it is on the table
 }
 function renderPlay(){
   const c = state.card, t = TOPICS.find(x => x.id === c.topic), ts = picked();
@@ -810,7 +811,6 @@ function advance(dir = "r"){
   card.classList.remove("dragging"); card.style.transform = "";
   card.classList.add(dir === "l" ? "leave-l" : "leave-r");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  countCard();
   setTimeout(() => {
     drawCard();
     card.classList.remove("leave-l", "leave-r");
