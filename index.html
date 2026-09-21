@@ -185,6 +185,9 @@
   .deck[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
   .pickbar{position:sticky;bottom:0;margin-top:14px;padding-block:14px calc(10px + env(safe-area-inset-bottom, 0px));background:linear-gradient(to bottom,transparent,var(--bg) 35%);display:grid;z-index:2}
   .skins-wrap{margin-top:28px}
+  .contact{margin-top:28px}
+  .contact p{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0}
+  .contact a{color:var(--accent);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;word-break:break-word}
   .skins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
   @media (min-width:520px){.skins{grid-template-columns:repeat(4,1fr)}}
   .skin{display:grid;gap:8px;padding:8px 8px 10px;border:1px solid var(--line);border-radius:12px;text-align:left;background:var(--tint);transition:border-color .2s}
@@ -332,9 +335,6 @@
   .tip-sheet img{width:min(260px,70vw);aspect-ratio:1;object-fit:contain;border-radius:12px;background:#fff;padding:10px;border:1px solid var(--line);margin:2px auto 6px}
   .tip-bank{font-size:14px;font-weight:600;letter-spacing:.01em;text-transform:none !important}
   .tip-note{color:var(--muted);font-size:14px}
-  .tip-links{width:100%;border-top:1px solid var(--line);margin-top:2px;padding-top:14px}
-  .tip-links p{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin:8px 0 16px;max-width:none}
-  .tip-links a{color:var(--accent);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;word-break:break-word}
   .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 </style>
@@ -370,6 +370,14 @@
     <div class="skins-wrap">
       <div class="eyebrow">Giao diện</div>
       <div class="skins" id="skins"></div>
+    </div>
+    <div class="contact">
+      <div class="eyebrow">Góp ý hay hợp tác</div>
+      <p>
+        <a href="https://www.instagram.com/lamthan_app" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.threads.com/@lamthan_app" target="_blank" rel="noopener">Threads</a>
+        <a href="mailto:lamthan.app@gmail.com">lamthan.app@gmail.com</a>
+      </p>
     </div>
     <div class="home-foot">
       <span></span>
@@ -479,14 +487,6 @@
     <img id="tip-qr" src="/qr.png" alt="Mã QR chuyển khoản">
     <p class="tip-note" id="tip-note" hidden>Mã QR sẽ được cập nhật sớm.</p>
     <p class="tip-bank" id="tip-bank"></p>
-    <div class="tip-links">
-      <div class="eyebrow">Góp ý hay hợp tác</div>
-      <p>
-        <a href="https://www.instagram.com/lamthan_app" target="_blank" rel="noopener">Instagram</a>
-        <a href="https://www.threads.com/@lamthan_app" target="_blank" rel="noopener">Threads</a>
-        <a href="mailto:lamthan.app@gmail.com">lamthan.app@gmail.com</a>
-      </p>
-    </div>
     <button class="btn btn-gold" id="tip-close">Đóng</button>
   </div>
 </div>
