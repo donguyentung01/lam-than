@@ -1,0 +1,33 @@
+{
+ "_note": "Pulled from src/app.html. cards[] is the four card colours in app order (c1, c2, c3, debate); a topic uses cards[topic.ci].",
+ "dongho": {
+  "name": "Đông Hồ",
+  "paper": "#efe6d2", "rule": "#221d17", "ruleAlpha": 0.42, "shimmer": "rgba(255,255,255,.45)",
+  "cards": [["#dfa73c", "#221d17"], ["#b0392a", "#fff4e2"], ["#2d5a4b", "#f6eedd"], ["#2b3f6b", "#f6eedd"]],
+  "cta": { "bg": "#3a1f18", "ink": "#f6eedd", "rule": "#7c4c38", "ruleAlpha": 0.5, "shimmer": "rgba(255,220,180,.10)", "pill": "#dfa73c", "pillInk": "#221d17" }
+ },
+ "trungthu": {
+  "name": "Trung Thu",
+  "paper": "#141a38", "rule": "#f2b13c", "ruleAlpha": 0.3, "shimmer": "rgba(255,246,216,.35)",
+  "cards": [["#f2b13c", "#2a1d06"], ["#e0523c", "#fff1e4"], ["#2f7d68", "#eafaf2"], ["#7a5cc6", "#fdf3de"]],
+  "cta": { "bg": "#1d2450", "ink": "#fdf3de", "rule": "#f2b13c", "ruleAlpha": 0.3, "shimmer": "rgba(255,246,216,.3)", "pill": "#f2b13c", "pillInk": "#1a1236" }
+ },
+ "sonmai": {
+  "name": "Sơn Mài",
+  "paper": "#15100e", "rule": "#c9a24a", "ruleAlpha": 0.3, "shimmer": "rgba(237,227,207,.18)",
+  "cards": [["#b3301e", "#ede3cf"], ["#6e1a14", "#ede3cf"], ["#1f1714", "#ede3cf"], ["#2d4254", "#ede3cf"]],
+  "cta": { "bg": "#1f1714", "ink": "#ede3cf", "rule": "#c9a24a", "ruleAlpha": 0.32, "shimmer": "rgba(237,227,207,.18)", "pill": "#c9a24a", "pillInk": "#1a120d" }
+ },
+ "tet": {
+  "name": "Tết",
+  "paper": "#6a0e15", "rule": "#ffc93c", "ruleAlpha": 0.28, "shimmer": "rgba(255,241,220,.22)",
+  "cards": [["#ffc93c", "#5a0c12"], ["#f59ab0", "#5a0c12"], ["#3a0a0f", "#ffe3a3"], ["#1f5b4a", "#fff1dc"]],
+  "cta": { "bg": "#3a0a0f", "ink": "#fff1dc", "rule": "#ffc93c", "ruleAlpha": 0.3, "shimmer": "rgba(255,241,220,.22)", "pill": "#ffc93c", "pillInk": "#5a0c12" }
+ },
+ "saigon": {
+  "name": "Sài Gòn Đêm",
+  "paper": "#0b1322", "rule": "#2ec4b6", "ruleAlpha": 0.28, "shimmer": "rgba(232,238,251,.3)",
+  "cards": [["#ff5c93", "#0b1322"], ["#2ec4b6", "#062320"], ["#18223d", "#ffd166"], ["#7b5cff", "#ffffff"]],
+  "cta": { "bg": "#101a30", "ink": "#e8eefb", "rule": "#ff5c93", "ruleAlpha": 0.3, "shimmer": "rgba(232,238,251,.3)", "pill": "#ff5c93", "pillInk": "#0b1322" }
+ }
+}
