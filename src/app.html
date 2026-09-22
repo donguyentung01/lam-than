@@ -1353,7 +1353,9 @@ document.addEventListener("visibilitychange", () => { if(!document.hidden && tal
 /* Flips are buffered and sent a handful at a time. The number on screen still moves on
    every card, because that is done here, not by the answer coming back. */
 const pending = {count:0, topics:{}, timer:null};
-const FLUSH_AT = 5, FLUSH_AFTER = 20000;
+/* The timer waits for the table to go quiet rather than counting from the first card: at the
+   pace people actually play, a fixed window would fire before a batch ever filled up. */
+const FLUSH_AT = 10, FLUSH_IDLE = 30000;
 
 function flushCount(){
   clearTimeout(pending.timer); pending.timer = null;
@@ -1377,7 +1379,8 @@ function countCard(topic){
   pending.count++;
   if(topic) pending.topics[topic] = (pending.topics[topic] || 0) + 1;
   if(pending.count >= FLUSH_AT) return flushCount();
-  if(!pending.timer) pending.timer = setTimeout(flushCount, FLUSH_AFTER);
+  clearTimeout(pending.timer);                         // still playing, so hold on to them
+  pending.timer = setTimeout(flushCount, FLUSH_IDLE);
 }
 
 // whatever is still buffered when the page goes away is sent with the page's last breath
