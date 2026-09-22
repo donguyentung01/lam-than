@@ -1355,7 +1355,7 @@ document.addEventListener("visibilitychange", () => { if(!document.hidden && tal
 const pending = {count:0, topics:{}, timer:null};
 /* The timer waits for the table to go quiet rather than counting from the first card: at the
    pace people actually play, a fixed window would fire before a batch ever filled up. */
-const FLUSH_AT = 10, FLUSH_IDLE = 30000;
+const FLUSH_AT = 10, FLUSH_IDLE = 600000;      // ten minutes: the backstop, not the usual way out
 
 function flushCount(){
   clearTimeout(pending.timer); pending.timer = null;
