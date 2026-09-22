@@ -4,23 +4,13 @@
    Storage: Upstash Redis REST (env vars set by the Vercel marketplace integration).
    With no database configured it answers { enabled:false } and the page hides the line. */
 
-const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+import { redis, configured } from "./_redis.js";
+
 const KEY = "cards:flipped";
 const BY_TOPIC = "cards:by-topic";     // hash, one field per topic id
 const TOPICS = ["yeu", "triet", "ay", "tien", "nha", "ban", "doi", "viec",
                 "t-yeu", "t-ay"];   // the thật hay thách decks keep their own tallies
 const LIMIT_PER_MINUTE = 300;          // per address, so one page cannot inflate the count much
-
-async function redis(...cmd) {
-  const r = await fetch(URL_, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify(cmd),
-  });
-  if (!r.ok) throw new Error(`redis ${r.status}`);
-  return (await r.json()).result;
-}
 
 function asTopics(flat) {                // HGETALL comes back as [field, value, field, value, ...]
   const out = {};
@@ -30,7 +20,7 @@ function asTopics(flat) {                // HGETALL comes back as [field, value,
 }
 
 export default async function handler(req, res) {
-  if (!URL_ || !TOKEN) return res.status(200).json({ enabled: false });
+  if (!configured) return res.status(200).json({ enabled: false });
   try {
     if (req.method === "GET") {
       const [total, flat] = await Promise.all([redis("GET", KEY), redis("HGETALL", BY_TOPIC)]);

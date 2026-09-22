@@ -378,6 +378,23 @@
   .tip-note{color:var(--muted);font-size:14px}
   .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ---------- paywall ---------- */
+  .deck .lock{color:var(--accent);font-weight:600}
+  .deck[data-locked="1"] .mini{filter:grayscale(.85) opacity(.55)}
+  .pw-list{display:grid;gap:0;margin:4px 0 16px}
+  .pw-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .pw-row b{flex:1;font-weight:600}
+  .pw-row .muted{color:var(--muted);font-size:13px}
+  .pw-row .btn{width:auto;min-height:40px;padding:0 18px;font-size:15px;white-space:nowrap}
+  .pw-code{display:flex;gap:8px;margin-bottom:12px}
+  .pw-code .btn{width:auto;min-height:46px;padding:0 16px;font-size:14px;white-space:nowrap}
+  .pw-code input{flex:1;min-width:0;height:46px;border-radius:10px;border:1px solid var(--line-strong);background:var(--field);color:var(--text);padding:0 14px;font:inherit;text-transform:uppercase}
+  .pw-code input::placeholder{color:var(--placeholder);text-transform:none}
+  .pw-msg{color:var(--accent);font-size:14px;margin:0 0 12px}
+  .pw-mine{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .pw-big{font-family:var(--card-font, inherit);font-weight:700;font-size:30px;letter-spacing:.06em;color:var(--accent);
+    text-align:center;padding:16px 8px;margin:4px 0 12px;border:1px dashed var(--line-strong);border-radius:12px;text-transform:none !important}
 </style>
 <script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"trungthu";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="trungthu"}</script>
 
@@ -550,6 +567,29 @@
     <div style="display:grid;gap:10px">
       <button class="btn btn-gold" id="age-ok">Tất cả đều đủ 18 tuổi</button>
       <button class="btn btn-ghost" id="age-no">Quay lại</button>
+    </div>
+  </div>
+</div>
+
+<div class="veil" id="paywall" hidden>
+  <div class="sheet">
+    <div class="eyebrow">Mở khoá</div>
+    <h2 id="pw-title">Hết phần dùng thử</h2>
+    <p id="pw-sub"></p>
+    <div id="pw-buy">
+      <div class="pw-list" id="pw-decks"></div>
+      <div class="pw-code">
+        <input id="pw-input" placeholder="Đã có mã? LT-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="12">
+        <button class="btn btn-ghost" id="pw-redeem">Dùng mã</button>
+      </div>
+      <p class="pw-msg" id="pw-msg" hidden></p>
+      <p class="pw-mine" id="pw-mine" hidden></p>
+      <button class="btn btn-ghost" id="pw-close">Quay lại</button>
+    </div>
+    <div id="pw-done" hidden>
+      <div class="pw-big" id="pw-code"></div>
+      <p class="pw-mine">Chụp màn hình lại nhé. Cả bàn nhập mã này trong một tiếng tới là chơi được trên máy mình.</p>
+      <button class="btn btn-gold" id="pw-go">Chơi tiếp →</button>
     </div>
   </div>
 </div>
@@ -918,6 +958,68 @@ const VG = (() => {
 /* Shown under the QR in the support panel. Leave empty to hide it. */
 const BANK_LINE = "SHB · 0822446003";
 
+/* ============ THE PASS ============
+   A bearer code, no account. Whoever holds it owns the decks on it, each for 24 hours,
+   on up to six devices. The device id only counts slots: on its own it unlocks nothing. */
+const PRICE = 5000;
+const K_CODE = "nltq-key", K_DEV = "nltq-did", K_ORDER = "nltq-order";
+const pass = { code: "", device: "", until: {}, fetched: false };
+
+const tidyCode = raw => {
+  const t = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return t.length === 10 && t.startsWith("LT") ? `LT-${t.slice(2, 6)}-${t.slice(6, 10)}` : "";
+};
+function store(k, v){ try{ v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(e){} }
+function stored(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+
+function initPass(){
+  pass.device = stored(K_DEV);
+  if(!pass.device){
+    pass.device = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+    store(K_DEV, pass.device);
+  }
+  // a code arriving by QR rides in the fragment, which browsers never send to a server
+  const m = /[#&]k=([A-Za-z0-9-]+)/.exec(location.hash || "");
+  if(m && tidyCode(m[1])){
+    store(K_CODE, tidyCode(m[1]));
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  pass.code = tidyCode(stored(K_CODE));
+}
+const owns = id => (pass.until[id] || 0) > Date.now();
+const locked = t => !owns(t.id) && loadedCount([t]) < deckSize(t);
+const money = n => n.toLocaleString("vi-VN") + "đ";
+function leftOver(id){                                  // "còn 6 tiếng" for a deck already paid for
+  const ms = (pass.until[id] || 0) - Date.now();
+  if(ms <= 0) return "";
+  const h = Math.floor(ms / 3600e3);
+  return h >= 1 ? `còn ${h} tiếng` : `còn ${Math.max(1, Math.round(ms / 60e3))} phút`;
+}
+
+/* Pull down every paid card this code is entitled to and fold it into the decks. */
+async function loadPaid(){
+  if(!pass.code || !pass.device) return false;
+  try{
+    const r = await fetch(`/api/cards?k=${encodeURIComponent(pass.code)}&d=${encodeURIComponent(pass.device)}`);
+    const d = await r.json();
+    if(!d.ok){ pass.until = {}; return d; }
+    pass.until = d.until || {};
+    if(d.code) pass.code = d.code;
+    for(const [id, cards] of Object.entries(d.topics || {})){
+      const t = TOPICS.find(x => x.id === id);
+      if(t && t.cards.length < deckSize(t)) t.cards = t.cards.concat(cards);
+    }
+    for(const [id, deck] of Object.entries(d.tod || {})){
+      const t = TOD.find(x => x.id === id);
+      if(!t) continue;
+      if(t.truths.length < (t.nt ?? 0)) t.truths = t.truths.concat(deck.truths || []);
+      if(t.dares.length < (t.nd ?? 0)) t.dares = t.dares.concat(deck.dares || []);
+    }
+    pass.fetched = true;
+    return d;
+  }catch(e){ return {ok:false, reason:"offline"}; }
+}
+
 /* ============ STATE ============ */
 let state;
 const $ = id => document.getElementById(id);
@@ -927,7 +1029,9 @@ const picksOf = () => state.mode === "tod" ? state.tpick : state.picked;
 const picked = () => TOPICS.filter(t => state.picked.includes(t.id));
 const tpicked = () => TOD.filter(t => state.tpick.includes(t.id));
 const chosen = () => state.mode === "tod" ? tpicked() : picked();
-const cardCount = ts => ts.reduce((n, t) => n + (t.cards ? t.cards.length : todCards(t)), 0);
+const deckSize = t => t.cards ? (t.n ?? t.cards.length) : ((t.nt ?? t.truths.length) + (t.nd ?? t.dares.length));
+const cardCount = ts => ts.reduce((n, t) => n + deckSize(t), 0);   // the whole deck, paid or not
+const loadedCount = ts => ts.reduce((n, t) => n + (t.cards ? t.cards.length : todCards(t)), 0);
 function freshState(){
   return { screen:"home", mode:"hoi", picked:[], tpick:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false,
            tod:{truth:[], dare:[], card:null, drawn:0, total:0, history:[], noRecord:false} };
@@ -949,9 +1053,9 @@ function renderDecks(){
   const list = decksOf(), tod = state.mode === "tod", order = deckOrder(), picks = picksOf();
   state.order = order.map(t => t.id).join(",");
   $("decks-title").textContent = tod ? "Thật hay Thách" : "Câu hỏi";
-  $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${picks.includes(t.id)}" title="${t.sub}">
+  $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" data-locked="${locked(t) && !loadedCount([t]) ? 1 : 0}" aria-pressed="${picks.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${list.indexOf(t) % 4}"><img alt="" src="${VG(t.art || t.id, 320, 320)}"></span>
-      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.truths.length} thật · ${t.dares.length} thách` : `${t.cards.length} câu hỏi`}${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.nt ?? t.truths.length} thật · ${t.nd ?? t.dares.length} thách` : `${deckSize(t)} câu hỏi`}${t.adult ? " · 18+" : ""}${locked(t) ? ` · <span class="lock">${money(PRICE)}</span>` : owns(t.id) ? ` · <span class="lock">${leftOver(t.id)}</span>` : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
   const ts = chosen(), btn = $("pick-go"), unit = tod ? "lá" : "câu";
   btn.disabled = !ts.length;
@@ -977,6 +1081,122 @@ $("pick-go").addEventListener("click", () => {
 });
 $("age-ok").addEventListener("click", () => { state.adultOk = true; $("agegate").hidden = true; startPicked(); });
 $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
+
+/* ============ THE GATE ============
+   Every deck is 5.000đ for 24 hours. Four decks show a few cards first; the rest are dark.
+   Payment is stubbed for now: the button mints a pass straight from /api/pass, which only
+   answers outside production. The real bank watcher replaces it later. */
+let gateFrom = "decks";
+const WHY = {
+  invalid: "Mã không đúng, hoặc đã hết hạn.",
+  expired: "Mã đã hết hạn rồi.",
+  window_closed: "Mã này đã quá hạn chia sẻ. Nhờ người mua mở khoá thêm nhé.",
+  too_many: "Mã đã dùng trên quá nhiều máy.",
+  offline: "Mất mạng rồi, thử lại nhé.",
+};
+
+function openGate(from){
+  gateFrom = from || (state.screen === "tod" ? "tod" : state.screen === "play" ? "play" : "decks");
+  renderGate();
+  $("pw-buy").hidden = false; $("pw-done").hidden = true;
+  $("paywall").hidden = false;
+  $("pw-input").value = "";
+}
+/* A code is no use to the table if the buyer never sees it, so it gets its own screen. */
+function showUnlocked(name){
+  $("pw-title").textContent = name ? `Đã mở ${name.toLowerCase()}` : "Đã mở khoá";
+  $("pw-sub").textContent = "Bộ này mở trong 24 giờ.";
+  $("pw-code").textContent = pass.code;
+  $("pw-buy").hidden = true; $("pw-done").hidden = false;
+}
+function closeGate(){ $("paywall").hidden = true; msgGate(""); }
+function msgGate(text){ const el = $("pw-msg"); el.textContent = text; el.hidden = !text; }
+
+function renderGate(){
+  const shut = chosen().filter(locked);
+  const one = shut.length === 1;
+  $("pw-title").textContent = one ? shut[0].name : "Mở khoá bộ bài";
+  $("pw-sub").textContent = `Mỗi bộ ${money(PRICE)}, mở trong 24 giờ, chơi được trên 6 máy.`;
+  $("pw-decks").innerHTML = shut.map(t => `<div class="pw-row"><b>${t.name}</b>
+    <span class="muted">${deckSize(t)} lá</span>
+    <button class="btn btn-gold" data-buy="${t.id}">${money(PRICE)}</button></div>`).join("");
+  const mine = $("pw-mine");
+  mine.textContent = pass.code ? `Mã của bạn: ${pass.code} · chụp màn hình lại nhé` : "";
+  mine.hidden = !pass.code;
+}
+
+/* Carry on wherever the wall interrupted. */
+function resumeAfterUnlock(){
+  closeGate();
+  renderDecks();
+  if(gateFrom === "play"){ dealRest(); drawCard(); renderPlay(); }
+  else if(gateFrom === "tod"){ startTod(); }
+  else { startPicked(); }
+}
+
+async function useCode(code){
+  const clean = tidyCode(code);
+  if(!clean) return msgGate(WHY.invalid), false;
+  pass.code = clean; pass.fetched = false;
+  const d = await loadPaid();
+  if(d && d.ok){ store(K_CODE, pass.code); resumeAfterUnlock(); return true; }
+  msgGate(WHY[d && d.reason] || WHY.invalid);
+  return false;
+}
+
+$("pw-decks").addEventListener("click", async e => {
+  const b = e.target.closest("[data-buy]"); if(!b) return;
+  const deck = b.dataset.buy;
+  b.disabled = true; msgGate("Đang mở trang thanh toán…");
+  try{
+    const r = await fetch("/api/order", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({deck, code: pass.code})});
+    const d = await r.json();
+    if(!d.ok) throw new Error(d.reason || "no");
+    if(d.paid){                                        // the stub on test, before payOS is live
+      await takeCode(d.code);
+      return showUnlocked((decksOf().find(t => t.id === deck) || {}).name);
+    }
+    store(K_ORDER, String(d.orderCode));               // so a lost redirect can still be settled
+    location.href = d.checkoutUrl;
+  }catch(err){ msgGate("Chưa mở được trang thanh toán. Thử lại nhé."); b.disabled = false; }
+});
+
+/* Adopt a code and pull down what it opens. */
+async function takeCode(code){
+  pass.code = code; store(K_CODE, code); pass.fetched = false;
+  await loadPaid();
+  renderDecks();
+}
+
+/* Coming back from payOS, or reopening the page after paying: ask whether the order landed.
+   The webhook is usually first, but the server also asks payOS directly, so a webhook that
+   never arrives cannot cost someone their money. */
+async function settlePending(){
+  const fromUrl = new URLSearchParams(location.search).get("o");
+  const o = fromUrl || stored(K_ORDER);
+  if(!o) return;
+  if(fromUrl) history.replaceState(null, "", location.pathname);
+  for(let i = 0; i < 8; i++){
+    let d = {};
+    try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(o)}`)).json(); }catch(e){}
+    if(d.status === "paid"){
+      store(K_ORDER, null);
+      await takeCode(d.code);
+      openGate("decks");
+      return showUnlocked();
+    }
+    if(d.reason === "no_order"){ store(K_ORDER, null); return; }   // expired or never existed
+    await new Promise(r => setTimeout(r, 1500));
+  }
+}
+$("pw-redeem").addEventListener("click", () => {
+  const v = $("pw-input").value.trim();
+  if(v) useCode(v.toUpperCase());
+});
+$("pw-input").addEventListener("keydown", e => { if(e.key === "Enter") $("pw-redeem").click(); });
+$("pw-close").addEventListener("click", () => { closeGate(); if(gateFrom !== "decks") show("decks"); });
+$("pw-go").addEventListener("click", resumeAfterUnlock);
 
 /* ============ THẬT HAY THÁCH ============ */
 const TOD = [
@@ -1075,14 +1295,23 @@ const todCards = t => t.truths.length + t.dares.length;
 /* ============ GAME ============ */
 function deal(){
   state.pile = shuffle(picked().flatMap(t => t.cards.map(text => ({text, topic:t.id}))));
-  state.total = state.pile.length; state.drawn = 0;
+  state.total = cardCount(picked());                     // the hud counts the deck, not the trial
+  state.drawn = 0;
   state.history = [];                                    // a reshuffle starts the trail over
 }
-function startGame(){
+function dealRest(){                                     // refill from the cards nobody has seen yet
+  const seen = new Set(state.history.concat(state.card ? [state.card] : []).map(c => c.text));
+  state.pile = shuffle(picked().flatMap(t => t.cards.filter(x => !seen.has(x)).map(text => ({text, topic:t.id}))));
+  state.total = cardCount(picked());
+}
+async function startGame(){
+  if(pass.code && !pass.fetched) await loadPaid();
   deal(); state.round = 1; state.autoFlip = true;   // cards open face up, no tap needed
+  if(!state.pile.length) return openGate();         // every chosen deck is still locked
   drawCard(); show("play");
 }
 function drawCard(){
+  if(!state.pile.length && picked().some(locked)) return openGate();   // the trial ends here
   if(!state.pile.length){ deal(); state.round++; }       // no final card: reshuffle and keep going
   if(state.card && !state.noRecord) state.history.push(state.card);   // a skipped card goes back in the pile, not the trail
   state.noRecord = false;
@@ -1197,7 +1426,9 @@ function todFill(kind){                                // refill one pile from t
   const key = kind === "dare" ? "dares" : "truths";
   state.tod[kind] = shuffle(tpicked().flatMap(t => t[key].map(text => ({text, topic:t.id, kind}))));
 }
-function startTod(){
+async function startTod(){
+  if(pass.code && !pass.fetched) await loadPaid();
+  if(!loadedCount(tpicked())) return openGate("decks");   // nothing free to show in these decks
   todFill("truth"); todFill("dare");
   const t = state.tod;
   t.total = t.truth.length + t.dare.length; t.drawn = 0; t.card = null; t.history = []; t.noRecord = false;
@@ -1206,7 +1437,7 @@ function startTod(){
 function todDraw(kind){
   const t = state.tod;
   if(!t[kind].length) todFill(kind);                   // a pile that runs dry is shuffled anew
-  if(!t[kind].length) return;
+  if(!t[kind].length) return tpicked().some(locked) ? openGate("tod") : undefined;
   if(t.card && !t.noRecord) t.history.push(t.card);
   t.noRecord = false;
   t.card = t[kind].shift(); t.drawn++;
@@ -1495,10 +1726,14 @@ function paintBack(id){
 /* ============ BOOT ============ */
 function start(saved){
   applySkin(currentSkin());
+  initPass();
   state = Object.assign(freshState(), saved && saved.screen ? saved : {});
   state.picked = (state.picked || []).filter(id => TOPICS.some(t => t.id === id));
   if(state.screen === "play" && !state.card) state.screen = "home";
   show(state.screen);
+  // a pass in hand: fold the paid cards in and redraw, so the grid shows what is already open
+  if(pass.code) loadPaid().then(() => { if(state.screen === "decks") renderDecks(); });
+  settlePending();
 }
 window.claude?.hot?.snapshot?.(() => state);
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});

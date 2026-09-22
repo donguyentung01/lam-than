@@ -404,6 +404,23 @@
   .tip-note{color:var(--muted);font-size:14px}
   .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ---------- paywall ---------- */
+  .deck .lock{color:var(--accent);font-weight:600}
+  .deck[data-locked="1"] .mini{filter:grayscale(.85) opacity(.55)}
+  .pw-list{display:grid;gap:0;margin:4px 0 16px}
+  .pw-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .pw-row b{flex:1;font-weight:600}
+  .pw-row .muted{color:var(--muted);font-size:13px}
+  .pw-row .btn{width:auto;min-height:40px;padding:0 18px;font-size:15px;white-space:nowrap}
+  .pw-code{display:flex;gap:8px;margin-bottom:12px}
+  .pw-code .btn{width:auto;min-height:46px;padding:0 16px;font-size:14px;white-space:nowrap}
+  .pw-code input{flex:1;min-width:0;height:46px;border-radius:10px;border:1px solid var(--line-strong);background:var(--field);color:var(--text);padding:0 14px;font:inherit;text-transform:uppercase}
+  .pw-code input::placeholder{color:var(--placeholder);text-transform:none}
+  .pw-msg{color:var(--accent);font-size:14px;margin:0 0 12px}
+  .pw-mine{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .pw-big{font-family:var(--card-font, inherit);font-weight:700;font-size:30px;letter-spacing:.06em;color:var(--accent);
+    text-align:center;padding:16px 8px;margin:4px 0 12px;border:1px dashed var(--line-strong);border-radius:12px;text-transform:none !important}
 </style>
 <script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"trungthu";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="trungthu"}</script>
 </head>
@@ -582,230 +599,33 @@
   </div>
 </div>
 
+<div class="veil" id="paywall" hidden>
+  <div class="sheet">
+    <div class="eyebrow">Mở khoá</div>
+    <h2 id="pw-title">Hết phần dùng thử</h2>
+    <p id="pw-sub"></p>
+    <div id="pw-buy">
+      <div class="pw-list" id="pw-decks"></div>
+      <div class="pw-code">
+        <input id="pw-input" placeholder="Đã có mã? LT-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="12">
+        <button class="btn btn-ghost" id="pw-redeem">Dùng mã</button>
+      </div>
+      <p class="pw-msg" id="pw-msg" hidden></p>
+      <p class="pw-mine" id="pw-mine" hidden></p>
+      <button class="btn btn-ghost" id="pw-close">Quay lại</button>
+    </div>
+    <div id="pw-done" hidden>
+      <div class="pw-big" id="pw-code"></div>
+      <p class="pw-mine">Chụp màn hình lại nhé. Cả bàn nhập mã này trong một tiếng tới là chơi được trên máy mình.</p>
+      <button class="btn btn-gold" id="pw-go">Chơi tiếp →</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============ TOPICS — every card is a debate statement ============
    Rule of thumb: a real "có nên…?" choice both sides can defend, in the way people actually talk. */
-const TOPICS = [
- {id:"yeu", name:"Tình Yêu", sub:"Người cũ, ghen tuông, ngoại tình, những luật ngầm khi yêu.", cards:[
-  "Việc yêu người yêu cũ của bạn thân có nên được chấp nhận?",
-  "Bạn thân khác giới có thật sự tồn tại?",
-  "Có nên xem điện thoại của người yêu?",
-  "Yêu nhau thì có nên biết mật khẩu điện thoại của nhau?",
-  "Chia tay rồi có nên unfollow người yêu cũ?",
-  "Ngoại tình tư tưởng có tính là ngoại tình không?",
-  "Đang có bồ mới thì có được đi chơi riêng với người yêu cũ?",
-  "Có nên yêu xa?",
-  "Có nên yêu người hơn mình mười tuổi?",
-  "Con gái có nên tỏ tình trước?",
-  "Nên yêu người yêu mình hơn là người mình yêu?",
-  "Chia tay rồi có làm bạn được không?",
-  "Có nên kể hết chuyện tình cũ cho người yêu mới?",
-  "Không ghen là không yêu?",
-  "Yêu là phải công khai trên mạng?",
-  "Người yêu ngoại tình một lần và xin lỗi thì có thể tha thứ?",
-  "Người yêu thả tim story người cũ thì có phải chuyện lớn?",
-  "Có nên giữ ảnh chụp chung với người yêu cũ?",
-  "Có nên yêu người mà gia đình không thích?",
-  "Có nên cho người yêu đi du lịch chung với hội bạn khác giới?",
-  "Có nên yêu người từng là mối tình đầu của bạn thân?",
-  "Tình yêu sét đánh có thật không?",
-  "Có nên hẹn hò hai người cùng lúc nếu chưa xác định ai chính thức?",
-  "Có nên yêu người từng ly hôn?",
-  "Có nên công khai chuyện tiền bạc hết cho người yêu biết?",
-  "Có nên yêu đồng nghiệp cùng công ty?",
-  "Có nên yêu người có con riêng?",
-  "Có nên để người yêu đọc tin nhắn với bạn thân của mình?",
-  "Yêu nhau lâu rồi có bắt buộc phải cưới?",
-  "Có nên chấp nhận người yêu vẫn giữ liên lạc với người cũ vì công việc?",
-  "Có nên tiếp tục yêu xa vô thời hạn nếu không có ngày đoàn tụ rõ ràng?",
-  "Có nên yêu người từng là trà xanh trong một mối quan hệ khác?",
-  "Có nên chấp nhận người yêu có nhiều bạn thân khác giới?",
-  "Có nên yêu người chưa từng yêu ai trước đó?",
-  "Có nên yêu người có định hướng sự nghiệp khác hẳn mình?",
-  "Có nên yêu người từng là situationship của bạn thân?",
-  "Có nên yêu người vẫn còn ở chung nhà với người yêu cũ vì chưa dọn ra?",
-  "Có nên yêu người kiếm tiền ít hơn mình rất nhiều?",
-  "Có nên tiếp tục yêu người không muốn có con?",
-  "Có nên chọn sự nghiệp thay vì mối tình đang yêu xa?",
-  "Có nên cưới người thu nhập bấp bênh dù rất yêu?",
-  "Có nên yêu người kém mình rất nhiều về học vấn?",
-  "Có nên cưới người mà mình biết mẹ chồng tương lai rất khó tính?",
-  "Có nên yêu người luôn coi bạn thân của mình là ưu tiên số một?",
-  "Có nên yêu người đã từng làm OnlyFans?",
-  "Có nên yêu người có gu ăn mặc hoàn toàn khác gu thẩm mỹ của mình?",
-  "Có nên chấp nhận một situationship nếu mình cũng chưa muốn nghiêm túc?",
-  "Người yêu chưa bao giờ đăng ảnh mình lên story có phải red flag?",
-  "Ngoại tình vì cô đơn khi yêu xa, có tha thứ không?",
-  "Có nên yêu người vẫn giữ quà kỷ niệm từ người yêu cũ?"
- ]},
- {id:"triet", name:"Deep Talk", sub:"Những câu không có đáp án đúng, chỉ có cách nghĩ của mỗi người.", cards:[
-  "Có nên nói dối để người khác đỡ buồn?",
-  "Tha thứ nhưng không quên thì có tính là tha thứ?",
-  "Con người có thật sự thay đổi được?",
-  "Thành công chủ yếu nhờ may mắn?",
-  "Nếu được, có nên biết trước ngày mình mất?",
-  "Nhặt được 50 nghìn ngoài đường thì có nên giữ?",
-  "Sống tốt quá thì dễ bị thiệt?",
-  "Hạnh phúc là do mình lựa chọn?",
-  "Có nên sống mặc kệ người khác nghĩ gì?",
-  "Có thể yêu hai người cùng một lúc?",
-  "Có nên trả đũa khi bị chơi xấu?",
-  "Trên đời không có gì là miễn phí?",
-  "Người giàu có trách nhiệm giúp người nghèo?",
-  "Im lặng trước cái sai cũng là một dạng đồng lõa?",
-  "Người tốt có cần được đền đáp mới tiếp tục tốt?",
-  "Có nên yêu bản thân trước rồi mới yêu người khác?",
-  "Đau khổ có phải là điều kiện để trưởng thành?",
-  "Sự thật lúc nào cũng nên được nói ra?",
-  "Càng hiểu đời thì càng cô đơn hơn?",
-  "Số phận đã định sẵn hay do mình tự chọn hết?",
-  "Càng nhiều lựa chọn thì con người càng khó hạnh phúc hơn?",
-  "Biết đủ có phải là một dạng thất bại trong âm thầm?",
-  "Người ta chỉ tốt khi có ai đó đang nhìn thấy?",
-  "Ký ức buồn có nên giữ lại để nhắc mình sống tử tế hơn?",
-  "Tự do thật sự có tồn tại hay chỉ là ảo tưởng dễ chịu?",
-  "Một lời xin lỗi muộn màng có còn giá trị gì không?",
-  "Sống chậm lại có phải là một cách trốn tránh cuộc đời?",
-  "Có phải ai cũng đang diễn một vai nào đó mỗi ngày?",
-  "Buông bỏ có phải lúc nào cũng là lựa chọn khôn ngoan hơn?",
-  "Càng trưởng thành càng mất đi khả năng tin người khác?",
-  "Người thành công có bắt buộc phải đánh đổi sự cô đơn?",
-  "Có phải càng yêu nhiều thì càng dễ đánh mất chính mình?",
-  "Nỗi sợ có phải là thứ giữ con người ta sống đúng đắn?",
-  "Có nên tin vào duyên số thay vì cố gắng hết mình?",
-  "Sự công bằng tuyệt đối có thật sự tồn tại trên đời?",
-  "Có phải người mạnh mẽ nhất là người giấu tổn thương giỏi nhất?",
-  "Ký ức đẹp có làm hiện tại trở nên nhạt nhòa hơn?",
-  "Niềm tin mù quáng có phải cũng là một dạng hạnh phúc?"
- ]},
- {id:"ay", name:"Chuyện Ấy", sub:"Sex, những lần đầu, quan điểm người lớn. Cay nhưng không thô.", adult:true, cards:[
-  "Có nên thử “tình một đêm”?",
-  "Có nên thử có “friends with bún bò”?",
-  "Không hợp “chuyện ấy” thì có nên cưới?",
-  "Trong tình yêu, sex có quan trọng bằng tình cảm không?",
-  "Có nên hỏi body count của người yêu?",
-  "Có nên dạy giáo dục giới tính từ tiểu học?",
-  "Có nên giả vờ “lên đỉnh” cho người yêu vui?",
-  "Con gái có nên chủ động rủ “chuyện ấy” trước thay vì chờ đối phương?",
-  "Có nên nói thẳng khi “chuyện ấy” chưa làm mình thoả mãn?",
-  "Có nên coi “chuyện ấy” nhạt dần là dấu hiệu tình yêu đang nguội?",
-  "Người yêu follow tài khoản OnlyFans trên mạng có chấp nhận được không?",
-  "Có nên chủ động đề nghị đi xét nghiệm trước khi tiến xa hơn?",
-  "Ngoại tình thể xác tệ hơn ngoại tình tinh thần?",
-  "Có nên yêu cầu bạn đời tương lai kể hết chuyện giường chiếu ngày xưa?",
-  "Có nên quen một người đã từng threesome?",
-  "Body count nhiều có nên là red flag khi chọn người nghiêm túc?",
-  "Có nên “chuyện ấy” để làm hoà sau khi cãi nhau to?",
-  "Phát hiện người yêu xem phim người lớn thường xuyên, có nên lo?",
-  "Đang situationship mà đã “chuyện ấy” thì có nên đòi danh phận?",
-  "Bạn trai đòi quay video “chuyện ấy” để kỷ niệm, có nên đồng ý?",
-  "Biết bạn đời tương lai từng \"bóc bánh trả tiền\", có nên bỏ qua?",
-  "Có nên cưới người chuyện ấy nhạt nhưng mang lại ổn định tài chính?"
- ]},
- {id:"tien", name:"Kiếm Ăn", sub:"Chia bill, lương, vay mượn, phong bì đám cưới.", cards:[
-  "Đi ăn chung thì cứ chia đều cho nhanh?",
-  "Hẹn hò lần đầu thì con trai nên trả tiền?",
-  "Có nên nói lương cho bạn bè biết?",
-  "Cưới rồi có nên gộp chung tiền?",
-  "Có nên đợi mua được nhà rồi mới cưới?",
-  "Có nên cho bạn thân vay tiền?",
-  "Đi làm rồi có nên gửi tiền về cho bố mẹ hàng tháng?",
-  "Tiền có mua được hạnh phúc?",
-  "Có nên trả góp để mua iPhone mới?",
-  "Đi đám cưới có nên mừng theo kiểu “có qua có lại”?",
-  "Còn trẻ thì nên tiêu cho trải nghiệm hơn là tiết kiệm?",
-  "Mới quen đã hỏi lương thì có sao không?",
-  "Có nên lấy người kiếm ít tiền hơn mình?",
-  "Có vợ có chồng rồi có nên giữ quỹ đen?",
-  "Có nên vay tiền để đi du lịch?",
-  "Có nên nhờ người yêu trả tiền khi mình đang thất nghiệp?",
-  "Có nên nhận quà đắt tiền từ người mới quen được vài lần?",
-  "Ở chung, tiền nhà có nên chia theo lương thay vì chia đều?",
-  "Có được góp ý với người yêu không nên dùng tiền hoang phí, dù tiền đấy là của họ?",
-  "Lì xì 10 nghìn có bị coi là keo kiệt?",
-  "Yêu trên một năm rồi thì có nên cho người yêu vay tiền?"
- ]},
- {id:"nha", name:"Gia Đình", sub:"Bố mẹ, cưới xin, con cái, những câu hỏi ngày Tết.", cards:[
-  "Cưới xong có nên ra ở riêng?",
-  "Ba mươi tuổi chưa cưới là “ế”?",
-  "Tết có nhất thiết phải về quê?",
-  "Bố mẹ có nên kiểm tra điện thoại của con tuổi teen?",
-  "Có nên sống thử trước khi cưới?",
-  "Cưới rồi có nhất thiết phải sinh con?",
-  "“Thương cho roi cho vọt” còn đúng không?",
-  "Con trai trưởng có phải lo cho bố mẹ nhiều hơn?",
-  "Bố mẹ phản đối người yêu thì có nên chia tay?",
-  "Có nên đi du lịch Tết thay vì đi chúc Tết họ hàng?",
-  "Có nên đưa bố mẹ vào viện dưỡng lão?",
-  "Có nên làm ăn chung với anh chị em ruột?",
-  "Lớn rồi có cần hỏi ý bố mẹ trước những quyết định lớn?",
-  "Có nên cưới dù bố mẹ hai bên không ưa nhau?",
-  "Có nên kể chuyện đang trong một situationship cho bố mẹ nghe?",
-  "Có nên nói thật với bố mẹ về xu hướng tính dục của mình?",
-  "Có nên từ mặt bố mẹ nếu họ toxic quá lâu?",
-  "Có nên để bố mẹ biết mình đang đi trị liệu tâm lý?"
- ]},
- {id:"ban", name:"Bạn Bè", sub:"Luật ngầm của tình bạn, nợ nần, bí mật, nhóm chat.", cards:[
-  "Bạn thân có được đọc tin nhắn của nhau?",
-  "Bạn thân cưới mà không mời thì có nên nghỉ chơi?",
-  "Bạn hỏi “mặc thế này đẹp không” thì có nên nói thật?",
-  "Có bồ rồi thì ít đi chơi với bạn là bình thường?",
-  "Bạn mượn tiền mãi không trả thì có nên đòi thẳng?",
-  "Có nên kể bí mật của bạn thân cho người yêu nghe?",
-  "Có nên yêu người trong nhóm bạn thân?",
-  "Bạn thân lâu năm thì không cần gặp nhau thường xuyên?",
-  "Bạn trễ hẹn 30 phút thì có nên về luôn?",
-  "Thấy bồ của bạn thân ngoại tình thì có nên nói?",
-  "Bạn quen qua mạng có thể thành bạn thân?",
-  "Đọc tin nhắn nhóm mà không trả lời thì có sao?",
-  "Có nên hủy kết bạn những người cả năm không nói chuyện?",
-  "Có nên làm bạn với người yêu cũ của bạn thân?",
-  "Biết bạn thân là trà xanh thì có nên tránh xa?",
-  "Biết bạn thân đang nói dối người yêu thì có nên giúp giấu?"
- ]},
- {id:"doi", name:"Chuyện Thiên Hạ", sub:"Giờ cao su, “seen” không rep, sống ảo, phép lịch sự thời nay.", cards:[
-  "Đến trễ 15 phút là chuyện bình thường?",
-  "“Seen” mà không rep là thiếu tôn trọng?",
-  "Có cần hỏi trước khi đăng ảnh có mặt bạn bè?",
-  "Có nên cấm điện thoại trong bữa ăn?",
-  "Có nên đăng chuyện tình cảm lên mạng?",
-  "Gọi điện mà không nhắn trước là bất lịch sự?",
-  "Có nên “cai” mạng xã hội một tháng mỗi năm?",
-  "“Cho điện thoại ăn trước” là phiền người khác?",
-  "Có nên xem tử vi, cung hoàng đạo trước khi yêu?",
-  "Có nên mặc đồ bộ ra đường?",
-  "Có nên “bóc phốt” trên mạng để đòi công bằng?",
-  "Có nên nhắn tin bằng tin nhắn thoại?",
-  "Có nên block người yêu cũ ngay sau khi chia tay?",
-  "Có nên seen tin nhắn crush rồi rep muộn để đỡ dễ dãi?",
-  "Có nên tắt “đang hoạt động” để seen không ai biết?",
-  "Rep tin nhắn nhóm chậm hơn tin nhắn riêng là bình thường?"
- ]},
- {id:"viec", name:"Hustle", sub:"Bằng cấp, nhảy việc, sếp, đồng nghiệp, đam mê hay lương.", cards:[
-  "Có cần học đại học không?",
-  "Có nên bỏ việc ổn định để theo đam mê?",
-  "Sếp nhắn sau 10 giờ tối thì có nên trả lời?",
-  "Có nên nhảy việc mỗi năm để tăng lương?",
-  "Làm ở nhà hiệu quả hơn lên văn phòng?",
-  "Có nên yêu đồng nghiệp?",
-  "Có nên cho con đi học thêm từ tiểu học?",
-  "Có nên nói xấu sếp với đồng nghiệp?",
-  "Ba mươi tuổi mới đổi nghề thì có muộn không?",
-  "Có nên đi làm cho công ty của người nhà?",
-  "So sánh với “con nhà người ta” có giúp con cố gắng hơn?",
-  "Có nên chọn việc lương cao dù không thích?",
-  "Có nên chọn công việc nhàn lương thấp để có thời gian sống cho mình?",
-  "Có nên nhận offer lương cao ở công ty nổi tiếng “toxic”?",
-  "Vẫn xong việc thì đi làm trễ mỗi ngày có sao không?",
-  "Có nên chọn startup để được tự do hơn công ty lớn?",
-  "Có nên hy sinh cuối tuần để hoàn thành deadline không ai giao?",
-  "Có nên làm việc lương cao nhưng ít cơ hội phát triển kỹ năng?",
-  "Có nên chấp nhận vị trí thực tập không lương?",
-  "Có nên nói thật lý do nghỉ việc trong buổi exit interview?",
-  "Biết mình lương thấp hơn người cùng vị trí, có nên im lặng?",
-  "Có nên nghỉ việc dù chưa có offer mới trong tay?"
- ]}
-];
+const TOPICS = [{"id":"yeu","name":"Tình Yêu","sub":"Người cũ, ghen tuông, ngoại tình, những luật ngầm khi yêu.","cards":["Việc yêu người yêu cũ của bạn thân có nên được chấp nhận?","Bạn thân khác giới có thật sự tồn tại?","Có nên xem điện thoại của người yêu?","Yêu nhau thì có nên biết mật khẩu điện thoại của nhau?","Chia tay rồi có nên unfollow người yêu cũ?"],"n":50},{"id":"triet","name":"Deep Talk","sub":"Những câu không có đáp án đúng, chỉ có cách nghĩ của mỗi người.","cards":["Có nên nói dối để người khác đỡ buồn?","Tha thứ nhưng không quên thì có tính là tha thứ?","Con người có thật sự thay đổi được?","Thành công chủ yếu nhờ may mắn?","Nếu được, có nên biết trước ngày mình mất?"],"n":38},{"id":"ay","name":"Chuyện Ấy","sub":"Sex, những lần đầu, quan điểm người lớn. Cay nhưng không thô.","adult":true,"cards":["Có nên thử “tình một đêm”?","Có nên thử có “friends with bún bò”?","Không hợp “chuyện ấy” thì có nên cưới?","Trong tình yêu, sex có quan trọng bằng tình cảm không?","Có nên hỏi body count của người yêu?"],"n":22},{"id":"tien","name":"Kiếm Ăn","sub":"Chia bill, lương, vay mượn, phong bì đám cưới.","cards":[],"n":21},{"id":"nha","name":"Gia Đình","sub":"Bố mẹ, cưới xin, con cái, những câu hỏi ngày Tết.","cards":[],"n":18},{"id":"ban","name":"Bạn Bè","sub":"Luật ngầm của tình bạn, nợ nần, bí mật, nhóm chat.","cards":[],"n":16},{"id":"doi","name":"Chuyện Thiên Hạ","sub":"Giờ cao su, “seen” không rep, sống ảo, phép lịch sự thời nay.","cards":["Đến trễ 15 phút là chuyện bình thường?","“Seen” mà không rep là thiếu tôn trọng?","Có cần hỏi trước khi đăng ảnh có mặt bạn bè?","Có nên cấm điện thoại trong bữa ăn?","Có nên đăng chuyện tình cảm lên mạng?"],"n":16},{"id":"viec","name":"Hustle","sub":"Bằng cấp, nhảy việc, sếp, đồng nghiệp, đam mê hay lương.","cards":[],"n":22}];
 
 /* ============ TOPIC SKETCHES — minimalist ink figures on paper, one colour wash each ============
    Drawn in a 100×100 space and scaled. Every line is inked twice (a firm pass plus a faint, slightly
@@ -946,6 +766,68 @@ const VG = (() => {
 /* Shown under the QR in the support panel. Leave empty to hide it. */
 const BANK_LINE = "SHB · 0822446003";
 
+/* ============ THE PASS ============
+   A bearer code, no account. Whoever holds it owns the decks on it, each for 24 hours,
+   on up to six devices. The device id only counts slots: on its own it unlocks nothing. */
+const PRICE = 5000;
+const K_CODE = "nltq-key", K_DEV = "nltq-did", K_ORDER = "nltq-order";
+const pass = { code: "", device: "", until: {}, fetched: false };
+
+const tidyCode = raw => {
+  const t = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return t.length === 10 && t.startsWith("LT") ? `LT-${t.slice(2, 6)}-${t.slice(6, 10)}` : "";
+};
+function store(k, v){ try{ v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(e){} }
+function stored(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+
+function initPass(){
+  pass.device = stored(K_DEV);
+  if(!pass.device){
+    pass.device = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+    store(K_DEV, pass.device);
+  }
+  // a code arriving by QR rides in the fragment, which browsers never send to a server
+  const m = /[#&]k=([A-Za-z0-9-]+)/.exec(location.hash || "");
+  if(m && tidyCode(m[1])){
+    store(K_CODE, tidyCode(m[1]));
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  pass.code = tidyCode(stored(K_CODE));
+}
+const owns = id => (pass.until[id] || 0) > Date.now();
+const locked = t => !owns(t.id) && loadedCount([t]) < deckSize(t);
+const money = n => n.toLocaleString("vi-VN") + "đ";
+function leftOver(id){                                  // "còn 6 tiếng" for a deck already paid for
+  const ms = (pass.until[id] || 0) - Date.now();
+  if(ms <= 0) return "";
+  const h = Math.floor(ms / 3600e3);
+  return h >= 1 ? `còn ${h} tiếng` : `còn ${Math.max(1, Math.round(ms / 60e3))} phút`;
+}
+
+/* Pull down every paid card this code is entitled to and fold it into the decks. */
+async function loadPaid(){
+  if(!pass.code || !pass.device) return false;
+  try{
+    const r = await fetch(`/api/cards?k=${encodeURIComponent(pass.code)}&d=${encodeURIComponent(pass.device)}`);
+    const d = await r.json();
+    if(!d.ok){ pass.until = {}; return d; }
+    pass.until = d.until || {};
+    if(d.code) pass.code = d.code;
+    for(const [id, cards] of Object.entries(d.topics || {})){
+      const t = TOPICS.find(x => x.id === id);
+      if(t && t.cards.length < deckSize(t)) t.cards = t.cards.concat(cards);
+    }
+    for(const [id, deck] of Object.entries(d.tod || {})){
+      const t = TOD.find(x => x.id === id);
+      if(!t) continue;
+      if(t.truths.length < (t.nt ?? 0)) t.truths = t.truths.concat(deck.truths || []);
+      if(t.dares.length < (t.nd ?? 0)) t.dares = t.dares.concat(deck.dares || []);
+    }
+    pass.fetched = true;
+    return d;
+  }catch(e){ return {ok:false, reason:"offline"}; }
+}
+
 /* ============ STATE ============ */
 let state;
 const $ = id => document.getElementById(id);
@@ -955,7 +837,9 @@ const picksOf = () => state.mode === "tod" ? state.tpick : state.picked;
 const picked = () => TOPICS.filter(t => state.picked.includes(t.id));
 const tpicked = () => TOD.filter(t => state.tpick.includes(t.id));
 const chosen = () => state.mode === "tod" ? tpicked() : picked();
-const cardCount = ts => ts.reduce((n, t) => n + (t.cards ? t.cards.length : todCards(t)), 0);
+const deckSize = t => t.cards ? (t.n ?? t.cards.length) : ((t.nt ?? t.truths.length) + (t.nd ?? t.dares.length));
+const cardCount = ts => ts.reduce((n, t) => n + deckSize(t), 0);   // the whole deck, paid or not
+const loadedCount = ts => ts.reduce((n, t) => n + (t.cards ? t.cards.length : todCards(t)), 0);
 function freshState(){
   return { screen:"home", mode:"hoi", picked:[], tpick:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false,
            tod:{truth:[], dare:[], card:null, drawn:0, total:0, history:[], noRecord:false} };
@@ -977,9 +861,9 @@ function renderDecks(){
   const list = decksOf(), tod = state.mode === "tod", order = deckOrder(), picks = picksOf();
   state.order = order.map(t => t.id).join(",");
   $("decks-title").textContent = tod ? "Thật hay Thách" : "Câu hỏi";
-  $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${picks.includes(t.id)}" title="${t.sub}">
+  $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" data-locked="${locked(t) && !loadedCount([t]) ? 1 : 0}" aria-pressed="${picks.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${list.indexOf(t) % 4}"><img alt="" src="${VG(t.art || t.id, 320, 320)}"></span>
-      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.truths.length} thật · ${t.dares.length} thách` : `${t.cards.length} câu hỏi`}${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.nt ?? t.truths.length} thật · ${t.nd ?? t.dares.length} thách` : `${deckSize(t)} câu hỏi`}${t.adult ? " · 18+" : ""}${locked(t) ? ` · <span class="lock">${money(PRICE)}</span>` : owns(t.id) ? ` · <span class="lock">${leftOver(t.id)}</span>` : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
   const ts = chosen(), btn = $("pick-go"), unit = tod ? "lá" : "câu";
   btn.disabled = !ts.length;
@@ -1006,111 +890,146 @@ $("pick-go").addEventListener("click", () => {
 $("age-ok").addEventListener("click", () => { state.adultOk = true; $("agegate").hidden = true; startPicked(); });
 $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
 
+/* ============ THE GATE ============
+   Every deck is 5.000đ for 24 hours. Four decks show a few cards first; the rest are dark.
+   Payment is stubbed for now: the button mints a pass straight from /api/pass, which only
+   answers outside production. The real bank watcher replaces it later. */
+let gateFrom = "decks";
+const WHY = {
+  invalid: "Mã không đúng, hoặc đã hết hạn.",
+  expired: "Mã đã hết hạn rồi.",
+  window_closed: "Mã này đã quá hạn chia sẻ. Nhờ người mua mở khoá thêm nhé.",
+  too_many: "Mã đã dùng trên quá nhiều máy.",
+  offline: "Mất mạng rồi, thử lại nhé.",
+};
+
+function openGate(from){
+  gateFrom = from || (state.screen === "tod" ? "tod" : state.screen === "play" ? "play" : "decks");
+  renderGate();
+  $("pw-buy").hidden = false; $("pw-done").hidden = true;
+  $("paywall").hidden = false;
+  $("pw-input").value = "";
+}
+/* A code is no use to the table if the buyer never sees it, so it gets its own screen. */
+function showUnlocked(name){
+  $("pw-title").textContent = name ? `Đã mở ${name.toLowerCase()}` : "Đã mở khoá";
+  $("pw-sub").textContent = "Bộ này mở trong 24 giờ.";
+  $("pw-code").textContent = pass.code;
+  $("pw-buy").hidden = true; $("pw-done").hidden = false;
+}
+function closeGate(){ $("paywall").hidden = true; msgGate(""); }
+function msgGate(text){ const el = $("pw-msg"); el.textContent = text; el.hidden = !text; }
+
+function renderGate(){
+  const shut = chosen().filter(locked);
+  const one = shut.length === 1;
+  $("pw-title").textContent = one ? shut[0].name : "Mở khoá bộ bài";
+  $("pw-sub").textContent = `Mỗi bộ ${money(PRICE)}, mở trong 24 giờ, chơi được trên 6 máy.`;
+  $("pw-decks").innerHTML = shut.map(t => `<div class="pw-row"><b>${t.name}</b>
+    <span class="muted">${deckSize(t)} lá</span>
+    <button class="btn btn-gold" data-buy="${t.id}">${money(PRICE)}</button></div>`).join("");
+  const mine = $("pw-mine");
+  mine.textContent = pass.code ? `Mã của bạn: ${pass.code} · chụp màn hình lại nhé` : "";
+  mine.hidden = !pass.code;
+}
+
+/* Carry on wherever the wall interrupted. */
+function resumeAfterUnlock(){
+  closeGate();
+  renderDecks();
+  if(gateFrom === "play"){ dealRest(); drawCard(); renderPlay(); }
+  else if(gateFrom === "tod"){ startTod(); }
+  else { startPicked(); }
+}
+
+async function useCode(code){
+  const clean = tidyCode(code);
+  if(!clean) return msgGate(WHY.invalid), false;
+  pass.code = clean; pass.fetched = false;
+  const d = await loadPaid();
+  if(d && d.ok){ store(K_CODE, pass.code); resumeAfterUnlock(); return true; }
+  msgGate(WHY[d && d.reason] || WHY.invalid);
+  return false;
+}
+
+$("pw-decks").addEventListener("click", async e => {
+  const b = e.target.closest("[data-buy]"); if(!b) return;
+  const deck = b.dataset.buy;
+  b.disabled = true; msgGate("Đang mở trang thanh toán…");
+  try{
+    const r = await fetch("/api/order", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({deck, code: pass.code})});
+    const d = await r.json();
+    if(!d.ok) throw new Error(d.reason || "no");
+    if(d.paid){                                        // the stub on test, before payOS is live
+      await takeCode(d.code);
+      return showUnlocked((decksOf().find(t => t.id === deck) || {}).name);
+    }
+    store(K_ORDER, String(d.orderCode));               // so a lost redirect can still be settled
+    location.href = d.checkoutUrl;
+  }catch(err){ msgGate("Chưa mở được trang thanh toán. Thử lại nhé."); b.disabled = false; }
+});
+
+/* Adopt a code and pull down what it opens. */
+async function takeCode(code){
+  pass.code = code; store(K_CODE, code); pass.fetched = false;
+  await loadPaid();
+  renderDecks();
+}
+
+/* Coming back from payOS, or reopening the page after paying: ask whether the order landed.
+   The webhook is usually first, but the server also asks payOS directly, so a webhook that
+   never arrives cannot cost someone their money. */
+async function settlePending(){
+  const fromUrl = new URLSearchParams(location.search).get("o");
+  const o = fromUrl || stored(K_ORDER);
+  if(!o) return;
+  if(fromUrl) history.replaceState(null, "", location.pathname);
+  for(let i = 0; i < 8; i++){
+    let d = {};
+    try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(o)}`)).json(); }catch(e){}
+    if(d.status === "paid"){
+      store(K_ORDER, null);
+      await takeCode(d.code);
+      openGate("decks");
+      return showUnlocked();
+    }
+    if(d.reason === "no_order"){ store(K_ORDER, null); return; }   // expired or never existed
+    await new Promise(r => setTimeout(r, 1500));
+  }
+}
+$("pw-redeem").addEventListener("click", () => {
+  const v = $("pw-input").value.trim();
+  if(v) useCode(v.toUpperCase());
+});
+$("pw-input").addEventListener("keydown", e => { if(e.key === "Enter") $("pw-redeem").click(); });
+$("pw-close").addEventListener("click", () => { closeGate(); if(gateFrom !== "decks") show("decks"); });
+$("pw-go").addEventListener("click", resumeAfterUnlock);
+
 /* ============ THẬT HAY THÁCH ============ */
-const TOD = [
- {id:"t-yeu", art:"yeu", name:"Tình Yêu", sub:"Người cũ, ghen tuông, tin nhắn chưa xoá.",
-  truths:[
-   "Lần gần nhất bạn ghen là vì chuyện gì?",
-   "Bạn còn giữ ảnh chụp chung với người cũ không?",
-   "Bạn từng nhắn tin cho người cũ lúc nửa đêm chưa?",
-   "Điều tệ nhất bạn từng làm trong một mối quan hệ là gì?",
-   "Bạn từng thầm thích một người bạn của mình chưa?",
-   "Bạn từng đọc trộm điện thoại người yêu chưa?",
-   "Mối tình nào làm bạn thay đổi nhiều nhất?",
-   "Bạn từng nói dối người yêu chuyện gì lớn nhất?",
-   "Có ai bạn vẫn nghĩ tới trước khi đi ngủ không?",
-   "Bạn từng quay lại với người cũ mấy lần?",
-   "Bạn từng so sánh người yêu hiện tại với người cũ chưa?",
-   "Bạn từng có tình cảm với hai người cùng một lúc chưa?",
-   "Người yêu cũ nào bạn tiếc nhất sau khi chia tay?",
-   "Bạn từng nói yêu ai đó dù trong lòng chưa chắc chắn chưa?",
-   "Chuyện gì khiến bạn nhận ra mình vẫn chưa hết yêu người cũ?",
-   "Bạn từng để ý người yêu nhắn tin với ai đó khác giới chưa?",
-   "Số điện thoại của người cũ nào bạn vẫn còn thuộc lòng?",
-   "Kỷ niệm nào với người cũ bạn ước mình có thể xoá khỏi đầu?",
-   "Bạn từng ghen với chính bạn thân của người yêu chưa?"
-  ],
-  dares:[
-   "Mở tin nhắn với người cũ và đọc to câu cuối cùng bạn gửi.",
-   "Đọc to ba cái tên đầu tiên trong danh sách tin nhắn của bạn.",
-   "Cho cả nhóm xem ảnh đại diện của bạn ba năm trước.",
-   "Kể lại lời tỏ tình ngượng nhất bạn từng nói, đúng giọng lúc đó.",
-   "Hát hai câu của bài hát làm bạn nhớ người cũ.",
-   "Nhắn cho người bạn đang để ý một câu hỏi vu vơ, đọc to câu trả lời.",
-   "Đọc to đoạn chat gần nhất có chữ nhớ trong đó.",
-   "Miêu tả buổi hẹn hoàn hảo của bạn trong ba mươi giây.",
-   "Để người bên phải chọn một người trong danh bạ, bạn gửi cho họ một lời chào.",
-   "Đổi ảnh đại diện thành ảnh do cả nhóm chọn, giữ trong một tiếng.",
-   "Cho cả nhóm xem tấm ảnh cuối cùng bạn chụp chung với người cũ.",
-   "Kể tên ứng dụng hẹn hò bạn đang dùng.",
-   "Cho cả nhóm xem đoạn tin nhắn khiến bạn cười một mình gần đây nhất.",
-   "Kể tên nơi hẹn hò đầu tiên với người yêu cũ gần nhất.",
-   "Cho cả nhóm xem tin nhắn chúc mừng sinh nhật gần nhất bạn nhận từ người cũ.",
-   "Kể tên bài hát bạn từng nghe đi nghe lại sau khi chia tay.",
-   "Diễn tả kiểu người bạn hay bị crush trong ba mươi giây.",
-   "Đọc to gợi ý kết bạn đầu tiên hiện lên trên điện thoại bạn.",
-   "Kể tên quán cà phê bạn hẹn hò nhiều nhất trong năm nay.",
-   "Cho cả nhóm xem playlist có cái tên lãng mạn nhất trong điện thoại bạn."
-  ]},
- {id:"t-ay", art:"ay", name:"Chuyện Ấy", sub:"Thẳng thắn, cho nhóm đã đủ thân.", adult:true,
-  truths:[
-   "Điều gì làm bạn thấy hấp dẫn ở một người?",
-   "Bạn từng có tình một đêm chưa?",
-   "Bạn có kể thật với người yêu về quá khứ của mình không?",
-   "Điều gì bạn muốn thử nhưng chưa dám nói ra?",
-   "Bạn từng giả vờ thích một tư thế chỉ để chiều người kia chưa?",
-   "Chuyện ấy quan trọng đến mức nào trong một mối quan hệ với bạn?",
-   "Bạn từng bị bắt gặp lúc đang làm chuyện ấy chưa?",
-   "Bạn thà không hợp chuyện ấy hay không hợp chuyện tiền bạc?",
-   "Bạn từng gửi ảnh nóng cho ai rồi hối hận chưa?",
-   "Điều gì làm bạn mất hứng nhanh nhất?",
-   "Lần đầu của bạn diễn ra như thế nào, giờ nghĩ lại thấy sao?",
-   "Nơi lạ nhất bạn từng làm chuyện ấy là đâu?",
-   "Điều gì trong chuyện ấy bạn ngại nói thẳng với đối phương nhất?",
-   "Bạn từng chủ động rủ trước chưa, hay luôn chờ người kia?",
-   "Bạn từng nghĩ đến ai khác trong lúc đang làm chuyện ấy chưa?",
-   "Bạn cần bao lâu quen thân mới sẵn sàng ngủ cùng một người?",
-   "Bạn từng lỡ gọi nhầm tên người cũ lúc thân mật chưa?",
-   "Bạn từng nói dối về số người mình từng ngủ cùng chưa?",
-   "Bạn đã bao giờ có giai đoạn “chơi bời” chưa?",
-   "Nếu chỉ được làm chuyện ấy với một tư thế trong suốt phần còn lại cuộc đời, bạn chọn tư thế gì?"
-  ],
-  dares:[
-   "Tả mẫu người lý tưởng trên giường của bạn trong ba mươi giây.",
-   "Đọc to tin nhắn táo bạo nhất bạn từng gửi.",
-   "Kể lại nụ hôn đáng nhớ nhất.",
-   "Cho cả nhóm nghe bài hát bạn hay bật khi làm chuyện ấy với ai đó.",
-   "Nói một câu thả thính, đủ nghiêm túc để cả nhóm không cười.",
-   "Kể một điều bạn ước đối phương làm nhiều hơn trên giường, không cần nói tên ai.",
-   "Chọn một từ duy nhất mô tả phong cách của bạn trên giường.",
-   "Kể tên một bộ phim hoặc cảnh phim khiến bạn thấy nóng người nhất.",
-   "Kể một lần bạn chủ động rủ rê trước, không cần nói tên đối phương.",
-   "Nói một câu bạn ước ai đó từng nói với bạn lúc thân mật.",
-   "Kể địa điểm lạ nhất bạn từng nghĩ tới chuyện ấy nhưng chưa dám thử.",
-   "Kể tên một món đồ trong tủ đồ khiến bạn thấy tự tin nhất khi thân mật.",
-   "Tả trong mười giây khung cảnh lãng mạn nhất bạn từng tưởng tượng cho chuyện ấy.",
-   "Kể một câu bạn từng lỡ miệng nói lúc thân mật khiến cả hai bật cười.",
-   "Nói tên một mùi hương khiến bạn liên tưởng ngay đến chuyện ấy.",
-   "Kể lại lần đầu bạn nhận ra mình có hứng với một người.",
-   "Kể một điều nhỏ đối phương làm khiến bạn đổ gục ngay lập tức.",
-   "Tả bằng lời khung giờ trong ngày bạn thấy hứng thú nhất với chuyện ấy.",
-   "Nói thẳng một thói quen nhỏ của đối phương khiến bạn mê mẩn, không cần nói tên ai.",
-   "Kể tên một địa danh du lịch khiến bạn liên tưởng ngay đến một kỷ niệm thân mật."
-  ]}
-];
+const TOD = [{"id":"t-yeu","art":"yeu","name":"Tình Yêu","sub":"Người cũ, ghen tuông, tin nhắn chưa xoá.","truths":[],"dares":[],"nt":19,"nd":20},{"id":"t-ay","art":"ay","name":"Chuyện Ấy","sub":"Thẳng thắn, cho nhóm đã đủ thân.","adult":true,"truths":[],"dares":[],"nt":20,"nd":20}];
 const todCards = t => t.truths.length + t.dares.length;
 
 /* ============ GAME ============ */
 function deal(){
   state.pile = shuffle(picked().flatMap(t => t.cards.map(text => ({text, topic:t.id}))));
-  state.total = state.pile.length; state.drawn = 0;
+  state.total = cardCount(picked());                     // the hud counts the deck, not the trial
+  state.drawn = 0;
   state.history = [];                                    // a reshuffle starts the trail over
 }
-function startGame(){
+function dealRest(){                                     // refill from the cards nobody has seen yet
+  const seen = new Set(state.history.concat(state.card ? [state.card] : []).map(c => c.text));
+  state.pile = shuffle(picked().flatMap(t => t.cards.filter(x => !seen.has(x)).map(text => ({text, topic:t.id}))));
+  state.total = cardCount(picked());
+}
+async function startGame(){
+  if(pass.code && !pass.fetched) await loadPaid();
   deal(); state.round = 1; state.autoFlip = true;   // cards open face up, no tap needed
+  if(!state.pile.length) return openGate();         // every chosen deck is still locked
   drawCard(); show("play");
 }
 function drawCard(){
+  if(!state.pile.length && picked().some(locked)) return openGate();   // the trial ends here
   if(!state.pile.length){ deal(); state.round++; }       // no final card: reshuffle and keep going
   if(state.card && !state.noRecord) state.history.push(state.card);   // a skipped card goes back in the pile, not the trail
   state.noRecord = false;
@@ -1225,7 +1144,9 @@ function todFill(kind){                                // refill one pile from t
   const key = kind === "dare" ? "dares" : "truths";
   state.tod[kind] = shuffle(tpicked().flatMap(t => t[key].map(text => ({text, topic:t.id, kind}))));
 }
-function startTod(){
+async function startTod(){
+  if(pass.code && !pass.fetched) await loadPaid();
+  if(!loadedCount(tpicked())) return openGate("decks");   // nothing free to show in these decks
   todFill("truth"); todFill("dare");
   const t = state.tod;
   t.total = t.truth.length + t.dare.length; t.drawn = 0; t.card = null; t.history = []; t.noRecord = false;
@@ -1234,7 +1155,7 @@ function startTod(){
 function todDraw(kind){
   const t = state.tod;
   if(!t[kind].length) todFill(kind);                   // a pile that runs dry is shuffled anew
-  if(!t[kind].length) return;
+  if(!t[kind].length) return tpicked().some(locked) ? openGate("tod") : undefined;
   if(t.card && !t.noRecord) t.history.push(t.card);
   t.noRecord = false;
   t.card = t[kind].shift(); t.drawn++;
@@ -1523,10 +1444,14 @@ function paintBack(id){
 /* ============ BOOT ============ */
 function start(saved){
   applySkin(currentSkin());
+  initPass();
   state = Object.assign(freshState(), saved && saved.screen ? saved : {});
   state.picked = (state.picked || []).filter(id => TOPICS.some(t => t.id === id));
   if(state.screen === "play" && !state.card) state.screen = "home";
   show(state.screen);
+  // a pass in hand: fold the paid cards in and redraw, so the grid shows what is already open
+  if(pass.code) loadPaid().then(() => { if(state.screen === "decks") renderDecks(); });
+  settlePending();
 }
 window.claude?.hot?.snapshot?.(() => state);
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
