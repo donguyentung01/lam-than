@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#efe6d2">
+<meta name="theme-color" content="#141a38">
 <meta name="description" content="Bộ câu hỏi để hiểu nhau hơn, cho những buổi cà phê, họp lớp, team building và những cuộc trò chuyện sâu.">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -47,6 +47,7 @@
     --display:"Cormorant Garamond", "Iowan Old Style", Georgia, serif; --display-style:italic; --display-weight:500; --mark-size:20px;
     --sans:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --card-font:var(--sans); --card-weight:800; --radius:18px;
+    --truth:#c9a24a; --truth-ink:#1a120d; --dare:#b3301e; --dare-ink:#ede3cf;
     color-scheme:dark;
   }
   /* Đông Hồ — giấy điệp, màu khắc gỗ tự nhiên */
@@ -64,6 +65,7 @@
     --veil:rgba(52,42,30,.5); --shadow:rgba(70,50,25,.22);
     --display:"Lora", Georgia, serif; --display-style:italic; --display-weight:600; --mark-size:19px;
     --card-font:"Lora", Georgia, serif; --card-weight:700; --radius:6px;
+    --truth:#dfa73c; --truth-ink:#221d17; --dare:#b0392a; --dare-ink:#fff8ec;
     color-scheme:light;
   }
   /* Tết — lì xì đỏ, mai vàng, đào hồng */
@@ -81,9 +83,70 @@
     --veil:rgba(40,4,8,.78); --shadow:rgba(30,0,4,.45);
     --display:"Pacifico", "Brush Script MT", cursive; --display-style:normal; --display-weight:400; --mark-size:18px;
     --radius:14px;
+    --truth:#ffc93c; --truth-ink:#5a0c12; --dare:#a3141d; --dare-ink:#fff1dc;
     color-scheme:dark;
   }
-  /* Sài Gòn Đêm — biển hiệu neon, phố khuya */
+  /* Trung Thu — trăng rằm, đèn lồng đỏ, đêm tháng tám */
+  :root[data-skin="trungthu"]{
+    --bg:#141a38; --bg-glow:#2b3468; --surface:#1d2450; --field:#161d3e; --placeholder:#7c83af;
+    --text:#fdf3de; --muted:#a9afd4;
+    --accent:#f2b13c; --accent-soft:#8a6a2c; --on-accent:#1a1236;
+    --line:rgba(242,177,60,.26); --line-strong:rgba(242,177,60,.58); --tint:#1b2247;
+    --c1:#f2b13c; --c1-ink:#2a1d06; --c2:#e0523c; --c2-ink:#fff1e4; --c3:#2f7d68; --c3-ink:#eafaf2;
+    --debate:#7a5cc6; --debate-ink:#fdf3de;
+    --wild:#fdf3de; --wild-ink:#1d2450; --final:#f2b13c; --final-ink:#1a1236;
+    --deck-3:#e0523c;
+    --back-base:#101636; --back-rule:#f2b13c; --tap:#fdf3de;
+    --seal-bg:#e0523c; --seal-ink:#fff3dd; --seal-sub:#ffd9a8; --seal-glow:0 0 12px rgba(242,177,60,.45); --seal-size:18px;
+    --veil:rgba(7,10,28,.82); --shadow:rgba(0,0,0,.5);
+    --display:"Lora", Georgia, serif; --display-style:italic; --display-weight:600; --mark-size:19px;
+    --card-font:"Lora", Georgia, serif; --card-weight:700; --radius:12px;
+    --truth:#f2b13c; --truth-ink:#2a1d06; --dare:#e0523c; --dare-ink:#fff1e4;
+    color-scheme:dark;
+  }
+  /* the full moon, low in the sky, only on this skin */
+  :root[data-skin="trungthu"] body{
+    background-image:
+      radial-gradient(circle 66px at 86% 15%, #fff6d8 0 40px, rgba(255,240,196,.42) 42px, rgba(255,236,178,.12) 70px, transparent 112px),
+      radial-gradient(120% 70% at 50% 0%, var(--bg-glow) 0%, var(--bg) 62%);
+  }
+  /* đèn lồng: a string of lanterns over the top edge, and sky lanterns drifting up behind */
+  .festive{display:none}
+  :root[data-skin="trungthu"] .festive{
+    display:block;position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1;
+  }
+  :root[data-skin="trungthu"] .screen{padding-block:70px 28px}
+  .lantern{position:absolute;top:-6px;left:var(--x);width:var(--w);
+    transform-origin:50% -24px;animation:sway var(--d) ease-in-out var(--t) infinite}
+  .lantern span{display:block}
+  .lantern .cord{width:1px;height:20px;margin:0 auto;background:linear-gradient(rgba(242,177,60,.55),rgba(242,177,60,.3))}
+  .lantern .bulb{position:relative;height:calc(var(--w) * 1.06);border-radius:50% / 46%;
+    background:
+      repeating-linear-gradient(90deg, rgba(90,10,0,.15) 0 1px, transparent 1px 6px),
+      linear-gradient(180deg,#ff8a5c 0%,#e0523c 48%,#ad3520 100%);
+    box-shadow:0 0 22px rgba(224,82,60,.45), inset 0 -5px 10px rgba(70,8,0,.28), inset 0 5px 9px rgba(255,214,150,.3)}
+  .lantern .bulb::before,.lantern .bulb::after{content:"";position:absolute;left:26%;width:48%;height:4px;border-radius:2px;background:#f2b13c}
+  .lantern .bulb::before{top:-2px}
+  .lantern .bulb::after{bottom:-2px}
+  .lantern .tassel{width:2px;height:15px;margin:2px auto 0;border-radius:1px;transform-origin:50% 0;
+    background:linear-gradient(#f2b13c,rgba(242,177,60,.12));
+    animation:sway calc(var(--d) * .75) ease-in-out var(--t) infinite}
+  @keyframes sway{0%,100%{transform:rotate(-4.5deg)}50%{transform:rotate(4.5deg)}}
+  /* đèn trời: small paper lanterns let go from below, drifting off the top */
+  .sky{position:absolute;bottom:-60px;left:var(--x);width:var(--w);height:calc(var(--w) * 1.3);
+    border-radius:50% 50% 44% 44% / 58% 58% 42% 42%;opacity:0;
+    background:linear-gradient(180deg,#fff0c9,rgba(245,173,74,.75));
+    box-shadow:0 0 18px rgba(255,196,96,.75);
+    animation:rise var(--d) linear var(--t) infinite}
+  @keyframes rise{
+    0%{transform:translate(0,0);opacity:0}
+    10%{opacity:.95}
+    85%{opacity:.75}
+    100%{transform:translate(28px,-115vh);opacity:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .lantern,.lantern .tassel,.sky{animation:none}
+  }
   :root[data-skin="saigon"]{
     --bg:#0b1322; --bg-glow:#1c2c4d; --surface:#121d34; --field:#0f192d; --placeholder:#5b6a88;
     --text:#e8eefb; --muted:#8e9fbf;
@@ -98,10 +161,13 @@
     --veil:rgba(5,9,18,.82); --shadow:rgba(0,0,0,.55);
     --display:"Bungee", "Arial Black", Impact, sans-serif; --display-style:normal; --display-weight:400; --mark-size:14px;
     --radius:12px;
+    --truth:#2ec4b6; --truth-ink:#062320; --dare:#ff5c93; --dare-ink:#0b1322;
     color-scheme:dark;
   }
 
   :root{
+    /* thật hay thách: each skin picks two colours that read apart across a table */
+    --truth:var(--c1); --truth-ink:var(--c1-ink); --dare:var(--accent); --dare-ink:var(--on-accent);
     --back:
       repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 7px, rgba(0,0,0,.05) 7px 14px),
       radial-gradient(circle at 50% 50%, rgba(0,0,0,.07) 1.4px, transparent 1.6px) 0 0/16px 16px;
@@ -167,17 +233,18 @@
   .pile:active{transform:scale(.98)}
   .pile .ghost,.pile .card{position:absolute;inset:0}
   .pile .card{cursor:pointer}
-  .pile-truth .back-face,.pile-truth .ghost{background:var(--c1)}
-  .pile-dare .back-face,.pile-dare .ghost{background:var(--accent)}
+  .pile-truth .back-face,.pile-truth .ghost{background:var(--truth)}
+  .pile-dare .back-face,.pile-dare .ghost{background:var(--dare)}
   .pile-truth .back-face::before{border-color:rgba(34,29,23,.4)}
   .pile-dare .back-face::before{border-color:rgba(255,244,226,.5)}
   .pile-word{text-align:center}
   .pile-word .w{font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight);font-size:30px;line-height:1.05}
   .pile-word .s{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.75;margin-top:4px}
-  .pile-truth .pile-word,.pile-truth .pile-n{color:var(--c1-ink)}
-  .pile-dare .pile-word,.pile-dare .pile-n{color:var(--on-accent)}
+  .pile-truth .pile-word,.pile-truth .pile-n{color:var(--truth-ink)}
+  .pile-dare .pile-word,.pile-dare .pile-n{color:var(--dare-ink)}
   .pile-n{position:absolute;bottom:13px;left:0;right:0;text-align:center;font-size:11px;opacity:.65;font-variant-numeric:tabular-nums}
-  .front-face.front-dare{background:var(--accent);color:var(--on-accent)}
+  .front-face.front-truth{background:var(--truth);color:var(--truth-ink)}
+  .front-face.front-dare{background:var(--dare);color:var(--dare-ink)}
   .tag{padding:2px 9px;border-radius:999px;font-weight:700;letter-spacing:.04em;background:rgba(34,29,23,.12)}
   .front-dare .tag{background:rgba(255,255,255,.22)}
   .deck[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -338,9 +405,21 @@
   .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 </style>
-<script>try{var sk=localStorage.getItem("nltq-skin")||"dongho";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="dongho"}</script>
+<script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"trungthu";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="trungthu"}</script>
 </head>
 <body>
+
+<div class="festive" aria-hidden="true">
+  <span class="lantern" style="--x:6%;--w:30px;--d:6.4s;--t:-.2s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
+  <span class="lantern" style="--x:21%;--w:24px;--d:7.6s;--t:-1.9s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
+  <span class="lantern" style="--x:39%;--w:33px;--d:6.9s;--t:-3.4s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
+  <span class="lantern" style="--x:57%;--w:26px;--d:8.2s;--t:-.9s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
+  <span class="lantern" style="--x:74%;--w:31px;--d:7.1s;--t:-2.6s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
+  <span class="lantern" style="--x:90%;--w:23px;--d:6.6s;--t:-4.1s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
+  <span class="sky" style="--x:14%;--w:11px;--d:34s;--t:-4s"></span>
+  <span class="sky" style="--x:48%;--w:8px;--d:44s;--t:-21s"></span>
+  <span class="sky" style="--x:81%;--w:13px;--d:39s;--t:-31s"></span>
+</div>
 
 <div class="app" id="app">
 
@@ -1186,7 +1265,7 @@ function renderTod(){
   if(!card){ $("tod-note").textContent = "Chạm vào chồng bài bạn chọn"; return; }
   const deck = TOD.find(x => x.id === card.topic), dare = card.kind === "dare";
   $("tod-front").classList.toggle("front-dare", dare);
-  $("tod-front").dataset.c = "0";
+  $("tod-front").classList.toggle("front-truth", !dare);
   $("tod-topic").textContent = deck ? deck.name : "";
   $("tod-tag").textContent = dare ? "Thách" : "Thật";
   $("tod-q").textContent = card.text;
@@ -1313,13 +1392,17 @@ function show(screen){
 
 /* ============ THEMES ============ */
 const SKINS = [
+  {id:"trungthu", name:"Trung Thu", note:"Trăng rằm, đèn lồng, đêm tháng tám",  bg:"#141a38", sw:["#f2b13c","#e0523c","#2f7d68"]},
   {id:"dongho", name:"Đông Hồ",     note:"Giấy điệp, màu khắc gỗ",             bg:"#efe6d2", sw:["#dfa73c","#b0392a","#2d5a4b"]},
   {id:"sonmai", name:"Sơn Mài",     note:"Đen then, thếp vàng, khảm vỏ trứng", bg:"#15100e", sw:["#b3301e","#6e1a14","#1f1714"]},
   {id:"tet",    name:"Tết",         note:"Lì xì đỏ, mai vàng, đào hồng",        bg:"#6a0e15", sw:["#ffc93c","#f59ab0","#3a0a0f"]},
   {id:"saigon", name:"Sài Gòn Đêm", note:"Biển hiệu neon, phố khuya",           bg:"#0b1322", sw:["#ff5c93","#2ec4b6","#18223d"]}
 ];
-const SKIN_KEY = "nltq-skin";
-function currentSkin(){ try{ const s = localStorage.getItem(SKIN_KEY); return SKINS.some(k => k.id === s) ? s : "dongho"; }catch(e){ return "dongho"; } }
+const SKIN_KEY = "nltq-skin", PICK_KEY = "nltq-pick", DEFAULT_SKIN = "trungthu";
+function currentSkin(){ try{
+  if(!localStorage.getItem(PICK_KEY)) return DEFAULT_SKIN;   // nobody picked yet, so the season decides
+  const s = localStorage.getItem(SKIN_KEY); return SKINS.some(k => k.id === s) ? s : DEFAULT_SKIN;
+}catch(e){ return DEFAULT_SKIN; } }
 function applySkin(id){
   const root = document.documentElement;
   if(id === "sonmai") delete root.dataset.skin; else root.dataset.skin = id;
@@ -1337,7 +1420,9 @@ function renderSkins(){
     <span><b>${s.name}</b></span></button>`).join("");
 }
 $("skins").addEventListener("click", e => {
-  const b = e.target.closest(".skin"); if(b) applySkin(b.dataset.skin);
+  const b = e.target.closest(".skin"); if(!b) return;
+  try{ localStorage.setItem(PICK_KEY, "1"); }catch(e){}       // their own pick outlives the seasonal default
+  applySkin(b.dataset.skin);
 });
 
 /* ============ CARD BACKS — one generative motif per theme ============ */

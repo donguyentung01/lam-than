@@ -6,7 +6,7 @@ S=src/app.html
 URL=https://lamthan.com
 DESC="Bộ câu hỏi để hiểu nhau hơn, cho những buổi cà phê, họp lớp, team building và những cuộc trò chuyện sâu."
 {
-  printf '<!doctype html>\n<html lang="vi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="theme-color" content="#efe6d2">\n'
+  printf '<!doctype html>\n<html lang="vi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="theme-color" content="#141a38">\n'
   printf '<meta name="description" content="%s">\n' "$DESC"
   printf '<link rel="icon" href="/icon.svg" type="image/svg+xml">\n<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n<link rel="manifest" href="/site.webmanifest">\n<meta name="apple-mobile-web-app-title" content="làm thân">\n'
   printf '<meta property="og:type" content="website">\n<meta property="og:site_name" content="làm thân">\n<meta property="og:title" content="làm thân · càng hỏi, càng thân">\n<meta property="og:description" content="%s">\n<meta property="og:url" content="%s/">\n<meta property="og:image" content="%s/og.png">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:locale" content="vi_VN">\n' "$DESC" "$URL" "$URL"
