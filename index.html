@@ -1444,29 +1444,54 @@ async function fetchTally(){
 function startTally(){
   clearInterval(tally.poll);
   fetchTally();
-  tally.poll = setInterval(fetchTally, 3000);          // the edge cache absorbs this
+  tally.poll = setInterval(fetchTally, 10000);         // matches the edge cache, so most polls never reach the database
 }
 function stopTally(){ clearInterval(tally.poll); tally.poll = null; }
 document.addEventListener("visibilitychange", () => { if(!document.hidden && tally.poll) fetchTally(); });
+
+/* Flips are buffered and sent a handful at a time. The number on screen still moves on
+   every card, because that is done here, not by the answer coming back. */
+const pending = {count:0, topics:{}, timer:null};
+/* The timer waits for the table to go quiet rather than counting from the first card: at the
+   pace people actually play, a fixed window would fire before a batch ever filled up. */
+const FLUSH_AT = 10, FLUSH_IDLE = 600000;      // ten minutes: the backstop, not the usual way out
+
+function flushCount(){
+  clearTimeout(pending.timer); pending.timer = null;
+  if(!pending.count) return;
+  const items = Object.entries(pending.topics).map(([topic, n]) => ({topic, n}));
+  const loose = pending.count - items.reduce((sum, it) => sum + it.n, 0);   // cards with no topic
+  if(loose > 0) items.push({n: loose});
+  pending.count = 0; pending.topics = {};
+  try{
+    fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({items}), keepalive:true})
+      .then(r => r.json()).then(d => { if(d && d.enabled) setTally(d.total); })
+      .catch(() => {});
+  }catch(e){}
+}
 
 function countCard(topic){
   if(tally.seen) setTally(tally.total + 1);            // our own card rolls over at once
   // only count up from a real figure: before the first poll, 0 is "unknown", not "never played"
   if(topic && tally.topicsSeen) setTopics({[topic]: (tally.topics[topic] || 0) + 1});
-  try{
-    fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({n:1, topic}), keepalive:true})
-      .then(r => r.json()).then(d => { if(d && d.enabled) setTally(d.total); })
-      .catch(() => {});
-  }catch(e){}
+  pending.count++;
+  if(topic) pending.topics[topic] = (pending.topics[topic] || 0) + 1;
+  if(pending.count >= FLUSH_AT) return flushCount();
+  clearTimeout(pending.timer);                         // still playing, so hold on to them
+  pending.timer = setTimeout(flushCount, FLUSH_IDLE);
 }
+
+// whatever is still buffered when the page goes away is sent with the page's last breath
+addEventListener("pagehide", flushCount);
+addEventListener("visibilitychange", () => { if(document.hidden) flushCount(); });
 
 /* ============ ROUTER ============ */
 function show(screen){
   state.screen = screen;
   ["home","decks","play","tod"].forEach(s => $("s-"+s).hidden = s !== screen);
   if(screen === "home"){ renderHome(); startTally(); }
-  else if(screen === "decks"){ renderDecks(); startTally(); }
+  else if(screen === "decks"){ renderDecks(); stopTally(); }   // the deck counts keep the figures they already have
   else stopTally();
   if(screen === "play") renderPlay();
   if(screen === "tod") renderTod();
