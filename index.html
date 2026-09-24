@@ -420,7 +420,7 @@
   .pw-msg{color:var(--accent);font-size:14px;margin:0 0 12px}
   .pw-mine{color:var(--muted);font-size:13px;margin:0 0 12px}
   .pw-qr-wrap{display:flex;justify-content:center}
-  #pw-qr{display:block;width:220px;height:220px;margin:4px auto 12px;border-radius:12px;background:#fff}
+  #pw-qr{display:block;width:100%;max-width:260px;height:auto;aspect-ratio:1;margin:4px auto 12px;border-radius:12px;background:#fff}
   .pw-memo{text-align:center;font-size:15px;margin:0 0 12px;color:var(--muted)}
   /* the memo may be retyped into a banking app, so it escapes the all-lowercase rule */
   .pw-memo b{font-family:var(--card-font, inherit);letter-spacing:.08em;font-size:19px;color:var(--accent);
@@ -621,7 +621,7 @@
       <button class="btn btn-ghost" id="pw-close">Quay lại</button>
     </div>
     <div id="pw-pay" hidden>
-      <img id="pw-qr" alt="Mã QR chuyển khoản" width="220" height="220">
+      <img id="pw-qr" alt="Mã QR chuyển khoản" width="260" height="260">
       <p class="pw-mine">Quét bằng app ngân hàng. Số tiền và nội dung đã điền sẵn, giữ nguyên nội dung nhé.</p>
       <div class="pw-memo">Nội dung: <b id="pw-note"></b></div>
       <p class="pw-msg" id="pw-wait">Đang chờ chuyển khoản…</p>

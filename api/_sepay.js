@@ -34,7 +34,9 @@ export function memosIn(content) {
   return [...new Set(found)];
 }
 
-/* The VietQR the buyer scans. SePay renders it, so there is no image to generate or host. */
+/* The VietQR the buyer scans. SePay renders it, so there is no image to generate or host.
+   The compact template carries the napas 247, bank and VietQR marks, which is what tells a
+   stranger this is an ordinary bank transfer rather than something we made up. */
 export const qrUrl = (memo, amount) =>
   `https://qr.sepay.vn/img?acc=${encodeURIComponent(ACCOUNT)}&bank=${encodeURIComponent(BANK)}` +
-  `&amount=${amount}&des=${encodeURIComponent(memo)}`;
+  `&amount=${amount}&des=${encodeURIComponent(memo)}&template=compact`;

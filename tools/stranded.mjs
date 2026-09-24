@@ -52,4 +52,4 @@ if (arg("--code") && !existing) { console.error("that code is not the right shap
 const pass = await grant(deck, existing, { note: "granted by hand" });
 console.log(`${where}: ${deck} is open on ${pass.code}`);
 console.log(`decks now: ${Object.keys(pass.decks).join(", ")}`);
-console.log(`share:     https://lamthan.com/#k=${pass.code}`);
+console.log(`share:     https://${PROD ? "lamthan.com" : "test.lamthan.com"}/#k=${pass.code}`);
