@@ -975,8 +975,45 @@ const BANK_LINE = "SHB · 0822446003";
    A bearer code, no account. Whoever holds it owns the decks on it, each for 24 hours,
    on up to six devices. The device id only counts slots: on its own it unlocks nothing. */
 const PRICE = 5000;
-const K_CODE = "nltq-key", K_DEV = "nltq-did", K_ORDER = "nltq-order";
+const K_CODE = "nltq-key", K_DEV = "nltq-did", K_ORDER = "nltq-order", K_KEYS = "nltq-keys";
+const MAX_KEYS = 5;                    // a night of scanning friends' links, not a collection
 const pass = { code: "", device: "", until: {}, fetched: false };
+
+/* Codes a phone can hold at once.
+
+   One is yours, the rest were scanned from friends, and they are kept apart because they
+   are not interchangeable: a purchase must land on your own code, never on somebody
+   else's, or your 5.000đ would widen what their code opens.
+
+   Holding a list rather than one slot is what makes a stray link harmless. A code that the
+   server does not recognise is simply dropped on the next look, so a stranger posting
+   lamthan.com/#k=LT-AAAA-AAAA costs a passer-by nothing. With a single slot it cost them
+   the deck they had paid for. */
+function keyList(){
+  let list = [];
+  try{ list = JSON.parse(stored(K_KEYS) || "[]"); }catch(e){ list = []; }
+  if(!Array.isArray(list)) list = [];
+  const mine = tidyCode(stored(K_CODE));
+  if(mine && !list.some(e => e && e.c === mine)) list.push({c: mine, u: 0});   // carried over
+  const now = Date.now();
+  return list
+    .filter(e => e && tidyCode(e.c) && (!e.u || e.u > now))   // expired ones need no request
+    .slice(0, MAX_KEYS);
+}
+function saveKeys(list){ store(K_KEYS, JSON.stringify(list.slice(0, MAX_KEYS))); }
+
+/* Newest first, so the most recently used code is the one shown and shared. */
+function rememberKey(code, until = 0){
+  const clean = tidyCode(code); if(!clean) return;
+  const list = keyList().filter(e => e.c !== clean);
+  list.unshift({c: clean, u: until});
+  saveKeys(list);
+}
+function forgetKey(code){
+  saveKeys(keyList().filter(e => e.c !== code));
+  if(tidyCode(stored(K_CODE)) === code) store(K_CODE, null);
+}
+const myCode = () => tidyCode(stored(K_CODE));        // where a purchase accumulates
 
 const tidyCode = raw => {
   const t = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -994,10 +1031,11 @@ function initPass(){
   // a code arriving by QR rides in the fragment, which browsers never send to a server
   const m = /[#&]k=([A-Za-z0-9-]+)/.exec(location.hash || "");
   if(m && tidyCode(m[1])){
-    store(K_CODE, tidyCode(m[1]));
+    rememberKey(m[1]);                  // added, never substituted: nothing of theirs is lost
     history.replaceState(null, "", location.pathname + location.search);
   }
-  pass.code = tidyCode(stored(K_CODE));
+  const list = keyList();
+  pass.code = myCode() || (list[0] ? list[0].c : "");
 }
 const owns = id => (pass.until[id] || 0) > Date.now();
 const locked = t => !owns(t.id) && loadedCount([t]) < deckSize(t);
@@ -1010,27 +1048,61 @@ function leftOver(id){                                  // "còn 6 tiếng" for 
 }
 
 /* Pull down every paid card this code is entitled to and fold it into the decks. */
-async function loadPaid(){
-  if(!pass.code || !pass.device) return false;
+/* Ask each code what it opens, and fold every answer into the decks.
+
+   Codes that come back unrecognised or expired are dropped here, which is the whole reason
+   a list is safe to keep: it prunes itself on use rather than growing. In practice it holds
+   one entry, because a pass lives 24 hours and expired ones are discarded before any
+   request is made. */
+function foldIn(d){
+  for(const [id, until] of Object.entries(d.until || {}))
+    if(until > (pass.until[id] || 0)) pass.until[id] = until;
+  for(const [id, cards] of Object.entries(d.topics || {})){
+    const t = TOPICS.find(x => x.id === id);
+    if(t && t.cards.length < deckSize(t)) t.cards = t.cards.concat(cards);
+  }
+  for(const [id, deck] of Object.entries(d.tod || {})){
+    const t = TOD.find(x => x.id === id);
+    if(!t) continue;
+    if(t.truths.length < (t.nt ?? 0)) t.truths = t.truths.concat(deck.truths || []);
+    if(t.dares.length < (t.nd ?? 0)) t.dares = t.dares.concat(deck.dares || []);
+  }
+}
+
+async function askFor(code){
   try{
-    const r = await fetch(`/api/cards?k=${encodeURIComponent(pass.code)}&d=${encodeURIComponent(pass.device)}`);
-    const d = await r.json();
-    if(!d.ok){ pass.until = {}; return d; }
-    pass.until = d.until || {};
-    if(d.code) pass.code = d.code;
-    for(const [id, cards] of Object.entries(d.topics || {})){
-      const t = TOPICS.find(x => x.id === id);
-      if(t && t.cards.length < deckSize(t)) t.cards = t.cards.concat(cards);
-    }
-    for(const [id, deck] of Object.entries(d.tod || {})){
-      const t = TOD.find(x => x.id === id);
-      if(!t) continue;
-      if(t.truths.length < (t.nt ?? 0)) t.truths = t.truths.concat(deck.truths || []);
-      if(t.dares.length < (t.nd ?? 0)) t.dares = t.dares.concat(deck.dares || []);
-    }
-    pass.fetched = true;
-    return d;
+    const r = await fetch(`/api/cards?k=${encodeURIComponent(code)}&d=${encodeURIComponent(pass.device)}`);
+    return await r.json();
   }catch(e){ return {ok:false, reason:"offline"}; }
+}
+
+async function loadPaid(code){
+  if(!pass.device) return false;
+  // asking about one code in particular: redeeming it, or checking it before adopting
+  if(code){
+    const d = await askFor(code);
+    if(d.ok){ foldIn(d); pass.fetched = true; }
+    return d;
+  }
+
+  const list = keyList();
+  if(!list.length) return false;
+  pass.until = {};
+  let best = false;
+  for(const entry of list){
+    const d = await askFor(entry.c);
+    if(d.reason === "offline") return d;             // no network: keep every code, try later
+    if(!d.ok){
+      if(d.reason === "invalid" || d.reason === "expired") forgetKey(entry.c);
+      continue;                                      // too_many or too_fast: keep it, just no cards
+    }
+    foldIn(d);
+    rememberKey(d.code || entry.c, Math.max(0, ...Object.values(d.until || {})));
+    if(!best) best = d;
+  }
+  pass.fetched = true;
+  if(best && !myCode()) pass.code = best.code || pass.code;
+  return best || {ok:false, reason:"invalid"};
 }
 
 /* ============ STATE ============ */
@@ -1154,12 +1226,18 @@ function resumeAfterUnlock(){
   else { startPicked(); }
 }
 
+/* Redeeming a code somebody gave you. It is checked before it is written down, and it is
+   added to what you already hold rather than put in place of it. */
 async function useCode(code){
   const clean = tidyCode(code);
   if(!clean) return msgGate(WHY.invalid), false;
-  pass.code = clean; pass.fetched = false;
-  const d = await loadPaid();
-  if(d && d.ok){ store(K_CODE, pass.code); resumeAfterUnlock(); return true; }
+  const d = await loadPaid(clean);
+  if(d && d.ok){
+    rememberKey(d.code || clean, Math.max(0, ...Object.values(d.until || {})));
+    if(!myCode()) pass.code = d.code || clean;
+    resumeAfterUnlock();
+    return true;
+  }
   msgGate(WHY[d && d.reason] || WHY.invalid);
   return false;
 }
@@ -1170,7 +1248,7 @@ $("pw-decks").addEventListener("click", async e => {
   b.disabled = true; msgGate("Đang tạo mã…");
   try{
     const r = await fetch("/api/order", {method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({deck, code: pass.code})});
+      body: JSON.stringify({deck, code: myCode()})});   // never a friend's, or their code would grow
     const d = await r.json();
     if(!d.ok) throw new Error(d.reason || "no");
     if(d.paid){                                        // the stub on test, before the bank is live
@@ -1199,7 +1277,10 @@ function showPay(order, deck){
 
 /* Adopt a code and pull down what it opens. */
 async function takeCode(code){
-  pass.code = code; store(K_CODE, code); pass.fetched = false;
+  const clean = tidyCode(code); if(!clean) return;
+  store(K_CODE, clean);                  // bought, so this is the one purchases pile onto
+  rememberKey(clean);
+  pass.code = clean; pass.fetched = false;
   await loadPaid();
   renderDecks();
 }
@@ -1374,7 +1455,7 @@ function dealRest(){                                     // refill from the card
   state.total = cardCount(picked());
 }
 async function startGame(){
-  if(pass.code && !pass.fetched) await loadPaid();
+  if(!pass.fetched && keyList().length) await loadPaid();
   deal(); state.round = 1; state.autoFlip = true;   // cards open face up, no tap needed
   if(!state.pile.length) return openGate();         // every chosen deck is still locked
   drawCard(); show("play");
@@ -1496,7 +1577,7 @@ function todFill(kind){                                // refill one pile from t
   state.tod[kind] = shuffle(tpicked().flatMap(t => t[key].map(text => ({text, topic:t.id, kind}))));
 }
 async function startTod(){
-  if(pass.code && !pass.fetched) await loadPaid();
+  if(!pass.fetched && keyList().length) await loadPaid();
   if(!loadedCount(tpicked())) return openGate("decks");   // nothing free to show in these decks
   todFill("truth"); todFill("dare");
   const t = state.tod;
@@ -1801,7 +1882,7 @@ function start(saved){
   if(state.screen === "play" && !state.card) state.screen = "home";
   show(state.screen);
   // a pass in hand: fold the paid cards in and redraw, so the grid shows what is already open
-  if(pass.code) loadPaid().then(() => { if(state.screen === "decks") renderDecks(); });
+  if(keyList().length) loadPaid().then(() => { if(state.screen === "decks") renderDecks(); });
   settlePending();
 }
 window.claude?.hot?.snapshot?.(() => state);
