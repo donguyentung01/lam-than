@@ -12,7 +12,7 @@
    pass is minted only by the webhook, from money the bank actually received; nothing a
    browser sends can mint one. */
 
-import { redis, configured, NS } from "./_redis.js";
+import { redis, configured, NS, caller, overLimit } from "./_redis.js";
 import { grant, PRICE, newMemo } from "./_pass.js";
 import { sepayReady, qrUrl } from "./_sepay.js";
 import { BANK } from "./_bank.js";
@@ -22,6 +22,13 @@ const orderKey = memo => `${NS}order:${memo}`;
 const TTL = "7200";                                   // two hours to finish paying
 
 const knownDeck = id => id in BANK.topics || id in BANK.tod;
+
+/* Two buckets, because the two verbs cost different things and are used at different rates.
+   Creating an order writes a key, and nobody honestly starts ten purchases in ninety
+   seconds. Polling only reads, and a payer with the QR open makes thirty of them in that
+   time, so the ceiling has to leave room for several people paying off one wifi at once. */
+const MAKE = { limit: 10, seconds: 90, bucket: "rl:order" };
+const POLL = { limit: 150, seconds: 90, bucket: "rl:poll" };
 
 export async function readOrder(memo) {
   const raw = await redis("GET", orderKey(memo));
@@ -46,6 +53,10 @@ export default async function handler(req, res) {
   if (!configured) return res.status(503).json({ ok: false, reason: "unconfigured" });
 
   if (req.method === "GET") {
+    if (await overLimit(caller(req), POLL)) {
+      res.setHeader("Retry-After", String(POLL.seconds));
+      return res.status(429).json({ ok: false, reason: "too_fast" });
+    }
     const o = String((req.query || {}).o || "").toUpperCase();
     if (!/^LT[A-Z0-9]{6}$/.test(o)) return res.status(400).json({ ok: false, reason: "bad_order" });
     const order = await readOrder(o);
@@ -56,6 +67,11 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== "POST") return res.status(405).json({ ok: false, reason: "method" });
+
+  if (await overLimit(caller(req), MAKE)) {           // before a key is written, not after
+    res.setHeader("Retry-After", String(MAKE.seconds));
+    return res.status(429).json({ ok: false, reason: "too_fast" });
+  }
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
   const deck = String(body.deck || "");
