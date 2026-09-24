@@ -8,7 +8,12 @@
 
 import { BANK } from "./_bank.js";
 import { check } from "./_pass.js";
-import { configured } from "./_redis.js";
+import { configured, caller, overLimit } from "./_redis.js";
+
+/* A table of six on one wifi shares an address, and each of them asks once or twice a
+   session, so the ceiling sits well above honest use. It exists to stop a loop, not to
+   ration anybody. */
+const LIMIT = 60, WINDOW = 90;
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");        // never let a CDN hold paid content
@@ -17,6 +22,12 @@ export default async function handler(req, res) {
 
   const { k = "", d = "" } = req.query || {};
   try {
+    // this comes first: a wrong code costs a Redis read too, so refusing late still pays
+    if (await overLimit(caller(req), { limit: LIMIT, seconds: WINDOW, bucket: "rl:cards" })) {
+      res.setHeader("Retry-After", String(WINDOW));
+      return res.status(429).json({ ok: false, reason: "too_fast" });
+    }
+
     const seat = await check(k, String(d).slice(0, 64));
     if (!seat.ok) return res.status(403).json(seat);
 
