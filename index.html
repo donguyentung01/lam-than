@@ -907,7 +907,7 @@ $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
    Every deck is 5.000đ for 24 hours. Four decks show a few cards first; the rest are dark.
    Payment is stubbed for now: the button mints a pass straight from /api/pass, which only
    answers outside production. The real bank watcher replaces it later. */
-let gateFrom = "decks", payFor = "", watchTimer = null, watchUntil = 0;
+let gateFrom = "decks", payFor = "", watchTimer = null, watchUntil = 0, watchMemo = "";
 const WHY = {
   invalid: "Mã không đúng, hoặc đã hết hạn.",
   expired: "Mã đã hết hạn rồi.",
@@ -1015,11 +1015,20 @@ async function takeCode(code){
    is cheap here because it only runs while somebody is actually staring at a QR code. */
 const WATCH_EVERY = 3000, WATCH_FOR = 600000;      // every three seconds, for ten minutes
 
-function stopWatch(){ clearTimeout(watchTimer); watchTimer = null; }
+function stopWatch(){ clearTimeout(watchTimer); watchTimer = null; watchMemo = ""; }
+
+/* Paying means leaving for the banking app, which suspends the page's timers and can
+   discard the tab outright. Coming back should check at once rather than waiting out a
+   timer that may never fire again. */
+addEventListener("visibilitychange", () => {
+  if(!document.hidden && watchMemo && !$("pw-pay").hidden) watchOrder(watchMemo);
+});
 
 function watchOrder(memo){
+  const until = watchUntil;
   stopWatch();
-  watchUntil = Date.now() + WATCH_FOR;
+  watchMemo = memo;
+  watchUntil = until > Date.now() ? until : Date.now() + WATCH_FOR;   // returning does not restart the clock
   const tick = async () => {
     let d = {};
     try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(memo)}`)).json(); }catch(e){}
@@ -1039,7 +1048,7 @@ function watchOrder(memo){
     }
     watchTimer = setTimeout(tick, WATCH_EVERY);
   };
-  watchTimer = setTimeout(tick, WATCH_EVERY);
+  watchTimer = setTimeout(tick, 200);       // ask straight away, then settle into the interval
 }
 
 /* Reopening the page after paying: ask once whether the order landed while we were away. */
