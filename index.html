@@ -419,6 +419,10 @@
   .pw-code input::placeholder{color:var(--placeholder);text-transform:none}
   .pw-msg{color:var(--accent);font-size:14px;margin:0 0 12px}
   .pw-mine{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .pw-qr-wrap{display:flex;justify-content:center}
+  #pw-qr{display:block;width:220px;height:220px;margin:4px auto 12px;border-radius:12px;background:#fff}
+  .pw-memo{text-align:center;font-size:15px;margin:0 0 12px;color:var(--muted)}
+  .pw-memo b{font-family:var(--card-font, inherit);letter-spacing:.08em;font-size:19px;color:var(--accent)}
   .pw-big{font-family:var(--card-font, inherit);font-weight:700;font-size:30px;letter-spacing:.06em;color:var(--accent);
     text-align:center;padding:16px 8px;margin:4px 0 12px;border:1px dashed var(--line-strong);border-radius:12px;text-transform:none !important}
 </style>
@@ -613,6 +617,13 @@
       <p class="pw-msg" id="pw-msg" hidden></p>
       <p class="pw-mine" id="pw-mine" hidden></p>
       <button class="btn btn-ghost" id="pw-close">Quay lại</button>
+    </div>
+    <div id="pw-pay" hidden>
+      <img id="pw-qr" alt="Mã QR chuyển khoản" width="220" height="220">
+      <p class="pw-mine">Quét bằng app ngân hàng. Số tiền và nội dung đã điền sẵn, giữ nguyên nội dung nhé.</p>
+      <div class="pw-memo">Nội dung: <b id="pw-note"></b></div>
+      <p class="pw-msg" id="pw-wait">Đang chờ chuyển khoản…</p>
+      <button class="btn btn-ghost" id="pw-cancel">Quay lại</button>
     </div>
     <div id="pw-done" hidden>
       <div class="pw-big" id="pw-code"></div>
@@ -894,7 +905,7 @@ $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
    Every deck is 5.000đ for 24 hours. Four decks show a few cards first; the rest are dark.
    Payment is stubbed for now: the button mints a pass straight from /api/pass, which only
    answers outside production. The real bank watcher replaces it later. */
-let gateFrom = "decks";
+let gateFrom = "decks", payFor = "", watchTimer = null, watchUntil = 0;
 const WHY = {
   invalid: "Mã không đúng, hoặc đã hết hạn.",
   expired: "Mã đã hết hạn rồi.",
@@ -906,7 +917,7 @@ const WHY = {
 function openGate(from){
   gateFrom = from || (state.screen === "tod" ? "tod" : state.screen === "play" ? "play" : "decks");
   renderGate();
-  $("pw-buy").hidden = false; $("pw-done").hidden = true;
+  showFace("buy");
   $("paywall").hidden = false;
   $("pw-input").value = "";
 }
@@ -915,9 +926,15 @@ function showUnlocked(name){
   $("pw-title").textContent = name ? `Đã mở ${name.toLowerCase()}` : "Đã mở khoá";
   $("pw-sub").textContent = "Bộ này mở trong 24 giờ.";
   $("pw-code").textContent = pass.code;
-  $("pw-buy").hidden = true; $("pw-done").hidden = false;
+  showFace("done");
 }
-function closeGate(){ $("paywall").hidden = true; msgGate(""); }
+
+/* The sheet has three faces and only ever shows one: pick a deck, pay, then the code. */
+function showFace(which){
+  for(const f of ["buy", "pay", "done"]) $("pw-" + f).hidden = f !== which;
+  if(which !== "pay") stopWatch();
+}
+function closeGate(){ stopWatch(); $("paywall").hidden = true; msgGate(""); }
 function msgGate(text){ const el = $("pw-msg"); el.textContent = text; el.hidden = !text; }
 
 function renderGate(){
@@ -955,20 +972,35 @@ async function useCode(code){
 $("pw-decks").addEventListener("click", async e => {
   const b = e.target.closest("[data-buy]"); if(!b) return;
   const deck = b.dataset.buy;
-  b.disabled = true; msgGate("Đang mở trang thanh toán…");
+  b.disabled = true; msgGate("Đang tạo mã…");
   try{
     const r = await fetch("/api/order", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({deck, code: pass.code})});
     const d = await r.json();
     if(!d.ok) throw new Error(d.reason || "no");
-    if(d.paid){                                        // the stub on test, before payOS is live
+    if(d.paid){                                        // the stub on test, before the bank is live
       await takeCode(d.code);
       return showUnlocked((decksOf().find(t => t.id === deck) || {}).name);
     }
-    store(K_ORDER, String(d.orderCode));               // so a lost redirect can still be settled
-    location.href = d.checkoutUrl;
-  }catch(err){ msgGate("Chưa mở được trang thanh toán. Thử lại nhé."); b.disabled = false; }
+    msgGate("");
+    store(K_ORDER, d.memo);                            // so closing the page does not lose the order
+    showPay(d, deck);
+  }catch(err){ msgGate("Chưa tạo được mã. Thử lại nhé."); }
+  b.disabled = false;
 });
+
+/* The QR carries the amount and the memo, so the buyer taps scan and confirm and nothing
+   else. The memo is shown as text too, for anyone whose bank app will not scan. */
+function showPay(order, deck){
+  payFor = deck;
+  $("pw-qr").src = order.qr;
+  $("pw-note").textContent = order.memo;
+  $("pw-title").textContent = (decksOf().find(t => t.id === deck) || {}).name || "Mở khoá";
+  $("pw-sub").textContent = `Chuyển ${money(order.amount || PRICE)} là mở ngay.`;
+  $("pw-wait").textContent = "Đang chờ chuyển khoản…";
+  showFace("pay");
+  watchOrder(order.memo);
+}
 
 /* Adopt a code and pull down what it opens. */
 async function takeCode(code){
@@ -977,26 +1009,50 @@ async function takeCode(code){
   renderDecks();
 }
 
-/* Coming back from payOS, or reopening the page after paying: ask whether the order landed.
-   The webhook is usually first, but the server also asks payOS directly, so a webhook that
-   never arrives cannot cost someone their money. */
-async function settlePending(){
-  const fromUrl = new URLSearchParams(location.search).get("o");
-  const o = fromUrl || stored(K_ORDER);
-  if(!o) return;
-  if(fromUrl) history.replaceState(null, "", location.pathname);
-  for(let i = 0; i < 8; i++){
+/* Nothing redirects anywhere, so the only way to learn the money arrived is to ask. Polling
+   is cheap here because it only runs while somebody is actually staring at a QR code. */
+const WATCH_EVERY = 3000, WATCH_FOR = 600000;      // every three seconds, for ten minutes
+
+function stopWatch(){ clearTimeout(watchTimer); watchTimer = null; }
+
+function watchOrder(memo){
+  stopWatch();
+  watchUntil = Date.now() + WATCH_FOR;
+  const tick = async () => {
     let d = {};
-    try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(o)}`)).json(); }catch(e){}
+    try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(memo)}`)).json(); }catch(e){}
     if(d.status === "paid"){
       store(K_ORDER, null);
       await takeCode(d.code);
-      openGate("decks");
-      return showUnlocked();
+      return showUnlocked((decksOf().find(t => t.id === payFor) || {}).name);
     }
-    if(d.reason === "no_order"){ store(K_ORDER, null); return; }   // expired or never existed
-    await new Promise(r => setTimeout(r, 1500));
+    if(d.reason === "no_order"){                   // expired, or never made it to the server
+      store(K_ORDER, null);
+      $("pw-wait").textContent = "Mã này hết hạn rồi, tạo lại nhé.";
+      return stopWatch();
+    }
+    if(Date.now() > watchUntil){
+      $("pw-wait").textContent = "Chưa thấy chuyển khoản. Nếu đã chuyển, nhắn cho tụi mình nhé.";
+      return stopWatch();
+    }
+    watchTimer = setTimeout(tick, WATCH_EVERY);
+  };
+  watchTimer = setTimeout(tick, WATCH_EVERY);
+}
+
+/* Reopening the page after paying: ask once whether the order landed while we were away. */
+async function settlePending(){
+  const memo = stored(K_ORDER);
+  if(!memo) return;
+  let d = {};
+  try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(memo)}`)).json(); }catch(e){ return; }
+  if(d.status === "paid"){
+    store(K_ORDER, null);
+    await takeCode(d.code);
+    openGate("decks");
+    return showUnlocked();
   }
+  if(d.reason === "no_order") store(K_ORDER, null);
 }
 $("pw-redeem").addEventListener("click", () => {
   const v = $("pw-input").value.trim();
@@ -1004,6 +1060,7 @@ $("pw-redeem").addEventListener("click", () => {
 });
 $("pw-input").addEventListener("keydown", e => { if(e.key === "Enter") $("pw-redeem").click(); });
 $("pw-close").addEventListener("click", () => { closeGate(); if(gateFrom !== "decks") show("decks"); });
+$("pw-cancel").addEventListener("click", () => { stopWatch(); renderGate(); showFace("buy"); });
 $("pw-go").addEventListener("click", resumeAfterUnlock);
 
 /* ============ THẬT HAY THÁCH ============ */
