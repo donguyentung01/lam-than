@@ -1159,9 +1159,17 @@ function freshState(){
 }
 
 /* ============ HOME ============ */
-function deckOrder(){                                  // busiest deck first, then the order they were written in
+/* Temporary. The grid leads with whatever is being played most, which is fair once a deck
+   has had a chance and useless before: a deck with no plays sits at the bottom, so nobody
+   plays it. These two are new, so they are held at the top until they can hold it alone.
+   Emptying this list is the whole of the undo. */
+const PINNED = ["hen", "ket"];
+
+function deckOrder(){                                  // pinned, then busiest, then as written
   const list = decksOf();
+  const pin = t => { const i = PINNED.indexOf(t.id); return i < 0 ? PINNED.length : i; };
   return list.slice().sort((a, b) =>
+    pin(a) - pin(b) ||
     (tally.topics[b.id] || 0) - (tally.topics[a.id] || 0) || list.indexOf(a) - list.indexOf(b));
 }
 function renderHome(){                                 // the two ways to play
