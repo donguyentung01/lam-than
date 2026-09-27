@@ -8,12 +8,14 @@
    Storage: Upstash Redis REST (env vars set by the Vercel marketplace integration).
    With no database configured it answers { enabled:false } and the page hides the line. */
 
+import { DECKS } from "./_decks.js";
+
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const KEY = "cards:flipped";
 const BY_TOPIC = "cards:by-topic";     // hash, one field per topic id
-const TOPICS = ["yeu", "triet", "ay", "tien", "nha", "ban", "doi", "viec",
-                "t-yeu", "t-ay"];   // the thật hay thách decks keep their own tallies
+// generated from src/app.html by build.sh, so a new deck is never counted and then discarded
+const TOPICS = DECKS;
 const LIMIT_PER_MINUTE = 300;          // per address, so one page cannot inflate the count much
 const MAX_PER_ITEM = 20;               // a batch is a few cards of one topic, never a spike
 const MAX_PER_CALL = 60;

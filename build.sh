@@ -15,4 +15,5 @@ DESC="Bộ câu hỏi để hiểu nhau hơn, cho những buổi cà phê, họp
   sed -n '1,/^<\/style>/p' "$S"; sed -n '/^<\/style>/{n;p;}' "$S" | head -1; printf '</head>\n<body>\n'
   sed -n '/^<\/style>/,$p' "$S" | tail -n +3; printf '</body>\n</html>\n'
 } > index.html
+node tools/decks.mjs
 echo "built index.html from $S"
