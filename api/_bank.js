@@ -66,7 +66,17 @@ export const BANK = {
    "Có nên yêu người từng ghost mình?",
    "Nếu người yêu không muốn công khai vì “không thích mạng xã hội”, có đáng nghi không?",
    "Có nên chia tay nếu hai người yêu nhau nhưng khác biệt quá nhiều về lối sống?",
-   "Tình yêu lâu năm có nhất thiết phải còn cảm giác “hồi hộp” như lúc mới yêu?"
+   "Tình yêu lâu năm có nhất thiết phải còn cảm giác “hồi hộp” như lúc mới yêu?",
+   "Có nên yêu người chưa từng giới thiệu mình với bạn bè thân?",
+   "Có nên chia tay người yêu vì mẹ họ không ưa mình?",
+   "Có nên chấp nhận người yêu hay đi bia hơi với đồng nghiệp đến khuya?",
+   "Nếu người yêu im lặng khi mẹ người yêu chê mình, có nên bỏ qua?",
+   "Có nên yêu người chưa dám nói với bố mẹ rằng đang có người yêu?",
+   "Có nên ở lại một mối tình ổn định nhưng mình không còn thấy rung động?",
+   "Có nên chia đôi mọi khoản chi khi yêu nhau nghiêm túc?",
+   "Có nên từ chối cơ hội thăng tiến để ở gần người yêu?",
+   "Có nên chia tay nếu người yêu luôn nghe lời mẹ hơn nghe mình?",
+   "Có nên đồng ý mua nhà chung khi chưa cưới?"
   ],
   "hen": [
    "Có một sở thích nào của anh mà người khác nghe xong sẽ thấy hơi bất ngờ không?",
@@ -186,7 +196,13 @@ export const BANK = {
    "Hạnh phúc lâu dài có tồn tại hay con người luôn cần một thứ mới để theo đuổi?",
    "Có nên sống một cuộc đời khiến bố mẹ tự hào nếu bản thân không hạnh phúc?",
    "Nếu được quay lại quá khứ, có nên sửa những sai lầm lớn nhất của mình?",
-   "Có phải ai cũng có một phiên bản bản thân mà họ không muốn người khác biết?"
+   "Có phải ai cũng có một phiên bản bản thân mà họ không muốn người khác biết?",
+   "Có nên tha thứ cho người phản bội nếu họ chưa từng xin lỗi?",
+   "Có nên hy sinh sự nghiệp vì gia đình?",
+   "Có nên ở lại một công việc lương cao nhưng mình thấy mòn mỏi mỗi ngày?",
+   "Có nên đọc tin nhắn của người yêu khi mình thấy bất an?",
+   "Có nên từ chối giúp người thân nếu biết họ cứ ỷ lại?",
+   "Có nên nói thật với bạn thân rằng mình không còn hợp với họ nữa?"
   ],
   "ay": [
    "Có nên dạy giáo dục giới tính từ tiểu học?",
@@ -216,7 +232,8 @@ export const BANK = {
    "“Chuyện ấy” có nên là điều kiện để xác định một mối quan hệ nghiêm túc?",
    "Có nên tiếp tục yêu nếu hai người có chemistry tình cảm nhưng không có chemistry thể xác?",
    "Có nên nói thật nếu ngoại hình cơ thể của người yêu không còn hấp dẫn mình?",
-   "Có nên giữ chuyện “chuyện ấy” hoàn toàn riêng tư với bạn bè?"
+   "Có nên giữ chuyện “chuyện ấy” hoàn toàn riêng tư với bạn bè?",
+   "Có nên yêu người chuyện ấy kém nhưng luôn chăm sóc mình chu đáo?"
   ],
   "tien": [
    "Đi ăn chung thì cứ chia đều cho nhanh?",
@@ -351,7 +368,8 @@ export const BANK = {
    "Có nên unfollow người mình không còn thân?",
    "Có nên góp tiền khi đi ăn chung nếu mình không ăn món đó?",
    "Người khác chen hàng nhưng chỉ vì họ “đang vội”, có nên cho qua?",
-   "Có nên quay video người lạ đang làm điều thú vị để đăng mạng xã hội?"
+   "Có nên quay video người lạ đang làm điều thú vị để đăng mạng xã hội?",
+   "Có nên tắt định vị để không ai biết mình đang ở đâu?"
   ],
   "viec": [
    "Có cần học đại học không?",
@@ -415,7 +433,18 @@ export const BANK = {
     "Bạn từng để ý người yêu nhắn tin với ai đó khác giới chưa?",
     "Số điện thoại của người cũ nào bạn vẫn còn thuộc lòng?",
     "Kỷ niệm nào với người cũ bạn ước mình có thể xoá khỏi đầu?",
-    "Bạn từng ghen với chính bạn thân của người yêu chưa?"
+    "Bạn từng ghen với chính bạn thân của người yêu chưa?",
+    "Tên người cũ nào bạn vẫn lưu trong điện thoại bằng biệt danh cũ?",
+    "Bạn từng ước người yêu hiện tại có điểm gì giống người cũ?",
+    "Bao lâu sau chia tay bạn mới thật sự hết đau?",
+    "Bạn từng nhắn tin cho người khác chỉ để người yêu ghen chưa?",
+    "Kiểu người nào bạn luôn bị hút dù biết sẽ đau?",
+    "Lần cuối bạn chủ động nhắn tin cho người cũ là khi nào?",
+    "Món đồ nào của người cũ bạn từng lén giữ lại?",
+    "Người cũ nào bạn từng lén xem story dù đã tự hứa là không xem nữa?",
+    "Điều ngốc nhất bạn từng làm vì ghen là gì?",
+    "Bạn từng phát hiện ra điều gì trong điện thoại của người yêu khiến bạn chết lặng?",
+    "Bài hát nào nghe lên là bạn nhớ ngay đến một người cũ?"
    ],
    "dares": [
     "Mở tin nhắn với người cũ và đọc to câu cuối cùng bạn gửi.",
@@ -437,7 +466,15 @@ export const BANK = {
     "Diễn tả kiểu người bạn hay bị crush trong ba mươi giây.",
     "Đọc to gợi ý kết bạn đầu tiên hiện lên trên điện thoại bạn.",
     "Kể tên quán cà phê bạn hẹn hò nhiều nhất trong năm nay.",
-    "Cho cả nhóm xem playlist có cái tên lãng mạn nhất trong điện thoại bạn."
+    "Cho cả nhóm xem playlist có cái tên lãng mạn nhất trong điện thoại bạn.",
+    "Kể tên bài hát bạn sẽ mở nếu tình cờ gặp lại người cũ ngoài đường.",
+    "Gửi cho người bên trái một sticker bạn hay thả cho crush.",
+    "Kể tên món ăn bạn hay gọi chung trong buổi hẹn đầu tiên.",
+    "Kể tên địa điểm bạn muốn được rủ đi hẹn hò nhất lúc này.",
+    "Đọc to tin nhắn đầu tiên trong đoạn chat với người bạn đang để ý.",
+    "Thả thính người bên trái bằng một câu bạn tự nghĩ ra trong mười giây, phải nghiêm túc đến cuối.",
+    "Mở ghi chú trong điện thoại và đọc to dòng đầu tiên bạn viết về chuyện tình cảm.",
+    "Tìm trong thư viện ảnh tấm ảnh cũ nhất có người yêu cũ, cho cả nhóm xem và kể ngắn bối cảnh."
    ]
   },
   "t-ay": {
@@ -461,7 +498,9 @@ export const BANK = {
     "Bạn từng lỡ gọi nhầm tên người cũ lúc thân mật chưa?",
     "Bạn từng nói dối về số người mình từng ngủ cùng chưa?",
     "Bạn đã bao giờ có giai đoạn “chơi bời” chưa?",
-    "Nếu chỉ được làm chuyện ấy với một tư thế trong suốt phần còn lại cuộc đời, bạn chọn tư thế gì?"
+    "Nếu chỉ được làm chuyện ấy với một tư thế trong suốt phần còn lại cuộc đời, bạn chọn tư thế gì?",
+    "Bạn có quy tắc nào cho lần đầu với người mới không?",
+    "Bạn từng thấy ghen vì chuyện ấy của người yêu cũ chưa?"
    ],
    "dares": [
     "Tả mẫu người lý tưởng trên giường của bạn trong ba mươi giây.",
@@ -483,7 +522,9 @@ export const BANK = {
     "Kể một điều nhỏ đối phương làm khiến bạn đổ gục ngay lập tức.",
     "Tả bằng lời khung giờ trong ngày bạn thấy hứng thú nhất với chuyện ấy.",
     "Nói thẳng một thói quen nhỏ của đối phương khiến bạn mê mẩn, không cần nói tên ai.",
-    "Kể tên một địa danh du lịch khiến bạn liên tưởng ngay đến một kỷ niệm thân mật."
+    "Kể tên một địa danh du lịch khiến bạn liên tưởng ngay đến một kỷ niệm thân mật.",
+    "Kể tên một bài nhạc khiến bạn nghĩ ngay đến một đêm đáng nhớ.",
+    "Kể một thói quen sau khi thân mật khiến bạn thấy ấm áp nhất."
    ]
   }
  }
