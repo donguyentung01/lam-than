@@ -8,28 +8,16 @@
    Storage: Upstash Redis REST (env vars set by the Vercel marketplace integration).
    With no database configured it answers { enabled:false } and the page hides the line. */
 
-import { redis, configured } from "./_redis.js";
+import { redis, pipeline, configured } from "./_redis.js";
+import { DECKS } from "./_decks.js";
 
 const KEY = "cards:flipped";
 const BY_TOPIC = "cards:by-topic";     // hash, one field per topic id
-const TOPICS = ["yeu", "triet", "ay", "tien", "nha", "ban", "doi", "viec",
-                "t-yeu", "t-ay"];   // the thật hay thách decks keep their own tallies
+// generated from src/app.html by build.sh, so a new deck is never counted and then discarded
+const TOPICS = DECKS;
 const LIMIT_PER_MINUTE = 300;          // per address, so one page cannot inflate the count much
 const MAX_PER_ITEM = 20;               // a batch is a few cards of one topic, never a spike
 const MAX_PER_CALL = 60;
-
-/* Several commands in one HTTP request. Upstash still counts each command, but the page
-   makes one call instead of two or three, which is fewer round trips and less to go wrong. */
-async function pipeline(...cmds) {
-  const r = await fetch(`${URL_}/pipeline`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify(cmds),
-  });
-  if (!r.ok) throw new Error(`redis ${r.status}`);
-  const out = await r.json();
-  return out.map(x => x.result);
-}
 
 function asTopics(flat) {                // HGETALL comes back as [field, value, field, value, ...]
   const out = {};

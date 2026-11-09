@@ -638,7 +638,7 @@
 <script>
 /* ============ TOPICS — every card is a debate statement ============
    Rule of thumb: a real "có nên…?" choice both sides can defend, in the way people actually talk. */
-const TOPICS = [{"id":"yeu","name":"Tình Yêu","sub":"Người cũ, ghen tuông, ngoại tình, những luật ngầm khi yêu.","cards":["Việc yêu người yêu cũ của bạn thân có nên được chấp nhận?","Bạn thân khác giới có thật sự tồn tại?","Có nên xem điện thoại của người yêu?","Yêu nhau thì có nên biết mật khẩu điện thoại của nhau?","Chia tay rồi có nên unfollow người yêu cũ?"],"n":50},{"id":"triet","name":"Deep Talk","sub":"Những câu không có đáp án đúng, chỉ có cách nghĩ của mỗi người.","cards":["Có nên nói dối để người khác đỡ buồn?","Tha thứ nhưng không quên thì có tính là tha thứ?","Con người có thật sự thay đổi được?","Thành công chủ yếu nhờ may mắn?","Nếu được, có nên biết trước ngày mình mất?"],"n":38},{"id":"ay","name":"Chuyện Ấy","sub":"Sex, những lần đầu, quan điểm người lớn. Cay nhưng không thô.","adult":true,"cards":["Có nên thử “tình một đêm”?","Có nên thử có “friends with bún bò”?","Không hợp “chuyện ấy” thì có nên cưới?","Trong tình yêu, sex có quan trọng bằng tình cảm không?","Có nên hỏi body count của người yêu?"],"n":22},{"id":"tien","name":"Kiếm Ăn","sub":"Chia bill, lương, vay mượn, phong bì đám cưới.","cards":[],"n":21},{"id":"nha","name":"Gia Đình","sub":"Bố mẹ, cưới xin, con cái, những câu hỏi ngày Tết.","cards":[],"n":18},{"id":"ban","name":"Bạn Bè","sub":"Luật ngầm của tình bạn, nợ nần, bí mật, nhóm chat.","cards":[],"n":16},{"id":"doi","name":"Chuyện Thiên Hạ","sub":"Giờ cao su, “seen” không rep, sống ảo, phép lịch sự thời nay.","cards":["Đến trễ 15 phút là chuyện bình thường?","“Seen” mà không rep là thiếu tôn trọng?","Có cần hỏi trước khi đăng ảnh có mặt bạn bè?","Có nên cấm điện thoại trong bữa ăn?","Có nên đăng chuyện tình cảm lên mạng?"],"n":16},{"id":"viec","name":"Hustle","sub":"Bằng cấp, nhảy việc, sếp, đồng nghiệp, đam mê hay lương.","cards":[],"n":22}];
+const TOPICS = [{"id":"yeu","name":"Tình Yêu","sub":"Người cũ, ghen tuông, ngoại tình, những luật ngầm khi yêu.","cards":["Việc yêu người yêu cũ của bạn thân có nên được chấp nhận?","Bạn thân khác giới có thật sự tồn tại?","Có nên xem điện thoại của người yêu?","Yêu nhau thì có nên biết mật khẩu điện thoại của nhau?","Chia tay rồi có nên unfollow người yêu cũ?"],"n":69},{"id":"hen","name":"First Date","sub":"Sở thích, thói quen, những câu hỏi cho lần đầu ngồi xuống với nhau.","cards":[],"n":69},{"id":"triet","name":"Deep Talk","sub":"Những câu không có đáp án đúng, chỉ có cách nghĩ của mỗi người.","cards":["Có nên nói dối để người khác đỡ buồn?","Tha thứ nhưng không quên thì có tính là tha thứ?","Con người có thật sự thay đổi được?","Thành công chủ yếu nhờ may mắn?","Nếu được, có nên biết trước ngày mình mất?"],"n":57},{"id":"ay","name":"Chuyện Ấy","sub":"Sex, những lần đầu, quan điểm người lớn. Cay nhưng không thô.","adult":true,"cards":["Có nên thử “tình một đêm”?","Có nên thử có “friends with bún bò”?","Không hợp “chuyện ấy” thì có nên cưới?","Trong tình yêu, sex có quan trọng bằng tình cảm không?","Có nên hỏi body count của người yêu?"],"n":33},{"id":"tien","name":"Kiếm Ăn","sub":"Chia bill, lương, vay mượn, phong bì đám cưới.","cards":[],"n":37},{"id":"nha","name":"Gia Đình","sub":"Bố mẹ, cưới xin, con cái, những câu hỏi ngày Tết.","cards":[],"n":33},{"id":"ban","name":"Bạn Bè","sub":"Luật ngầm của tình bạn, nợ nần, bí mật, nhóm chat.","cards":[],"n":35},{"id":"doi","name":"Chuyện Thiên Hạ","sub":"Giờ cao su, “seen” không rep, sống ảo, phép lịch sự thời nay.","cards":["Đến trễ 15 phút là chuyện bình thường?","“Seen” mà không rep là thiếu tôn trọng?","Có cần hỏi trước khi đăng ảnh có mặt bạn bè?","Có nên cấm điện thoại trong bữa ăn?","Có nên đăng chuyện tình cảm lên mạng?"],"n":27},{"id":"viec","name":"Hustle","sub":"Bằng cấp, nhảy việc, sếp, đồng nghiệp, đam mê hay lương.","cards":[],"n":27},{"id":"ket","name":"Không Lối Thoát","sub":"Trả lời kiểu gì cũng sai. Hỏi cho vui, đừng hỏi lúc đang giận.","cards":[],"n":14}];
 
 /* ============ TOPIC SKETCHES — minimalist ink figures on paper, one colour wash each ============
    Drawn in a 100×100 space and scaled. Every line is inked twice (a firm pass plus a faint, slightly
@@ -678,6 +678,29 @@ const VG = (() => {
       ink(head(65, 37, 9)); ink("M57 33c2-8 13-9 16-2 2 5 1 12 4 20 2 5 5 8 8 10");
       ink("M59 45c-2 5-5 10-6 17M72 46c5 5 11 9 14 18");
       wash("M14 64c8-3 16-3 22-2 6 1 11 1 17 0 8-1 20-1 33 2V70H14Z", C.rose, .25);
+    },
+    hen(){                                         // across a small table, a candle between them
+      ink(head(26, 31, 7)); ink("M20 28c2-5 9-6 12-1");
+      ink("M22 38c-5 5-7 11-7 16M31 39c4 3 8 5 11 5", 1.3);
+      ink(head(74, 31, 7)); ink("M68 27c3-5 10-4 12 1");
+      ink("M78 38c5 5 7 11 7 16M69 39c-4 3-8 5-11 5", 1.3);
+      wash("M28 51c0-4 44-4 44 0 0 4-44 4-44 0z", C.grey, .2);
+      ink("M28 51c0-4 44-4 44 0 0 4-44 4-44 0z", 1.2);
+      ink("M50 55v11M41 70h18", 1.3);
+      wash("M50 33c-2-3-6-1-4 2 1 2 4 5 4 5s3-3 4-5c2-3-2-5-4-2z", C.ochre, .75);
+      ink("M50 33c-2-3-6-1-4 2 1 2 4 5 4 5s3-3 4-5c2-3-2-5-4-2z", 1);
+      ink("M47 42h6v7h-6z", 1.1);
+      ink("M34 45h7v3c0 2-7 2-7 0zM59 45h7v3c0 2-7 2-7 0z", 1.1);
+    },
+    ket(){                                         // stuck, and every answer is the wrong one
+      ink(head(36, 32, 8)); ink("M29 29c2-6 11-7 14 0");
+      ink("M31 41c-6 6-9 14-8 25M43 41c4 4 6 9 6 13", 1.3);
+      ink("M23 66h26", 1.3);
+      ink("M30 45c-6 2-9 6-10 11M46 46c5 2 9 5 11 10", 1.1);
+      wash("M63 20c8-7 19-1 16 8-2 6-9 7-9 13h-6c0-9 9-10 10-14 1-4-6-6-9-3z", C.ochre, .5);
+      ink("M63 20c8-7 19-1 16 8-2 6-9 7-9 13h-6c0-9 9-10 10-14 1-4-6-6-9-3z", 1.2);
+      wash("M70 45h6v6h-6z", C.ochre, .5); ink("M70 45h6v6h-6z", 1.2);
+      star(26, 19, 2); star(53, 24, 1.6);
     },
     ay(){                                          // two heads on one pillow, under a blanket
       wash("M18 44c0-6 32-8 64-4 4 1 4 9 0 10-32 2-62 2-64-6z", C.grey, .18);
@@ -791,7 +814,7 @@ const pass = { code: "", until: {}, fetched: false };
 
    One is yours, the rest were scanned from friends, and they are kept apart because they
    are not interchangeable: a purchase must land on your own code, never on somebody
-   else's, or your 5.000đ would widen what their code opens.
+   else's, or your 5.000đ would pay for their next 24 hours.
 
    Holding a list rather than one slot is what makes a stray link harmless. A code that the
    server does not recognise is simply dropped on the next look, so a stranger posting
@@ -925,9 +948,17 @@ function freshState(){
 }
 
 /* ============ HOME ============ */
-function deckOrder(){                                  // busiest deck first, then the order they were written in
+/* Temporary. The grid leads with whatever is being played most, which is fair once a deck
+   has had a chance and useless before: a deck with no plays sits at the bottom, so nobody
+   plays it. These two are new, so they are held at the top until they can hold it alone.
+   Emptying this list is the whole of the undo. */
+const PINNED = ["hen", "ket"];
+
+function deckOrder(){                                  // pinned, then busiest, then as written
   const list = decksOf();
+  const pin = t => { const i = PINNED.indexOf(t.id); return i < 0 ? PINNED.length : i; };
   return list.slice().sort((a, b) =>
+    pin(a) - pin(b) ||
     (tally.topics[b.id] || 0) - (tally.topics[a.id] || 0) || list.indexOf(a) - list.indexOf(b));
 }
 function renderHome(){                                 // the two ways to play
@@ -942,7 +973,7 @@ function renderDecks(){
   $("decks-title").textContent = tod ? "Thật hay Thách" : "Câu hỏi";
   $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" data-locked="${locked(t) && !loadedCount([t]) ? 1 : 0}" aria-pressed="${picks.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${list.indexOf(t) % 4}"><img alt="" src="${VG(t.art || t.id, 320, 320)}"></span>
-      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.nt ?? t.truths.length} thật · ${t.nd ?? t.dares.length} thách` : `${deckSize(t)} câu hỏi`}${t.adult ? " · 18+" : ""}${locked(t) ? ` · <span class="lock">${money(PRICE)}</span>` : owns(t.id) ? ` · <span class="lock">${leftOver(t.id)}</span>` : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.nt ?? t.truths.length} thật · ${t.nd ?? t.dares.length} thách` : `${deckSize(t)} câu hỏi`}${t.adult ? " · 18+" : ""}${owns(t.id) ? ` · <span class="lock">${leftOver(t.id)}</span>` : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
   const ts = chosen(), btn = $("pick-go"), unit = tod ? "lá" : "câu";
   btn.disabled = !ts.length;
