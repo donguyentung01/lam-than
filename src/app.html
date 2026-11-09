@@ -1,7 +1,7 @@
 <title>làm thân</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Lora:ital,wght@0,700;1,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Be+Vietnam+Pro:wght@400;500;600;800&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Lora:ital,wght@0,700;1,600&display=swap">
 <style>
   /* Themes ("giao diện"): each skin redefines tokens only. Default = Sơn Mài. */
   :root{
@@ -43,6 +43,27 @@
     color-scheme:light;
   }
   /* Trung Thu — trăng rằm, đèn lồng đỏ, đêm tháng tám */
+  /* Giáng Sinh — thông xanh, đỏ nam việt quất, đèn nháy vàng */
+  :root[data-skin="giangsinh"]{
+    --bg:#123a2c; --bg-glow:#1f5641; --surface:#174634; --field:#0f3226; --placeholder:#86a898;
+    --text:#fbf3e4; --muted:#b7cdc1;
+    --accent:#e9b949; --accent-soft:#8a7030; --on-accent:#1f1a08;
+    --line:rgba(233,185,73,.26); --line-strong:rgba(233,185,73,.58); --tint:#164331;
+    --c1:#b3263a; --c1-ink:#fbf3e4; --c2:#e9b949; --c2-ink:#2a1d06; --c3:#fbf3e4; --c3-ink:#123a2c;
+    --debate:#2b5c8a; --debate-ink:#fbf3e4;
+    --wild:#fbf3e4; --wild-ink:#123a2c; --final:#e9b949; --final-ink:#1f1a08;
+    --deck-3:#b3263a;
+    --back-base:#0f3226; --back-rule:#e9b949; --tap:#fbf3e4;
+    --seal-bg:#b3263a; --seal-ink:#fbf3e4; --seal-sub:#ffd9a8; --seal-glow:0 0 12px rgba(233,185,73,.45); --seal-size:18px;
+    --veil:rgba(5,20,14,.82); --shadow:rgba(0,0,0,.5);
+    --display:"Playfair Display", Georgia, serif; --display-style:italic; --display-weight:700; --mark-size:19px;
+    --card-font:"Playfair Display", Georgia, serif; --card-weight:700; --radius:16px;
+    --truth:#e9b949; --truth-ink:#2a1d06; --dare:#b3263a; --dare-ink:#fbf3e4;
+    color-scheme:dark;
+  }
+  :root[data-skin="giangsinh"] body{
+    background-image:radial-gradient(120% 70% at 50% 0%, var(--bg-glow) 0%, var(--bg) 62%);
+  }
   :root[data-skin="trungthu"]{
     --bg:#141a38; --bg-glow:#2b3468; --surface:#1d2450; --field:#161d3e; --placeholder:#7c83af;
     --text:#fdf3de; --muted:#a9afd4;
@@ -68,10 +89,27 @@
   }
   /* đèn lồng: a string of lanterns over the top edge, and sky lanterns drifting up behind */
   .festive{display:none}
-  :root[data-skin="trungthu"] .festive{
+  :root[data-skin="trungthu"] .festive, :root[data-skin="giangsinh"] .festive{
     display:block;position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1;
   }
-  :root[data-skin="trungthu"] .screen{padding-block:70px 28px}
+  :root[data-skin="trungthu"] .screen, :root[data-skin="giangsinh"] .screen{padding-block:70px 28px}
+  :root:not([data-skin="trungthu"]) .lantern, :root:not([data-skin="trungthu"]) .sky{display:none}
+  .xmas{display:none}
+  :root[data-skin="giangsinh"] .xmas{display:block}
+  /* đèn nháy: a string of fairy lights along the top edge, and snow falling behind */
+  .xmas .wire{position:absolute;left:0;top:0;width:100%;height:46px}
+  .xmas .light{position:absolute;left:var(--x);top:var(--y);width:9px;height:12px;margin-left:-4.5px;border-radius:50% 50% 45% 45%;
+    background:var(--c);box-shadow:0 0 10px var(--c),0 0 20px var(--c);animation:twinkle var(--d) ease-in-out var(--t) infinite}
+  .xmas .light::before{content:"";position:absolute;left:2px;top:-4px;width:5px;height:4px;border-radius:1px;background:#0a2219}
+  @keyframes twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+  .xmas .flake{position:absolute;top:-12px;left:var(--x);width:var(--w);height:var(--w);border-radius:50%;background:#fff;opacity:0;
+    animation:fall var(--d) linear var(--t) infinite}
+  @keyframes fall{
+    0%{transform:translate(0,0);opacity:0}
+    8%{opacity:.85}
+    90%{opacity:.6}
+    100%{transform:translate(36px,105vh);opacity:0}
+  }
   .lantern{position:absolute;top:-6px;left:var(--x);width:var(--w);
     transform-origin:50% -24px;animation:sway var(--d) ease-in-out var(--t) infinite}
   .lantern span{display:block}
@@ -101,7 +139,8 @@
     100%{transform:translate(28px,-115vh);opacity:0}
   }
   @media (prefers-reduced-motion:reduce){
-    .lantern,.lantern .tassel,.sky{animation:none}
+    .lantern,.lantern .tassel,.sky,.xmas .light{animation:none}
+    .xmas .flake{display:none}
   }
 
   :root{
@@ -344,9 +383,31 @@
   .hud-title{flex:1;text-align:center;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hud-count{min-width:40px;text-align:right;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 </style>
-<script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"trungthu";if(["trungthu","dongho","sonmai"].indexOf(sk)<0)sk="trungthu";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="trungthu"}</script>
+<script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"giangsinh";if(["giangsinh","trungthu","dongho","sonmai"].indexOf(sk)<0)sk="giangsinh";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="giangsinh"}</script>
 
 <div class="festive" aria-hidden="true">
+<span class="xmas">
+  <svg class="wire" viewBox="0 0 100 46" preserveAspectRatio="none"><path d="M-2 10 Q 9 40 20 16 T 42 16 T 64 16 T 86 16 T 104 10" fill="none" stroke="#0a2219" stroke-width="0.6" vector-effect="non-scaling-stroke"></path></svg>
+  <span class="light" style="--x:4%;--y:22px;--c:#e9b949;--d:2.2s;--t:-0.3s"></span>
+  <span class="light" style="--x:14%;--y:30px;--c:#e2475a;--d:2.8s;--t:-1.1s"></span>
+  <span class="light" style="--x:25%;--y:24px;--c:#fbf3e4;--d:2.4s;--t:-0.7s"></span>
+  <span class="light" style="--x:36%;--y:30px;--c:#e9b949;--d:3.1s;--t:-1.9s"></span>
+  <span class="light" style="--x:47%;--y:24px;--c:#e2475a;--d:2.6s;--t:-0.2s"></span>
+  <span class="light" style="--x:58%;--y:30px;--c:#fbf3e4;--d:2.9s;--t:-1.4s"></span>
+  <span class="light" style="--x:69%;--y:24px;--c:#e9b949;--d:2.3s;--t:-0.9s"></span>
+  <span class="light" style="--x:80%;--y:30px;--c:#e2475a;--d:3.0s;--t:-0.5s"></span>
+  <span class="light" style="--x:91%;--y:24px;--c:#fbf3e4;--d:2.5s;--t:-1.6s"></span>
+  <span class="flake" style="--x:6%;--w:4px;--d:14s;--t:-2s"></span>
+  <span class="flake" style="--x:18%;--w:3px;--d:18s;--t:-9s"></span>
+  <span class="flake" style="--x:31%;--w:5px;--d:16s;--t:-5s"></span>
+  <span class="flake" style="--x:44%;--w:3px;--d:21s;--t:-13s"></span>
+  <span class="flake" style="--x:57%;--w:4px;--d:15s;--t:-1s"></span>
+  <span class="flake" style="--x:68%;--w:3px;--d:19s;--t:-7s"></span>
+  <span class="flake" style="--x:79%;--w:5px;--d:17s;--t:-11s"></span>
+  <span class="flake" style="--x:90%;--w:3px;--d:20s;--t:-4s"></span>
+  <span class="flake" style="--x:12%;--w:2px;--d:24s;--t:-16s"></span>
+  <span class="flake" style="--x:73%;--w:2px;--d:23s;--t:-19s"></span>
+</span>
   <span class="lantern" style="--x:6%;--w:30px;--d:6.4s;--t:-.2s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
   <span class="lantern" style="--x:21%;--w:24px;--d:7.6s;--t:-1.9s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
   <span class="lantern" style="--x:39%;--w:33px;--d:6.9s;--t:-3.4s"><span class="cord"></span><span class="bulb"></span><span class="tassel"></span></span>
@@ -1632,11 +1693,12 @@ function show(screen){
 
 /* ============ THEMES ============ */
 const SKINS = [
+  {id:"giangsinh", name:"Giáng Sinh", note:"Đèn nháy, thông xanh, tuyết rơi", bg:"#123a2c", sw:["#b3263a","#e9b949","#fbf3e4"]},
   {id:"trungthu", name:"Trung Thu", note:"Trăng rằm, đèn lồng, đêm tháng tám",  bg:"#141a38", sw:["#f2b13c","#e0523c","#2f7d68"]},
   {id:"dongho", name:"Đông Hồ",     note:"Giấy điệp, màu khắc gỗ",             bg:"#efe6d2", sw:["#dfa73c","#b0392a","#2d5a4b"]},
   {id:"sonmai", name:"Sơn Mài",     note:"Đen then, thếp vàng, khảm vỏ trứng", bg:"#15100e", sw:["#b3301e","#6e1a14","#1f1714"]}
 ];
-const SKIN_KEY = "nltq-skin", PICK_KEY = "nltq-pick", DEFAULT_SKIN = "trungthu";
+const SKIN_KEY = "nltq-skin", PICK_KEY = "nltq-pick", DEFAULT_SKIN = "giangsinh";
 function currentSkin(){ try{
   if(!localStorage.getItem(PICK_KEY)) return DEFAULT_SKIN;   // nobody picked yet, so the season decides
   const s = localStorage.getItem(SKIN_KEY); return SKINS.some(k => k.id === s) ? s : DEFAULT_SKIN;
@@ -1665,6 +1727,25 @@ $("skins").addEventListener("click", e => {
 
 /* ============ CARD BACKS — one generative motif per theme ============ */
 const BACKS = {
+  /* tuyết và sao — snowflakes and little stars on pine */
+  giangsinh(g, W, H){
+    g.fillStyle = "#123a2c"; g.fillRect(0,0,W,H);
+    const flake = (x, y, r) => { g.beginPath();
+      for(let k=0;k<6;k++){ const a = k*Math.PI/3; g.moveTo(x, y); g.lineTo(x+Math.cos(a)*r, y+Math.sin(a)*r);
+        const bx = x+Math.cos(a)*r*.6, by = y+Math.sin(a)*r*.6;
+        g.moveTo(bx, by); g.lineTo(bx+Math.cos(a+.6)*r*.28, by+Math.sin(a+.6)*r*.28);
+        g.moveTo(bx, by); g.lineTo(bx+Math.cos(a-.6)*r*.28, by+Math.sin(a-.6)*r*.28); }
+      g.stroke(); };
+    g.lineCap = "round";
+    for(let i=0;i<90;i++){
+      const x = Math.random()*W, y = Math.random()*H, fade = clearing(x, y, W, H);
+      if(fade < 1.05) continue;
+      g.globalAlpha = Math.min(.9, (fade-1)*1.5 + .15);
+      if(Math.random() < .7){ g.strokeStyle = "#fbf3e4"; g.lineWidth = 1.6; flake(x, y, 7 + Math.random()*12); }
+      else { g.fillStyle = Math.random() < .5 ? "#e9b949" : "#e2475a"; g.beginPath(); g.arc(x, y, 2 + Math.random()*2.5, 0, Math.PI*2); g.fill(); }
+    }
+    g.globalAlpha = 1;
+  },
   /* khảm vỏ trứng — eggshell inlay mosaic */
   sonmai(g, W, H){
     g.fillStyle = "#1f1714"; g.fillRect(0,0,W,H);
