@@ -47,7 +47,7 @@ let BANK;
     click($("pick-go")); await wait(10);
     let n = 0;
     while ($("paywall").hidden && n < 30) { click($("next")); await wait(3); n++; }
-    console.log(" trial ran", n, "cards then walled:", !$("paywall").hidden, "| hud:", $("hud-count").textContent, "| offers:", $("pw-decks").textContent.trim());
+    console.log(" trial ran", n, "cards then walled:", !$("paywall").hidden, "| hud:", $("hud-count").textContent, "| qr sheet:", !$("pw-pay").hidden, "|", $("pw-wait").textContent.trim());
     click($("pw-close")); await wait(5);
     click(d.querySelector('.deck[data-id="yeu"]'));            // unpick
     click(d.querySelector('.deck[data-id="viec"]'));           // a deck with no trial at all

@@ -5,7 +5,7 @@
      -> { ok, paid:true, code }            nothing configured outside production: the stub
 
    GET /api/order?o=<memo>
-     -> { status:"pending" } | { status:"paid", code }
+     -> { status:"pending", amount, qr } | { status:"paid", code }
 
    The memo is the order id. It is the only thing tying a bank transfer back to the person
    waiting on a screen, which is why it is minted here and never taken from the client. A
@@ -58,9 +58,10 @@ export default async function handler(req, res) {
     if (!/^LT[A-Z0-9]{6}$/.test(o)) return res.status(400).json({ ok: false, reason: "bad_order" });
     const order = await readOrder(o);
     if (!order) return res.status(404).json({ ok: false, reason: "no_order" });
+    // a pending order hands back its QR, so reopening the wall shows the same one
     return res.status(200).json(order.status === "paid"
       ? { ok: true, status: "paid", code: order.pass }
-      : { ok: true, status: "pending" });
+      : { ok: true, status: "pending", amount: order.amount, qr: sepayReady ? qrUrl(o, order.amount) : null });
   }
 
   if (req.method !== "POST") return res.status(405).json({ ok: false, reason: "method" });

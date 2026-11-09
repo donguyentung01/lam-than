@@ -608,8 +608,12 @@
     <div class="eyebrow">Mở khoá</div>
     <h2 id="pw-title">Hết phần dùng thử</h2>
     <p id="pw-sub"></p>
-    <div id="pw-buy">
-      <div class="pw-list" id="pw-decks"></div>
+    <div id="pw-pay">
+      <img id="pw-qr" alt="Mã QR chuyển khoản" width="260" height="260">
+      <p class="pw-mine">Mở app ngân hàng và quét mã. Số tiền và nội dung đã điền sẵn, giữ nguyên nội dung nhé.</p>
+      <div class="pw-memo">Nội dung: <b id="pw-note"></b></div>
+      <p class="pw-msg" id="pw-wait">Đang tạo mã QR…</p>
+      <button class="btn btn-ghost" id="pw-retry" hidden>Tạo lại mã QR</button>
       <div class="pw-code">
         <input id="pw-input" placeholder="Đã có mã? LT-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="12">
         <button class="btn btn-ghost" id="pw-redeem">Dùng mã</button>
@@ -617,13 +621,6 @@
       <p class="pw-msg" id="pw-msg" hidden></p>
       <p class="pw-mine" id="pw-mine" hidden></p>
       <button class="btn btn-ghost" id="pw-close">Quay lại</button>
-    </div>
-    <div id="pw-pay" hidden>
-      <img id="pw-qr" alt="Mã QR chuyển khoản" width="260" height="260">
-      <p class="pw-mine">Quét bằng app ngân hàng. Số tiền và nội dung đã điền sẵn, giữ nguyên nội dung nhé.</p>
-      <div class="pw-memo">Nội dung: <b id="pw-note"></b></div>
-      <p class="pw-msg" id="pw-wait">Đang chờ chuyển khoản…</p>
-      <button class="btn btn-ghost" id="pw-cancel">Quay lại</button>
     </div>
     <div id="pw-done" hidden>
       <div class="pw-big" id="pw-code"></div>
@@ -1442,12 +1439,14 @@ const WHY = {
   offline: "Mất mạng rồi, thử lại nhé.",
 };
 
-function openGate(from){
+/* The wall opens straight onto the QR: nothing to choose, so nothing to tap before paying. */
+function openGate(from, { order = true } = {}){
   gateFrom = from || (state.screen === "tod" ? "tod" : state.screen === "play" ? "play" : "decks");
   renderGate();
-  showFace("buy");
+  showFace("pay");
   $("paywall").hidden = false;
   $("pw-input").value = "";
+  if(order) startOrder();
 }
 /* A code is no use to the table if the buyer never sees it, so it gets its own screen. */
 function showUnlocked(){
@@ -1457,9 +1456,9 @@ function showUnlocked(){
   showFace("done");
 }
 
-/* The sheet has three faces and only ever shows one: buy, pay, then the code. */
+/* The sheet has two faces: the QR, then the code once the money lands. */
 function showFace(which){
-  for(const f of ["buy", "pay", "done"]) $("pw-" + f).hidden = f !== which;
+  for(const f of ["pay", "done"]) $("pw-" + f).hidden = f !== which;
   if(which !== "pay") stopWatch();
 }
 function closeGate(){ stopWatch(); $("paywall").hidden = true; msgGate(""); }
@@ -1468,10 +1467,7 @@ function msgGate(text){ const el = $("pw-msg"); el.textContent = text; el.hidden
 function renderGate(){
   const shut = TOPICS.concat(TOD).filter(locked);
   $("pw-title").textContent = "Mở khoá tất cả";
-  $("pw-sub").textContent = `${money(PRICE)} mở tất cả ${shut.length} bộ bài trong 24 giờ.`;
-  $("pw-decks").innerHTML = `<div class="pw-row"><b>Tất cả bộ bài</b>
-    <span class="muted">${cardCount(shut)} lá</span>
-    <button class="btn btn-gold" data-buy="all">${money(PRICE)}</button></div>`;
+  $("pw-sub").textContent = `Chuyển ${money(PRICE)} là mở tất cả ${shut.length} bộ bài trong 24 giờ.`;
   const mine = $("pw-mine");
   mine.textContent = pass.code ? `Mã của bạn: ${pass.code} · chụp màn hình lại nhé` : "";
   mine.hidden = !pass.code;
@@ -1502,10 +1498,25 @@ async function useCode(code){
   return false;
 }
 
-$("pw-decks").addEventListener("click", async e => {
-  const b = e.target.closest("[data-buy]"); if(!b) return;
-  b.disabled = true; msgGate("Đang tạo mã…");
+/* Make the order, or pick up the one this phone already has open, and show its QR.
+   Reopening the wall reuses a pending order rather than minting a new memo each time. */
+let ordering = false;
+async function startOrder(){
+  if(ordering) return;
+  ordering = true;
+  const qr = $("pw-qr");
+  qr.style.visibility = "hidden"; qr.removeAttribute("src");
+  $("pw-note").textContent = ""; $("pw-retry").hidden = true;
+  $("pw-wait").textContent = "Đang tạo mã QR…";
   try{
+    const open = stored(K_ORDER);
+    if(open){
+      let d = {};
+      try{ d = await (await fetch(`/api/order?o=${encodeURIComponent(open)}`)).json(); }catch(e){}
+      if(d.status === "paid"){ store(K_ORDER, null); await takeCode(d.code); return showUnlocked(); }
+      if(d.status === "pending" && d.qr) return showPay({memo: open, qr: d.qr, amount: d.amount});
+      store(K_ORDER, null);
+    }
     const r = await fetch("/api/order", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({code: myCode()})});   // never a friend's: your money reopens your own code
     const d = await r.json();
@@ -1514,20 +1525,21 @@ $("pw-decks").addEventListener("click", async e => {
       await takeCode(d.code);
       return showUnlocked();
     }
-    msgGate("");
     store(K_ORDER, d.memo);                            // so closing the page does not lose the order
     showPay(d);
-  }catch(err){ msgGate("Chưa tạo được mã. Thử lại nhé."); }
-  b.disabled = false;
-});
+  }catch(err){
+    $("pw-wait").textContent = "Chưa tạo được mã QR.";
+    $("pw-retry").hidden = false;
+  }finally{ ordering = false; }
+}
 
 /* The QR carries the amount and the memo, so the buyer taps scan and confirm and nothing
    else. The memo is shown as text too, for anyone whose bank app will not scan. */
 function showPay(order){
-  $("pw-qr").src = order.qr;
+  const qr = $("pw-qr");
+  qr.onload = () => { qr.style.visibility = "visible"; };
+  qr.src = order.qr;
   $("pw-note").textContent = order.memo;
-  $("pw-title").textContent = "Mở khoá tất cả";
-  $("pw-sub").textContent = `Chuyển ${money(order.amount || PRICE)} là mở ngay.`;
   $("pw-wait").textContent = "Đang chờ chuyển khoản…";
   showFace("pay");
   watchOrder(order.memo);
@@ -1570,9 +1582,9 @@ function watchOrder(memo){
       return showUnlocked();
     }
     if(d.reason === "no_order"){                   // expired, or never made it to the server
-      store(K_ORDER, null);
-      $("pw-wait").textContent = "Mã này hết hạn rồi, tạo lại nhé.";
-      return stopWatch();
+      store(K_ORDER, null);                        // a fresh QR, without asking
+      stopWatch();
+      return startOrder();
     }
     if(Date.now() > watchUntil){
       $("pw-wait").textContent = "Chưa thấy chuyển khoản. Nếu đã chuyển, nhắn cho tụi mình nhé.";
@@ -1592,7 +1604,7 @@ async function settlePending(){
   if(d.status === "paid"){
     store(K_ORDER, null);
     await takeCode(d.code);
-    openGate("decks");
+    openGate("decks", {order: false});
     return showUnlocked();
   }
   if(d.reason === "no_order") store(K_ORDER, null);
@@ -1603,7 +1615,7 @@ $("pw-redeem").addEventListener("click", () => {
 });
 $("pw-input").addEventListener("keydown", e => { if(e.key === "Enter") $("pw-redeem").click(); });
 $("pw-close").addEventListener("click", () => { closeGate(); if(gateFrom !== "decks") show("decks"); });
-$("pw-cancel").addEventListener("click", () => { stopWatch(); renderGate(); showFace("buy"); });
+$("pw-retry").addEventListener("click", startOrder);
 $("pw-go").addEventListener("click", resumeAfterUnlock);
 
 /* ============ THẬT HAY THÁCH ============ */
