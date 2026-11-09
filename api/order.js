@@ -1,6 +1,6 @@
-/* Buying one deck.
+/* Buying a pass: 24 hours of every paid deck.
 
-   POST /api/order { deck, code? }
+   POST /api/order { code? }
      -> { ok, memo, qr, amount }           show the QR, then poll
      -> { ok, paid:true, code }            nothing configured outside production: the stub
 
@@ -15,13 +15,10 @@
 import { redis, configured, NS, caller, overLimit } from "./_redis.js";
 import { grant, PRICE, newMemo } from "./_pass.js";
 import { sepayReady, qrUrl } from "./_sepay.js";
-import { BANK } from "./_bank.js";
 
 const DEV = process.env.VERCEL_ENV !== "production";
 const orderKey = memo => `${NS}order:${memo}`;
 const TTL = "7200";                                   // two hours to finish paying
-
-const knownDeck = id => id in BANK.topics || id in BANK.tod;
 
 /* Two buckets, because the two verbs cost different things and are used at different rates.
    Creating an order writes a key, and nobody honestly starts ten purchases in ninety
@@ -41,7 +38,7 @@ export async function settle(memo, { via = "" } = {}) {
   if (!order) return null;
   if (order.status === "paid") return order;          // already granted: idempotent
 
-  const pass = await grant(order.deck, order.code, { note: via || `sepay:${memo}` });
+  const pass = await grant(order.code, { note: via || `sepay:${memo}` });
   order.status = "paid";
   order.pass = pass.code;
   await redis("SET", orderKey(memo), JSON.stringify(order), "EX", TTL);
@@ -74,11 +71,8 @@ export default async function handler(req, res) {
   }
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-  const deck = String(body.deck || "");
-  if (!knownDeck(deck)) return res.status(400).json({ ok: false, reason: "unknown_deck" });
-
   const memo = newMemo();
-  const order = { deck, code: String(body.code || ""), amount: PRICE, status: "pending" };
+  const order = { code: String(body.code || ""), amount: PRICE, status: "pending" };
 
   try {
     if (!sepayReady) {

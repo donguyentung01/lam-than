@@ -629,7 +629,7 @@
     </div>
     <div id="pw-done" hidden>
       <div class="pw-big" id="pw-code"></div>
-      <p class="pw-mine">Chụp màn hình lại nhé. Cả bàn nhập mã này trong một tiếng tới là chơi được trên máy mình.</p>
+      <p class="pw-mine">Chụp màn hình lại nhé. Bạn bè nhập mã này là chơi được trên máy mình, trong 24 giờ.</p>
       <button class="btn btn-gold" id="pw-go">Chơi tiếp →</button>
     </div>
   </div>
@@ -780,12 +780,12 @@ const VG = (() => {
 const BANK_LINE = "SHB · 0822446003";
 
 /* ============ THE PASS ============
-   A bearer code, no account. Whoever holds it owns the decks on it, each for 24 hours,
-   on up to six devices. The device id only counts slots: on its own it unlocks nothing. */
+   A bearer code, no account. Whoever holds it plays every paid deck for 24 hours, on as
+   many phones as they like. */
 const PRICE = 5000;
-const K_CODE = "nltq-key", K_DEV = "nltq-did", K_ORDER = "nltq-order", K_KEYS = "nltq-keys";
+const K_CODE = "nltq-key", K_ORDER = "nltq-order", K_KEYS = "nltq-keys";
 const MAX_KEYS = 5;                    // a night of scanning friends' links, not a collection
-const pass = { code: "", device: "", until: {}, fetched: false };
+const pass = { code: "", until: {}, fetched: false };
 
 /* Codes a phone can hold at once.
 
@@ -831,11 +831,6 @@ function store(k, v){ try{ v === null ? localStorage.removeItem(k) : localStorag
 function stored(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
 
 function initPass(){
-  pass.device = stored(K_DEV);
-  if(!pass.device){
-    pass.device = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
-    store(K_DEV, pass.device);
-  }
   // a code arriving by QR rides in the fragment, which browsers never send to a server
   const m = /[#&]k=([A-Za-z0-9-]+)/.exec(location.hash || "");
   if(m && tidyCode(m[1])){
@@ -879,13 +874,12 @@ function foldIn(d){
 
 async function askFor(code){
   try{
-    const r = await fetch(`/api/cards?k=${encodeURIComponent(code)}&d=${encodeURIComponent(pass.device)}`);
+    const r = await fetch(`/api/cards?k=${encodeURIComponent(code)}`);
     return await r.json();
   }catch(e){ return {ok:false, reason:"offline"}; }
 }
 
 async function loadPaid(code){
-  if(!pass.device) return false;
   // asking about one code in particular: redeeming it, or checking it before adopting
   if(code){
     const d = await askFor(code);
@@ -902,7 +896,7 @@ async function loadPaid(code){
     if(d.reason === "offline") return d;             // no network: keep every code, try later
     if(!d.ok){
       if(d.reason === "invalid" || d.reason === "expired") forgetKey(entry.c);
-      continue;                                      // too_many or too_fast: keep it, just no cards
+      continue;                                      // too_fast: keep it, just no cards
     }
     foldIn(d);
     rememberKey(d.code || entry.c, Math.max(0, ...Object.values(d.until || {})));
@@ -976,15 +970,13 @@ $("age-ok").addEventListener("click", () => { state.adultOk = true; $("agegate")
 $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
 
 /* ============ THE GATE ============
-   Every deck is 5.000đ for 24 hours. Four decks show a few cards first; the rest are dark.
-   Payment is stubbed for now: the button mints a pass straight from /api/pass, which only
-   answers outside production. The real bank watcher replaces it later. */
-let gateFrom = "decks", payFor = "", watchTimer = null, watchUntil = 0, watchMemo = "";
+   5.000đ opens every paid deck for 24 hours. Four decks show a few cards first; the rest
+   are dark. Outside production, with no bank wired up, /api/order mints a pass on the spot
+   so the whole flow can be walked on test. */
+let gateFrom = "decks", watchTimer = null, watchUntil = 0, watchMemo = "";
 const WHY = {
   invalid: "Mã không đúng, hoặc đã hết hạn.",
   expired: "Mã đã hết hạn rồi.",
-  window_closed: "Mã này đã quá hạn chia sẻ. Nhờ người mua mở khoá thêm nhé.",
-  too_many: "Mã đã dùng trên quá nhiều máy.",
   too_fast: "Thử lại sau một phút nhé.",
   offline: "Mất mạng rồi, thử lại nhé.",
 };
@@ -997,14 +989,14 @@ function openGate(from){
   $("pw-input").value = "";
 }
 /* A code is no use to the table if the buyer never sees it, so it gets its own screen. */
-function showUnlocked(name){
-  $("pw-title").textContent = name ? `Đã mở ${name.toLowerCase()}` : "Đã mở khoá";
-  $("pw-sub").textContent = "Bộ này mở trong 24 giờ.";
+function showUnlocked(){
+  $("pw-title").textContent = "Đã mở khoá tất cả";
+  $("pw-sub").textContent = "Mọi bộ bài mở trong 24 giờ.";
   $("pw-code").textContent = pass.code;
   showFace("done");
 }
 
-/* The sheet has three faces and only ever shows one: pick a deck, pay, then the code. */
+/* The sheet has three faces and only ever shows one: buy, pay, then the code. */
 function showFace(which){
   for(const f of ["buy", "pay", "done"]) $("pw-" + f).hidden = f !== which;
   if(which !== "pay") stopWatch();
@@ -1013,13 +1005,12 @@ function closeGate(){ stopWatch(); $("paywall").hidden = true; msgGate(""); }
 function msgGate(text){ const el = $("pw-msg"); el.textContent = text; el.hidden = !text; }
 
 function renderGate(){
-  const shut = chosen().filter(locked);
-  const one = shut.length === 1;
-  $("pw-title").textContent = one ? shut[0].name : "Mở khoá bộ bài";
-  $("pw-sub").textContent = `Mỗi bộ ${money(PRICE)}, mở trong 24 giờ, chơi được trên 6 máy.`;
-  $("pw-decks").innerHTML = shut.map(t => `<div class="pw-row"><b>${t.name}</b>
-    <span class="muted">${deckSize(t)} lá</span>
-    <button class="btn btn-gold" data-buy="${t.id}">${money(PRICE)}</button></div>`).join("");
+  const shut = TOPICS.concat(TOD).filter(locked);
+  $("pw-title").textContent = "Mở khoá tất cả";
+  $("pw-sub").textContent = `${money(PRICE)} mở tất cả ${shut.length} bộ bài trong 24 giờ.`;
+  $("pw-decks").innerHTML = `<div class="pw-row"><b>Tất cả bộ bài</b>
+    <span class="muted">${cardCount(shut)} lá</span>
+    <button class="btn btn-gold" data-buy="all">${money(PRICE)}</button></div>`;
   const mine = $("pw-mine");
   mine.textContent = pass.code ? `Mã của bạn: ${pass.code} · chụp màn hình lại nhé` : "";
   mine.hidden = !pass.code;
@@ -1052,31 +1043,29 @@ async function useCode(code){
 
 $("pw-decks").addEventListener("click", async e => {
   const b = e.target.closest("[data-buy]"); if(!b) return;
-  const deck = b.dataset.buy;
   b.disabled = true; msgGate("Đang tạo mã…");
   try{
     const r = await fetch("/api/order", {method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({deck, code: myCode()})});   // never a friend's, or their code would grow
+      body: JSON.stringify({code: myCode()})});   // never a friend's: your money reopens your own code
     const d = await r.json();
     if(!d.ok) throw new Error(d.reason || "no");
     if(d.paid){                                        // the stub on test, before the bank is live
       await takeCode(d.code);
-      return showUnlocked((decksOf().find(t => t.id === deck) || {}).name);
+      return showUnlocked();
     }
     msgGate("");
     store(K_ORDER, d.memo);                            // so closing the page does not lose the order
-    showPay(d, deck);
+    showPay(d);
   }catch(err){ msgGate("Chưa tạo được mã. Thử lại nhé."); }
   b.disabled = false;
 });
 
 /* The QR carries the amount and the memo, so the buyer taps scan and confirm and nothing
    else. The memo is shown as text too, for anyone whose bank app will not scan. */
-function showPay(order, deck){
-  payFor = deck;
+function showPay(order){
   $("pw-qr").src = order.qr;
   $("pw-note").textContent = order.memo;
-  $("pw-title").textContent = (decksOf().find(t => t.id === deck) || {}).name || "Mở khoá";
+  $("pw-title").textContent = "Mở khoá tất cả";
   $("pw-sub").textContent = `Chuyển ${money(order.amount || PRICE)} là mở ngay.`;
   $("pw-wait").textContent = "Đang chờ chuyển khoản…";
   showFace("pay");
@@ -1117,7 +1106,7 @@ function watchOrder(memo){
     if(d.status === "paid"){
       store(K_ORDER, null);
       await takeCode(d.code);
-      return showUnlocked((decksOf().find(t => t.id === payFor) || {}).name);
+      return showUnlocked();
     }
     if(d.reason === "no_order"){                   // expired, or never made it to the server
       store(K_ORDER, null);

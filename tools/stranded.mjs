@@ -2,11 +2,11 @@
 
    Someone will edit the transfer note, or pay twice, or send 5.000đ with no note at all.
    That money is owed and the webhook writes it down rather than dropping it. This reads the
-   list, and grants a deck by hand when one turns out to be real.
+   list, and grants a pass by hand when one turns out to be real.
 
      node tools/stranded.mjs                      what is waiting
-     node tools/stranded.mjs --grant yeu          mint a new code holding one deck
-     node tools/stranded.mjs --grant yeu --code LT-ABCD-EFGH    add it to a code they have
+     node tools/stranded.mjs --grant              mint a new code, open for 24 hours
+     node tools/stranded.mjs --grant --code LT-ABCD-EFGH    reopen a code they have
 
    Add --prod to work on production; without it everything is the t: test namespace. */
 
@@ -28,9 +28,9 @@ const { redis, NS } = await import("../api/_redis.js");
 const { grant, tidyCode } = await import("../api/_pass.js");
 
 const where = PROD ? "production" : "test";
-const deck = arg("--grant");
+const granting = process.argv.includes("--grant");
 
-if (!deck) {
+if (!granting) {
   const rows = (await redis("LRANGE", `${NS}unmatched`, "0", "-1")) || [];
   if (!rows.length) { console.log(`nothing stranded on ${where}`); process.exit(0); }
   console.log(`${rows.length} stranded on ${where}:\n`);
@@ -42,14 +42,13 @@ if (!deck) {
     console.log(`    note: ${t.content || t.description || "(none)"}`);
     console.log(`    ref:  ${t.referenceCode || t.id || "?"}\n`);
   }
-  console.log("to settle one:  node tools/stranded.mjs --grant <deck> [--code LT-XXXX-XXXX]" + (PROD ? " --prod" : ""));
+  console.log("to settle one:  node tools/stranded.mjs --grant [--code LT-XXXX-XXXX]" + (PROD ? " --prod" : ""));
   process.exit(0);
 }
 
 const existing = arg("--code") ? tidyCode(arg("--code")) : "";
 if (arg("--code") && !existing) { console.error("that code is not the right shape"); process.exit(1); }
 
-const pass = await grant(deck, existing, { note: "granted by hand" });
-console.log(`${where}: ${deck} is open on ${pass.code}`);
-console.log(`decks now: ${Object.keys(pass.decks).join(", ")}`);
+const pass = await grant(existing, { note: "granted by hand" });
+console.log(`${where}: ${pass.code} is open until ${new Date(pass.until).toLocaleString("vi-VN")}`);
 console.log(`share:     https://${PROD ? "lamthan.com" : "test.lamthan.com"}/#k=${pass.code}`);
