@@ -27,7 +27,7 @@
 <title>làm thân</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Lora:ital,wght@0,700;1,600&family=Pacifico&family=Bungee&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Lora:ital,wght@0,700;1,600&display=swap">
 <style>
   /* Themes ("giao diện"): each skin redefines tokens only. Default = Sơn Mài. */
   :root{
@@ -67,24 +67,6 @@
     --card-font:"Lora", Georgia, serif; --card-weight:700; --radius:6px;
     --truth:#dfa73c; --truth-ink:#221d17; --dare:#b0392a; --dare-ink:#fff8ec;
     color-scheme:light;
-  }
-  /* Tết — lì xì đỏ, mai vàng, đào hồng */
-  :root[data-skin="tet"]{
-    --bg:#6a0e15; --bg-glow:#9c1c24; --surface:#7c1720; --field:#560a11; --placeholder:#c78a80;
-    --text:#fff1dc; --muted:#efb6a4;
-    --accent:#ffc93c; --accent-soft:#b9853a; --on-accent:#5a0c12;
-    --line:rgba(255,201,60,.3); --line-strong:rgba(255,201,60,.6); --tint:rgba(255,241,220,.05);
-    --c1:#ffc93c; --c1-ink:#5a0c12; --c2:#f59ab0; --c2-ink:#5a0c12; --c3:#3a0a0f; --c3-ink:#ffe3a3;
-    --debate:#1f5b4a; --debate-ink:#fff1dc;
-    --wild:#fff1dc; --wild-ink:#a3141d; --final:#ffc93c; --final-ink:#5a0c12;
-    --deck-3:#e0612e;
-    --back-base:#a3141d; --back-rule:#ffc93c; --tap:#fff1dc;
-    --seal-bg:#ffc93c; --seal-ink:#8c0f18; --seal-sub:#8c0f18; --seal-size:18px;
-    --veil:rgba(40,4,8,.78); --shadow:rgba(30,0,4,.45);
-    --display:"Pacifico", "Brush Script MT", cursive; --display-style:normal; --display-weight:400; --mark-size:18px;
-    --radius:14px;
-    --truth:#ffc93c; --truth-ink:#5a0c12; --dare:#a3141d; --dare-ink:#fff1dc;
-    color-scheme:dark;
   }
   /* Trung Thu — trăng rằm, đèn lồng đỏ, đêm tháng tám */
   :root[data-skin="trungthu"]{
@@ -146,23 +128,6 @@
   }
   @media (prefers-reduced-motion:reduce){
     .lantern,.lantern .tassel,.sky{animation:none}
-  }
-  :root[data-skin="saigon"]{
-    --bg:#0b1322; --bg-glow:#1c2c4d; --surface:#121d34; --field:#0f192d; --placeholder:#5b6a88;
-    --text:#e8eefb; --muted:#8e9fbf;
-    --accent:#ff5c93; --accent-soft:#8f3a5d; --on-accent:#0b1322;
-    --line:rgba(142,159,191,.24); --line-strong:rgba(255,92,147,.6); --tint:rgba(232,238,251,.03);
-    --c1:#ff5c93; --c1-ink:#0b1322; --c2:#2ec4b6; --c2-ink:#062320; --c3:#18223d; --c3-ink:#ffd166;
-    --debate:#7b5cff; --debate-ink:#ffffff;
-    --wild:#ffd166; --wild-ink:#0b1322; --final:#e8eefb; --final-ink:#0b1322;
-    --deck-3:#ffd166;
-    --back-base:#101a30; --back-rule:#2ec4b6; --tap:#e8eefb;
-    --seal-bg:#0b1322; --seal-ink:#ff5c93; --seal-sub:#2ec4b6; --seal-glow:0 0 10px rgba(255,92,147,.85); --seal-size:13px;
-    --veil:rgba(5,9,18,.82); --shadow:rgba(0,0,0,.55);
-    --display:"Bungee", "Arial Black", Impact, sans-serif; --display-style:normal; --display-weight:400; --mark-size:14px;
-    --radius:12px;
-    --truth:#2ec4b6; --truth-ink:#062320; --dare:#ff5c93; --dare-ink:#0b1322;
-    color-scheme:dark;
   }
 
   :root{
@@ -428,7 +393,7 @@
   .pw-big{font-family:var(--card-font, inherit);font-weight:700;font-size:30px;letter-spacing:.06em;color:var(--accent);
     text-align:center;padding:16px 8px;margin:4px 0 12px;border:1px dashed var(--line-strong);border-radius:12px;text-transform:none !important}
 </style>
-<script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"trungthu";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="trungthu"}</script>
+<script>try{var sk=localStorage.getItem("nltq-pick")&&localStorage.getItem("nltq-skin")||"trungthu";if(["trungthu","dongho","sonmai"].indexOf(sk)<0)sk="trungthu";if(sk!=="sonmai")document.documentElement.dataset.skin=sk}catch(e){document.documentElement.dataset.skin="trungthu"}</script>
 </head>
 <body>
 
@@ -1514,9 +1479,7 @@ function show(screen){
 const SKINS = [
   {id:"trungthu", name:"Trung Thu", note:"Trăng rằm, đèn lồng, đêm tháng tám",  bg:"#141a38", sw:["#f2b13c","#e0523c","#2f7d68"]},
   {id:"dongho", name:"Đông Hồ",     note:"Giấy điệp, màu khắc gỗ",             bg:"#efe6d2", sw:["#dfa73c","#b0392a","#2d5a4b"]},
-  {id:"sonmai", name:"Sơn Mài",     note:"Đen then, thếp vàng, khảm vỏ trứng", bg:"#15100e", sw:["#b3301e","#6e1a14","#1f1714"]},
-  {id:"tet",    name:"Tết",         note:"Lì xì đỏ, mai vàng, đào hồng",        bg:"#6a0e15", sw:["#ffc93c","#f59ab0","#3a0a0f"]},
-  {id:"saigon", name:"Sài Gòn Đêm", note:"Biển hiệu neon, phố khuya",           bg:"#0b1322", sw:["#ff5c93","#2ec4b6","#18223d"]}
+  {id:"sonmai", name:"Sơn Mài",     note:"Đen then, thếp vàng, khảm vỏ trứng", bg:"#15100e", sw:["#b3301e","#6e1a14","#1f1714"]}
 ];
 const SKIN_KEY = "nltq-skin", PICK_KEY = "nltq-pick", DEFAULT_SKIN = "trungthu";
 function currentSkin(){ try{
@@ -1578,43 +1541,6 @@ const BACKS = {
         for(let k=r-3; k>4; k-=6){ g.beginPath(); g.arc(x, y, k, Math.PI, 0); g.stroke(); }
       }
     }
-  },
-  /* hoa mai, hoa đào on lì xì red */
-  tet(g, W, H){
-    g.fillStyle = "#a3141d"; g.fillRect(0,0,W,H);
-    const flower = (x, y, s, petal, core, rot) => {
-      for(let p=0;p<5;p++){
-        const a = rot + p*Math.PI*2/5;
-        g.beginPath(); g.ellipse(x+Math.cos(a)*s*.55, y+Math.sin(a)*s*.55, s*.5, s*.34, a, 0, Math.PI*2);
-        g.fillStyle = petal; g.fill();
-      }
-      g.beginPath(); g.arc(x, y, s*.2, 0, Math.PI*2); g.fillStyle = core; g.fill();
-    };
-    for(let i=0;i<150;i++){
-      const x = Math.random()*W, y = Math.random()*H, fade = clearing(x, y, W, H);
-      if(fade < 1.05) continue;
-      g.globalAlpha = Math.min(1, (fade-1)*1.6);
-      const mai = Math.random() < .6;
-      flower(x, y, 9 + Math.random()*13, mai ? "#ffc93c" : "#f7a8bb", mai ? "#e0612e" : "#ffe3a3", Math.random()*6);
-    }
-  },
-  /* đèn phố khuya — neon bokeh and rain */
-  saigon(g, W, H){
-    g.fillStyle = "#101a30"; g.fillRect(0,0,W,H);
-    const hues = ["255,92,147","46,196,182","255,209,102"];
-    g.globalCompositeOperation = "lighter";
-    for(let i=0;i<70;i++){
-      const x = Math.random()*W, y = Math.random()*H, fade = clearing(x, y, W, H);
-      if(fade < 1) continue;
-      const rad = 10 + Math.random()*34, c = hues[i % 3], a = Math.min(.55, (fade-1)*.8);
-      const grd = g.createRadialGradient(x, y, 0, x, y, rad);
-      grd.addColorStop(0, `rgba(${c},${a})`); grd.addColorStop(.7, `rgba(${c},${a*.5})`); grd.addColorStop(1, `rgba(${c},0)`);
-      g.fillStyle = grd; g.beginPath(); g.arc(x, y, rad, 0, Math.PI*2); g.fill();
-    }
-    g.globalCompositeOperation = "source-over";
-    g.strokeStyle = "rgba(232,238,251,.14)"; g.lineWidth = 1;
-    for(let i=0;i<120;i++){ const x = Math.random()*W, y = Math.random()*H, l = 8+Math.random()*16;
-      g.beginPath(); g.moveTo(x, y); g.lineTo(x-l*.25, y+l); g.stroke(); }
   }
 };
 /* >1 outside the oval "window" that keeps the seal readable */
