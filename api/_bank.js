@@ -3,6 +3,10 @@
 export const BANK = {
  "topics": {
   "yeu": [
+   "Bạn thân khác giới có thật sự tồn tại?",
+   "Có nên xem điện thoại của người yêu?",
+   "Yêu nhau thì có nên biết mật khẩu điện thoại của nhau?",
+   "Chia tay rồi có nên unfollow người yêu cũ?",
    "Ngoại tình tư tưởng có tính là ngoại tình không?",
    "Đang có bồ mới thì có được đi chơi riêng với người yêu cũ?",
    "Có nên yêu xa?",
@@ -79,6 +83,10 @@ export const BANK = {
    "Có nên đồng ý mua nhà chung khi chưa cưới?"
   ],
   "hen": [
+   "Cuối tuần lý tưởng của anh trông như thế nào?",
+   "Có món gì anh có thể ăn cả tuần không chán?",
+   "Anh là kiểu người thích ở nhà hay thích ra ngoài?",
+   "Nếu mai được nghỉ làm không cần lý do, anh sẽ làm gì?",
    "Có một sở thích nào của anh mà người khác nghe xong sẽ thấy hơi bất ngờ không?",
    "Anh thích lên kế hoạch trước hay thích tới đâu tính tới đó?",
    "Nếu phải chọn một bài hát để mô tả cuộc sống hiện tại, anh chọn bài nào?",
@@ -145,6 +153,10 @@ export const BANK = {
    "Có điều gì anh thấy cực kỳ thu hút nhưng đa số mọi người lại không để ý không?"
   ],
   "triet": [
+   "Tha thứ nhưng không quên thì có tính là tha thứ?",
+   "Con người có thật sự thay đổi được?",
+   "Thành công chủ yếu nhờ may mắn?",
+   "Nếu được, có nên biết trước ngày mình mất?",
    "Nhặt được 50 nghìn ngoài đường thì có nên giữ?",
    "Sống tốt quá thì dễ bị thiệt?",
    "Hạnh phúc là do mình lựa chọn?",
@@ -205,6 +217,10 @@ export const BANK = {
    "Có nên nói thật với bạn thân rằng mình không còn hợp với họ nữa?"
   ],
   "ay": [
+   "Có nên thử có “friends with bún bò”?",
+   "Không hợp “chuyện ấy” thì có nên cưới?",
+   "Trong tình yêu, sex có quan trọng bằng tình cảm không?",
+   "Có nên hỏi body count của người yêu?",
    "Có nên dạy giáo dục giới tính từ tiểu học?",
    "Có nên giả vờ “lên đỉnh” cho người yêu vui?",
    "Con gái có nên chủ động rủ “chuyện ấy” trước thay vì chờ đối phương?",
@@ -236,7 +252,6 @@ export const BANK = {
    "Có nên yêu người chuyện ấy kém nhưng luôn chăm sóc mình chu đáo?"
   ],
   "tien": [
-   "Đi ăn chung thì cứ chia đều cho nhanh?",
    "Hẹn hò lần đầu thì con trai nên trả tiền?",
    "Có nên nói lương cho bạn bè biết?",
    "Cưới rồi có nên gộp chung tiền?",
@@ -275,7 +290,6 @@ export const BANK = {
    "Có nên chọn một công việc ổn định thay vì công việc mình thật sự thích?"
   ],
   "nha": [
-   "Cưới xong có nên ra ở riêng?",
    "Ba mươi tuổi chưa cưới là “ế”?",
    "Tết có nhất thiết phải về quê?",
    "Bố mẹ có nên kiểm tra điện thoại của con tuổi teen?",
@@ -310,7 +324,6 @@ export const BANK = {
    "Có nên đưa người yêu về ra mắt dù chưa chắc sẽ cưới?"
   ],
   "ban": [
-   "Bạn thân có được đọc tin nhắn của nhau?",
    "Bạn thân cưới mà không mời thì có nên nghỉ chơi?",
    "Bạn hỏi “mặc thế này đẹp không” thì có nên nói thật?",
    "Có bồ rồi thì ít đi chơi với bạn là bình thường?",
@@ -347,6 +360,10 @@ export const BANK = {
    "Tình bạn lâu năm có đáng được ưu tiên hơn một tình bạn mới nhưng hợp nhau hơn?"
   ],
   "doi": [
+   "“Seen” mà không rep là thiếu tôn trọng?",
+   "Có cần hỏi trước khi đăng ảnh có mặt bạn bè?",
+   "Có nên cấm điện thoại trong bữa ăn?",
+   "Có nên đăng chuyện tình cảm lên mạng?",
    "Gọi điện mà không nhắn trước là bất lịch sự?",
    "Có nên “cai” mạng xã hội một tháng mỗi năm?",
    "“Cho điện thoại ăn trước” là phiền người khác?",
@@ -372,7 +389,6 @@ export const BANK = {
    "Có nên tắt định vị để không ai biết mình đang ở đâu?"
   ],
   "viec": [
-   "Có cần học đại học không?",
    "Có nên bỏ việc ổn định để theo đam mê?",
    "Sếp nhắn sau 10 giờ tối thì có nên trả lời?",
    "Có nên nhảy việc mỗi năm để tăng lương?",
@@ -401,6 +417,10 @@ export const BANK = {
    "Có nên chọn remote job lương thấp hơn office job?"
   ],
   "ket": [
+   "Người ta thường nói ghét của nào trời trao của đó, vậy anh có ghét em không?",
+   "Nếu anh mất trí nhớ nhưng vẫn yêu em thì đó là tình yêu hay thói quen?",
+   "Nếu em biến thành con mèo, anh yêu em vì em hay vì anh thích mèo?",
+   "Nếu em là người cuối cùng trên Trái Đất, anh yêu em vì em hay vì hết lựa chọn?",
    "Nếu em có hai bản sao giống hệt nhau và cả hai đều yêu anh, anh có ngoại tình không?",
    "Nếu một ngày em biến thành đàn ông nhưng vẫn yêu anh, anh có còn yêu em không?",
    "Nếu em béo lên 30kg anh có còn yêu em không, hay anh yêu cân nặng hiện tại?",
@@ -415,7 +435,6 @@ export const BANK = {
  "tod": {
   "t-yeu": {
    "truths": [
-    "Lần gần nhất bạn ghen là vì chuyện gì?",
     "Bạn còn giữ ảnh chụp chung với người cũ không?",
     "Bạn từng nhắn tin cho người cũ lúc nửa đêm chưa?",
     "Điều tệ nhất bạn từng làm trong một mối quan hệ là gì?",
@@ -479,7 +498,6 @@ export const BANK = {
   },
   "t-ay": {
    "truths": [
-    "Điều gì làm bạn thấy hấp dẫn ở một người?",
     "Bạn từng có tình một đêm chưa?",
     "Bạn có kể thật với người yêu về quá khứ của mình không?",
     "Điều gì bạn muốn thử nhưng chưa dám nói ra?",

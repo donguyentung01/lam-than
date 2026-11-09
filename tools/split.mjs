@@ -6,8 +6,7 @@
    only an entitled request can reach them. A paywall that leaves the cards in the page
    source is decoration, so this step is the whole paywall.
 
-   5.000đ opens every deck for 24 hours. Six decks show a few cards first as a trial;
-   the rest are dark until paid for. Which cards a trial shows is just authoring order, so
+   5.000đ opens every deck for 24 hours. Each deck shows its first card free. Which cards a trial shows is just authoring order, so
    put the strongest cards at the top of each deck in src/app.html.
 
    node tools/split.mjs            split index.html in place, write api/_bank.js
@@ -21,11 +20,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PAGE = path.join(ROOT, "index.html");
 const BANK = path.join(ROOT, "api/_bank.js");
 
-/* The trial decks, and how many cards each shows for free. Chosen from real play counts:
-   Tình Yêu, Chuyện Ấy, Deep Talk and Chuyện Thiên Hạ are where people already land, and
-   First Date and Không Lối Thoát are the newest decks, so a taste is how people find them.
-   Every deck not listed here is fully locked. */
-const TRIAL = { yeu: 5, ay: 5, triet: 5, doi: 5, hen: 5, ket: 5 };
+/* Every deck shows exactly one free card: the first in its list, so put the strongest card
+   on top. A thật hay thách deck's one free card is its first thật; its thách pile is
+   locked from the start, so picking thách goes straight to the wall. */
+const FREE = 1;
 
 /* Pull one `const NAME = [ ... ];` array out of the page and read it. Counts brackets rather
    than looking for a marker, so it reads both the hand-written source and its own one-line
@@ -56,23 +54,22 @@ let page = fs.readFileSync(PAGE, "utf8");
 const topics = readArray(page, "TOPICS");
 const tod = readArray(page, "TOD");
 
-const freeOf = id => TRIAL[id] || 0;
 
 /* the free half stays in the page, carrying the true size so the UI can say "50 câu hỏi" */
-const freeTopics = topics.value.map(t => ({ ...t, n: t.cards.length, cards: t.cards.slice(0, freeOf(t.id)) }));
+const freeTopics = topics.value.map(t => ({ ...t, n: t.cards.length, cards: t.cards.slice(0, FREE) }));
 const freeTod = tod.value.map(t => ({
   ...t,
   nt: t.truths.length, nd: t.dares.length,
-  truths: t.truths.slice(0, freeOf(t.id)),
-  dares: t.dares.slice(0, freeOf(t.id)),
+  truths: t.truths.slice(0, FREE),
+  dares: [],
 }));
 
 /* the paid half moves out of reach */
 const paid = {
-  topics: Object.fromEntries(topics.value.map(t => [t.id, t.cards.slice(freeOf(t.id))])),
+  topics: Object.fromEntries(topics.value.map(t => [t.id, t.cards.slice(FREE)])),
   tod: Object.fromEntries(tod.value.map(t => [t.id, {
-    truths: t.truths.slice(freeOf(t.id)),
-    dares: t.dares.slice(freeOf(t.id)),
+    truths: t.truths.slice(FREE),
+    dares: t.dares,
   }])),
 };
 

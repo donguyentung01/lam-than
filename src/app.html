@@ -1428,9 +1428,8 @@ $("age-ok").addEventListener("click", () => { state.adultOk = true; $("agegate")
 $("age-no").addEventListener("click", () => { $("agegate").hidden = true; });
 
 /* ============ THE GATE ============
-   5.000đ opens every paid deck for 24 hours. Six decks show a few cards first; the rest
-   are dark. Outside production, with no bank wired up, /api/order mints a pass on the spot
-   so the whole flow can be walked on test. */
+   5.000đ opens every paid deck for 24 hours. Every deck shows its first card free; the
+   rest come with the pass. */
 let gateFrom = "decks", watchTimer = null, watchUntil = 0, watchMemo = "";
 const WHY = {
   invalid: "Mã không đúng, hoặc đã hết hạn.",
@@ -1879,8 +1878,11 @@ async function startTod(){
 }
 function todDraw(kind){
   const t = state.tod;
-  if(!t[kind].length) todFill(kind);                   // a pile that runs dry is shuffled anew
-  if(!t[kind].length) return tpicked().some(locked) ? openGate("tod") : undefined;
+  if(!t[kind].length){
+    if(tpicked().some(locked)) return openGate("tod");  // the free cards are spent: the wall, not a reshuffle
+    todFill(kind);                                      // a paid pile that runs dry is shuffled anew
+  }
+  if(!t[kind].length) return;
   if(t.card && !t.noRecord) t.history.push(t.card);
   t.noRecord = false;
   t.card = t[kind].shift(); t.drawn++;

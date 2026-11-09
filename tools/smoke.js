@@ -50,9 +50,11 @@ let BANK;
     console.log(" trial ran", n, "cards then walled:", !$("paywall").hidden, "| hud:", $("hud-count").textContent, "| qr sheet:", !$("pw-pay").hidden, "|", $("pw-wait").textContent.trim());
     click($("pw-close")); await wait(5);
     click(d.querySelector('.deck[data-id="yeu"]'));            // unpick
-    click(d.querySelector('.deck[data-id="viec"]'));           // a deck with no trial at all
+    click(d.querySelector('.deck[data-id="viec"]'));           // every deck has exactly one free card
     click($("pick-go")); await wait(10);
-    console.log(" locked deck walls without dealing:", !$("paywall").hidden && $("s-play").hidden);
+    const first = !$("s-play").hidden && $("paywall").hidden;
+    click($("next")); await wait(5);
+    console.log(" another deck: one free card, then the wall:", first && !$("paywall").hidden);
     console.log(" free visitor errors:", errors.length ? errors : "none");
     w.close();
   }
