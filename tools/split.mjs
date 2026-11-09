@@ -6,7 +6,7 @@
    only an entitled request can reach them. A paywall that leaves the cards in the page
    source is decoration, so this step is the whole paywall.
 
-   Every deck costs 5.000đ for 24 hours. Four decks show a few cards first as a trial;
+   5.000đ opens every deck for 24 hours. Six decks show a few cards first as a trial;
    the rest are dark until paid for. Which cards a trial shows is just authoring order, so
    put the strongest cards at the top of each deck in src/app.html.
 
@@ -22,9 +22,10 @@ const PAGE = path.join(ROOT, "index.html");
 const BANK = path.join(ROOT, "api/_bank.js");
 
 /* The trial decks, and how many cards each shows for free. Chosen from real play counts:
-   Tình Yêu, Chuyện Ấy, Deep Talk and Chuyện Thiên Hạ are where people already land.
+   Tình Yêu, Chuyện Ấy, Deep Talk and Chuyện Thiên Hạ are where people already land, and
+   First Date and Không Lối Thoát are the newest decks, so a taste is how people find them.
    Every deck not listed here is fully locked. */
-const TRIAL = { yeu: 5, ay: 5, triet: 5, doi: 5 };
+const TRIAL = { yeu: 5, ay: 5, triet: 5, doi: 5, hen: 5, ket: 5 };
 
 /* Pull one `const NAME = [ ... ];` array out of the page and read it. Counts brackets rather
    than looking for a marker, so it reads both the hand-written source and its own one-line

@@ -69,11 +69,6 @@ export const BANK = {
    "Tình yêu lâu năm có nhất thiết phải còn cảm giác “hồi hộp” như lúc mới yêu?"
   ],
   "hen": [
-   "Nếu được teleport đi bất kì đâu ngay bây giờ, anh sẽ đi đâu?",
-   "Cuối tuần lý tưởng của anh trông như thế nào?",
-   "Có món gì anh có thể ăn cả tuần không chán?",
-   "Anh là kiểu người thích ở nhà hay thích ra ngoài?",
-   "Nếu mai được nghỉ làm không cần lý do, anh sẽ làm gì?",
    "Có một sở thích nào của anh mà người khác nghe xong sẽ thấy hơi bất ngờ không?",
    "Anh thích lên kế hoạch trước hay thích tới đâu tính tới đó?",
    "Nếu phải chọn một bài hát để mô tả cuộc sống hiện tại, anh chọn bài nào?",
@@ -388,11 +383,6 @@ export const BANK = {
    "Có nên chọn remote job lương thấp hơn office job?"
   ],
   "ket": [
-   "Nếu em biến thành con gián và đi yêu một con gián khác thì có gọi là ngoại tình không?",
-   "Người ta thường nói ghét của nào trời trao của đó, vậy anh có ghét em không?",
-   "Nếu anh mất trí nhớ nhưng vẫn yêu em thì đó là tình yêu hay thói quen?",
-   "Nếu em biến thành con mèo, anh yêu em vì em hay vì anh thích mèo?",
-   "Nếu em là người cuối cùng trên Trái Đất, anh yêu em vì em hay vì hết lựa chọn?",
    "Nếu em có hai bản sao giống hệt nhau và cả hai đều yêu anh, anh có ngoại tình không?",
    "Nếu một ngày em biến thành đàn ông nhưng vẫn yêu anh, anh có còn yêu em không?",
    "Nếu em béo lên 30kg anh có còn yêu em không, hay anh yêu cân nặng hiện tại?",
