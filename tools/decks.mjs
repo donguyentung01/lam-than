@@ -24,7 +24,7 @@ function idsIn(name) {
   return [...body.matchAll(/\{\s*id:\s*"([a-z0-9-]+)"/g)].map(m => m[1]);
 }
 
-const ids = [...idsIn("TOPICS"), ...idsIn("TOD")];
+const ids = [...idsIn("TOPICS"), ...idsIn("TOD"), ...idsIn("NHB")];
 const seen = new Set();
 for (const id of ids) {
   if (seen.has(id)) throw new Error(`two decks share the id "${id}"`);
