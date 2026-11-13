@@ -8,10 +8,10 @@
      node tools/inbox.mjs apply changes.json  add, remove and reword cards in src/app.html
 
    changes.json:
-     { "add":    [{ "game":"hoi"|"tod", "topic":"yeu", "kind":"truth"|"dare", "text":"…" }],
+     { "add":    [{ "game":"hoi"|"tod"|"nhb", "topic":"yeu", "kind":"truth"|"dare", "text":"…" }],
        "remove": [{ "game", "topic", "kind", "text" }],
        "edit":   [{ "game", "topic", "kind", "from":"old text", "to":"new text" }] }
-   `kind` is only for thật hay thách cards.
+   `kind` is only for thật hay thách cards. "nhb" is Mình chưa bao giờ… (decks n-yeu, n-ay).
 
    New cards go at the end of their deck, so the free cards at the top never shift.
    A remove or edit that cannot find its card stops everything before anything is written:
@@ -38,7 +38,7 @@ const listOf = name => { const at = page.indexOf(`const ${name} = [`); const a =
 
 /* Where one deck's cards live in the source: the cards / truths / dares array. */
 function slot(game, topic, kind) {
-  const list = listOf(game === "tod" ? "TOD" : "TOPICS");
+  const list = listOf(game === "tod" ? "TOD" : game === "nhb" ? "NHB" : "TOPICS");
   const head = page.indexOf(`{id:"${topic}"`, list.open);
   if (head < 0 || head > list.close) throw new Error(`no deck "${topic}" in ${game}`);
   const field = game === "tod" ? (kind === "dare" ? "dares:[" : "truths:[") : "cards:[";
@@ -63,9 +63,10 @@ function write(s, cards) {
 const [cmd, arg] = process.argv.slice(2);
 
 if (cmd === "export") {
-  const out = { hoi: {}, tod: {} };
+  const out = { hoi: {}, tod: {}, nhb: {} };
   for (const t of listOf("TOPICS").value) out.hoi[t.id] = { name: t.name, sub: t.sub, adult: !!t.adult, cards: t.cards };
   for (const t of listOf("TOD").value) out.tod[t.id] = { name: t.name, sub: t.sub, adult: !!t.adult, truths: t.truths, dares: t.dares };
+  for (const t of listOf("NHB").value) out.nhb[t.id] = { name: t.name, sub: t.sub, adult: !!t.adult, cards: t.cards };
   console.log(JSON.stringify(out, null, 1));
 } else if (cmd === "apply") {
   const ch = JSON.parse(fs.readFileSync(arg, "utf8"));

@@ -471,6 +471,11 @@
         <span class="cap"><h3>Thật hay Thách</h3><p>Chọn thật thì phải nói, chọn thách thì phải làm.</p><div class="meta" id="mode-tod-meta"></div></span>
         <span class="go" aria-hidden="true">→</span>
       </button>
+      <button class="mode" id="mode-nhb">
+        <span class="mini" data-c="1"><img alt="" id="mode-nhb-art"></span>
+        <span class="cap"><h3>Mình chưa bao giờ…</h3><p>Ai từng làm rồi thì tự thú.</p><div class="meta" id="mode-nhb-meta"></div></span>
+        <span class="go" aria-hidden="true">→</span>
+      </button>
     </div>
     <div class="skins-wrap">
       <div class="eyebrow">Giao diện</div>
@@ -519,7 +524,7 @@
               <div class="tap">Chạm để lật</div>
             </div>
             <div class="face front-face" id="front">
-              <div class="f-top"><span id="f-topic"></span><span>Có hay không?</span></div>
+              <div class="f-top"><span id="f-topic"></span><span id="f-ask">Có hay không?</span></div>
               <div class="q" id="q"></div>
               <div class="f-bot"><span>Làm Thân</span><span class="n" id="f-n"></span></div>
             </div>
@@ -1219,14 +1224,18 @@ const BANK_LINE = "BIDV · 96247LT6868";
 let state;
 const $ = id => document.getElementById(id);
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-const decksOf = () => state.mode === "tod" ? TOD : TOPICS;
-const picksOf = () => state.mode === "tod" ? state.tpick : state.picked;
-const picked = () => TOPICS.filter(t => state.picked.includes(t.id));
+/* "Mình chưa bao giờ…" plays exactly like Câu hỏi, one card at a time, so it runs on the
+   same engine: picked() hands the game whichever card list the current mode uses. */
+const nhb = () => state.mode === "nhb";
+const decksOf = () => state.mode === "tod" ? TOD : nhb() ? NHB : TOPICS;
+const pickKey = () => state.mode === "tod" ? "tpick" : nhb() ? "npick" : "picked";
+const picksOf = () => state[pickKey()];
+const picked = () => nhb() ? NHB.filter(t => state.npick.includes(t.id)) : TOPICS.filter(t => state.picked.includes(t.id));
 const tpicked = () => TOD.filter(t => state.tpick.includes(t.id));
 const chosen = () => state.mode === "tod" ? tpicked() : picked();
 const cardCount = ts => ts.reduce((n, t) => n + (t.cards ? t.cards.length : todCards(t)), 0);
 function freshState(){
-  return { screen:"home", mode:"hoi", picked:[], tpick:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false,
+  return { screen:"home", mode:"hoi", picked:[], tpick:[], npick:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false,
            tod:{truth:[], dare:[], card:null, drawn:0, total:0, history:[], noRecord:false} };
 }
 
@@ -1241,30 +1250,34 @@ function renderHome(){                                 // the two ways to play
   $("mode-tod-art").src = VG("ban", 320, 320);
   $("mode-hoi-meta").textContent = `${TOPICS.length} chủ đề · ${cardCount(TOPICS)} câu hỏi`;
   $("mode-tod-meta").textContent = `${TOD.length} chủ đề · ${cardCount(TOD)} lá`;
+  $("mode-nhb-art").src = VG("vui", 320, 320);
+  $("mode-nhb-meta").textContent = cardCount(NHB) ? `${NHB.length} chủ đề · ${cardCount(NHB)} câu` : `${NHB.length} chủ đề · sắp có`;
 }
 function renderDecks(){
   const list = decksOf(), tod = state.mode === "tod", order = deckOrder(), picks = picksOf();
   state.order = order.map(t => t.id).join(",");
-  $("decks-title").textContent = tod ? "Thật hay Thách" : "Câu hỏi";
+  $("decks-title").textContent = tod ? "Thật hay Thách" : nhb() ? "Mình chưa bao giờ…" : "Câu hỏi";
   $("decks").innerHTML = order.map(t => `<button class="deck" data-id="${t.id}" aria-pressed="${picks.includes(t.id)}" title="${t.sub}">
       <span class="mini" data-c="${list.indexOf(t) % 4}"><img alt="" src="${VG(t.art || t.id, 320, 320)}"></span>
-      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.truths.length} thật · ${t.dares.length} thách` : `${t.cards.length} câu hỏi`}${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
+      <span class="cap"><h3>${t.name}</h3><p>${t.sub}</p><div class="meta">${tod ? `${t.truths.length} thật · ${t.dares.length} thách` : nhb() ? (t.cards.length ? `${t.cards.length} câu` : "chưa có câu nào") : `${t.cards.length} câu hỏi`}${t.adult ? " · 18+" : ""}</div><div class="played" data-t="${t.id}" hidden></div></span>
       <span class="tick" aria-hidden="true">✓</span></button>`).join("");
   const ts = chosen(), btn = $("pick-go"), unit = tod ? "lá" : "câu";
-  btn.disabled = !ts.length;
+  btn.disabled = !ts.length || !cardCount(ts);          // an empty deck has nothing to deal
   paintTopics();
   btn.textContent = !ts.length ? "Chọn ít nhất một chủ đề"
+    : !cardCount(ts) ? "Bộ này chưa có câu nào"
     : ts.length === 1 ? `Chơi ${ts[0].name} · ${cardCount(ts)} ${unit} →`
     : `Trộn ${ts.length} chủ đề · ${cardCount(ts)} ${unit} →`;
 }
 $("decks").addEventListener("click", e => {
   const b = e.target.closest(".deck"); if(!b) return;
-  const id = b.dataset.id, key = state.mode === "tod" ? "tpick" : "picked";
+  const id = b.dataset.id, key = pickKey();
   state[key] = state[key].includes(id) ? state[key].filter(x => x !== id) : state[key].concat(id);
   renderDecks();
 });
 $("mode-hoi").addEventListener("click", () => { state.mode = "hoi"; show("decks"); });
 $("mode-tod").addEventListener("click", () => { state.mode = "tod"; show("decks"); });
+$("mode-nhb").addEventListener("click", () => { state.mode = "nhb"; show("decks"); });
 $("decks-back").addEventListener("click", () => show("home"));
 function startPicked(){ state.mode === "tod" ? startTod() : startGame(); }
 $("pick-go").addEventListener("click", () => {
@@ -1392,6 +1405,17 @@ const TOD = [
 ];
 const todCards = t => t.truths.length + t.dares.length;
 
+/* ============ MÌNH CHƯA BAO GIỜ… ============
+   Never have I ever. Each card is the whole sentence, starting "Mình chưa bao giờ", and
+   whoever has done it owns up. Free in every build: tools/split.mjs only reads TOPICS and TOD.
+   Cards come from the Question Inbox (game "nhb"). */
+const NHB = [
+ {id:"n-yeu", art:"yeu", name:"Tình Yêu", sub:"Người cũ, crush, những chuyện chưa kể ai.", cards:[
+ ]},
+ {id:"n-ay", art:"ay", name:"Chuyện Ấy", sub:"Cho nhóm đã đủ thân. Ai từng thì tự thú.", adult:true, cards:[
+ ]}
+];
+
 /* ============ GAME ============ */
 function deal(){
   state.pile = shuffle(picked().flatMap(t => t.cards.map(text => ({text, topic:t.id}))));
@@ -1414,11 +1438,12 @@ function drawCard(){
   }
 }
 function renderPlay(){
-  const c = state.card, t = TOPICS.find(x => x.id === c.topic), ts = picked();
+  const list = decksOf(), c = state.card, t = list.find(x => x.id === c.topic), ts = picked();
   $("hud-title").textContent = ts.length === 1 ? ts[0].name : `${ts.length} chủ đề`;
   $("hud-count").textContent = `${state.drawn}/${state.total}`;
-  $("front").dataset.c = TOPICS.indexOf(t) % 4;
+  $("front").dataset.c = list.indexOf(t) % 4;
   $("f-topic").textContent = t.name;
+  $("f-ask").textContent = nhb() ? "Ai từng rồi?" : "Có hay không?";
   $("q").textContent = c.text;
   $("f-n").textContent = String(state.drawn).padStart(2, "0");
   $("card").classList.toggle("flipped", state.flipped);
@@ -1823,6 +1848,7 @@ function start(saved){
   applySkin(currentSkin());
   state = Object.assign(freshState(), saved && saved.screen ? saved : {});
   state.picked = (state.picked || []).filter(id => TOPICS.some(t => t.id === id));
+  state.npick = (state.npick || []).filter(id => NHB.some(t => t.id === id));
   if(state.screen === "play" && !state.card) state.screen = "home";
   show(state.screen);
 }
