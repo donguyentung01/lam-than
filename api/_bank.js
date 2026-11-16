@@ -463,7 +463,13 @@ export const BANK = {
     "Người cũ nào bạn từng lén xem story dù đã tự hứa là không xem nữa?",
     "Điều ngốc nhất bạn từng làm vì ghen là gì?",
     "Bạn từng phát hiện ra điều gì trong điện thoại của người yêu khiến bạn chết lặng?",
-    "Bài hát nào nghe lên là bạn nhớ ngay đến một người cũ?"
+    "Bài hát nào nghe lên là bạn nhớ ngay đến một người cũ?",
+    "Chuyện gì ở người yêu hiện tại khiến bạn ghen mà bạn chưa dám nói thẳng?",
+    "Tin nhắn nào trong điện thoại bạn mà người yêu hiện tại đọc được là toang ngay?",
+    "Bạn từng ghen vì một cái like hay comment dưới ảnh của người yêu, kể nghe thử?",
+    "Bạn từng nhớ người cũ vì lý do gì ngớ ngẩn nhất, như món ăn hay con đường?",
+    "Kể lý do buồn cười nhất từng khiến bạn ghen?",
+    "Người cũ nào bạn từng thấy mình may mắn vì đã chia tay, và vì sao?"
    ],
    "dares": [
     "Mở tin nhắn với người cũ và đọc to câu cuối cùng bạn gửi.",
@@ -518,7 +524,8 @@ export const BANK = {
     "Bạn đã bao giờ có giai đoạn “chơi bời” chưa?",
     "Nếu chỉ được làm chuyện ấy với một tư thế trong suốt phần còn lại cuộc đời, bạn chọn tư thế gì?",
     "Bạn có quy tắc nào cho lần đầu với người mới không?",
-    "Bạn từng thấy ghen vì chuyện ấy của người yêu cũ chưa?"
+    "Bạn từng thấy ghen vì chuyện ấy của người yêu cũ chưa?",
+    "Bạn chấm bao nhiêu điểm trên thang 10 cho độ chủ động của mình, và vì sao?"
    ],
    "dares": [
     "Tả mẫu người lý tưởng trên giường của bạn trong ba mươi giây.",
@@ -542,7 +549,8 @@ export const BANK = {
     "Nói thẳng một thói quen nhỏ của đối phương khiến bạn mê mẩn, không cần nói tên ai.",
     "Kể tên một địa danh du lịch khiến bạn liên tưởng ngay đến một kỷ niệm thân mật.",
     "Kể tên một bài nhạc khiến bạn nghĩ ngay đến một đêm đáng nhớ.",
-    "Kể một thói quen sau khi thân mật khiến bạn thấy ấm áp nhất."
+    "Kể một thói quen sau khi thân mật khiến bạn thấy ấm áp nhất.",
+    "Kể lại một lần bạn từ chối dù trong lòng rất muốn đồng ý."
    ]
   }
  }
