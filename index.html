@@ -1600,7 +1600,7 @@ const VUA_CARDS = [
   {id:"nhau",  n:2, k:"drink", icon:"clink", name:"Bạn Nhậu",          say:"Chọn một người. Từ giờ đến hết ván, bạn uống thì họ uống theo."},
   {id:"thac",  n:2, k:"drink", icon:"falls", name:"Thác Nước",         say:"Cả bàn cùng uống."},
   {id:"noi",   n:4, k:"game",  icon:"chain", name:"Nối Từ",            say:"Nói một từ ghép. Người tiếp theo nối bằng chữ cuối. Ai bí thì uống.", ex:"xinh đẹp → đẹp gái → gái gú…"},
-  {id:"de",    n:4, k:"game",                name:"Chủ Đề",            say:"Lần lượt kể tên một thứ thuộc chủ đề, không được trùng. Ai bí hoặc trùng thì uống."},
+  {id:"de",    n:4, k:"game",                name:"Chủ Đề",            say:"Bạn tự chọn một chủ đề. Lần lượt mỗi người kể một thứ thuộc chủ đề đó, không trùng. Ai bí thì uống."},
   {id:"tod",   n:4, k:"pull",                name:"Thật Hay Thách",    say:"Chọn bộ, rồi chọn Thật hoặc Thách. Từ chối thì uống."},
   {id:"nhb",   n:4, k:"pull",                name:"Mình Chưa Bao Giờ", say:"Ai đã từng làm thì uống."},
   {id:"cup",   n:4, k:"cup",   icon:"crown", name:"Chén Vua",          say:"Rót một ít vào ly giữa bàn. Ai rút lá Chén Vua thứ tư thì uống cạn."},
@@ -1608,48 +1608,49 @@ const VUA_CARDS = [
 ];
 const VUA_TOD = ["t-yeu", "t-ban"], VUA_NHB = ["n-yeu"];       // never Chuyện Ấy
 
-/* Suggestions for Chủ Đề. The drawer can take one, ask for another, or say their own. */
+/* Suggestions for Chủ Đề, there for a table that cannot think of one. The drawer is free to
+   pick their own; the card says so. */
 const VUA_TOPICS = [
-  ["Ca sĩ Việt Nam", "Sơn Tùng M-TP, Mỹ Tâm, Đen Vâu…"],
-  ["Món ăn đường phố", "bánh tráng trộn, bột chiên, ốc…"],
-  ["Hãng trà sữa", "Phúc Long, Gong Cha, Koi Thé…"],
-  ["Quận ở Sài Gòn", "Quận 1, Bình Thạnh, Gò Vấp…"],
-  ["Tỉnh thành Việt Nam", "Huế, Đà Nẵng, Cần Thơ…"],
-  ["App trên điện thoại", "Zalo, Shopee, Grab…"],
-  ["Hãng bia", "Tiger, Heineken, Sài Gòn…"],
-  ["Phim Việt Nam", "Bố Già, Mai, Nhà Bà Nữ…"],
-  ["Trái cây", "xoài, sầu riêng, chôm chôm…"],
-  ["Món ăn ngày Tết", "bánh chưng, thịt kho, dưa hành…"],
-  ["Các loại bún", "bún bò, bún riêu, bún chả…"],
-  ["Món nhậu", "khô mực, gỏi gà, lẩu thái…"],
-  ["Thương hiệu thời trang", "Zara, Uniqlo, H&M…"],
-  ["Mạng xã hội", "Facebook, TikTok, Threads…"],
-  ["Con vật", "mèo, cá heo, chim cánh cụt…"],
-  ["Nghề nghiệp", "bác sĩ, giáo viên, kế toán…"],
-  ["Thứ có trong túi xách", "son, chìa khoá, khăn giấy…"],
-  ["Nhân vật hoạt hình", "Doraemon, Shin, Tom và Jerry…"],
-  ["Cầu thủ bóng đá", "Quang Hải, Messi, Ronaldo…"],
-  ["Hãng điện thoại", "iPhone, Samsung, Oppo…"],
-  ["Nước trên thế giới", "Nhật, Hàn, Pháp…"],
-  ["Môn thể thao", "bóng đá, cầu lông, pickleball…"],
-  ["Thứ màu đỏ", "bao lì xì, cà chua, ớt…"],
-  ["Phim hoạt hình Disney", "Frozen, Coco, Moana…"],
-  ["App hẹn hò", "Tinder, Bumble, Hinge…"],
-  ["Món có chữ “bánh”", "bánh mì, bánh xèo, bánh cuốn…"],
-  ["Thành phố trên thế giới", "Tokyo, Paris, Seoul…"],
-  ["Đồ trong bếp", "nồi, chảo, đôi đũa…"],
-  ["Thương hiệu mỹ phẩm", "Innisfree, MAC, Cocoon…"],
-  ["Câu người cũ hay nói", "“mình hợp làm bạn hơn”, “anh bận”…"],
-  ["Lý do đi trễ", "kẹt xe, ngủ quên, trời mưa…"],
-  ["Tin nhắn làm bạn sợ", "“mình nói chuyện chút nha”, “?”…"],
-  ["Nghệ sĩ K-pop", "BTS, BLACKPINK, IU…"],
-  ["Đồ trong tủ lạnh", "trứng, sữa, nước mắm…"],
-  ["Môn học ở trường", "toán, văn, thể dục…"],
-  ["Đồ hay mua trên Shopee lúc nửa đêm", "ốp điện thoại, đèn ngủ, váy…"],
-  ["Địa điểm hẹn hò", "quán cà phê, rạp phim, bờ hồ…"],
-  ["Món chè", "chè ba màu, chè khúc bạch, chè bưởi…"],
-  ["Trò chơi hồi nhỏ", "ô ăn quan, nhảy dây, trốn tìm…"],
-  ["Thứ bạn làm khi mất ngủ", "lướt TikTok, đếm cừu, nhắn tin người cũ…"],
+  ["Rapper Việt Nam","Đen Vâu, Binz, Suboi…"],
+  ["Người nổi tiếng từng đi tù","nghĩ cho kỹ rồi hẵng nói…"],
+  ["Người nổi tiếng từng dính phốt","ai hóng drama nhiều thì thắng…"],
+  ["Câu người cũ hay nói","“mình hợp làm bạn hơn”, “anh bận”…"],
+  ["Tin nhắn làm bạn sợ","“mình nói chuyện chút nha”, “?”…"],
+  ["Lý do chia tay vô lý nhất","“em tốt quá”, “mình chưa sẵn sàng”…"],
+  ["Cớ để xin nghỉ làm","đau bụng, bà ngoại ốm, mất điện…"],
+  ["Câu mẹ hay nói","“con nhà người ta”, “mặc thêm áo vào”…"],
+  ["Câu sếp hay nói","“gấp nha em”, “em check giúp anh chút”…"],
+  ["Câu họ hàng hỏi ngày Tết","“bao giờ cưới?”, “lương bao nhiêu?”…"],
+  ["Thứ chắc chắn có ở đám cưới Việt","phong bì, cô dâu thay ba bộ váy, “Một Hai Ba Dzô”…"],
+  ["Red flag khi hẹn hò","nói xấu người cũ, không bao giờ rep tin…"],
+  ["Kiểu người trên app hẹn hò","chỉ đăng ảnh xe, bio ghi “hỏi đi”…"],
+  ["Kiểu người trong nhóm chat","chỉ thả tim, seen không rep, gửi meme 2015…"],
+  ["Câu thả thính sến nhất","“em có mệt không, chạy trong đầu anh cả ngày”…"],
+  ["Lời nói dối ai cũng từng nói","“đang trên đường”, “mình ổn”…"],
+  ["Biệt danh lưu người yêu trong danh bạ","Gấu, Ông xã, “Đừng nghe”…"],
+  ["Thứ người cũ để lại","áo khoác, bàn chải, nỗi đau…"],
+  ["Lý do để nhậu","sinh nhật, thất tình, thứ Sáu…"],
+  ["Câu cửa miệng trên mạng","“ối dồi ôi”, “khum”, “ét o ét”…"],
+  ["Bài karaoke kinh điển","Em Của Ngày Hôm Qua, Hồng Nhan…"],
+  ["Hit nhạc Việt ai cũng thuộc","Lạc Trôi, See Tình, Bigcityboi…"],
+  ["Hoa hậu Việt Nam","H’Hen Niê, Tiểu Vy, Thùy Tiên…"],
+  ["Cầu thủ Việt Nam","Quang Hải, Công Phượng, Văn Hậu…"],
+  ["Món người nước ngoài sợ","trứng vịt lộn, mắm tôm, sầu riêng…"],
+  ["Thứ người Việt mang đi du lịch","mì gói, dầu gió, nồi cơm điện…"],
+  ["Điều kiêng ngày Tết","quét nhà mùng 1, làm vỡ chén…"],
+  ["Lý do đi trễ","kẹt xe, ngủ quên, trời mưa…"],
+  ["Đồ hay mua trên Shopee lúc nửa đêm","ốp điện thoại, đèn ngủ, váy…"],
+  ["Thứ bạn làm khi mất ngủ","lướt TikTok, đếm cừu, nhắn tin người cũ…"],
+  ["Thứ bạn từng giấu bố mẹ","sổ liên lạc, người yêu, hình xăm…"],
+  ["Món nhậu","khô mực, gỏi gà, lẩu thái…"],
+  ["Hãng bia","Tiger, Heineken, Sài Gòn…"],
+  ["Món ăn đường phố","bánh tráng trộn, bột chiên, ốc…"],
+  ["Ca sĩ Việt Nam","Sơn Tùng M-TP, Mỹ Tâm, Hà Anh Tuấn…"],
+  ["Phim Việt Nam","Bố Già, Mai, Nhà Bà Nữ…"],
+  ["Nhân vật hoạt hình","Doraemon, Shin, Tom và Jerry…"],
+  ["Quận ở Sài Gòn","Quận 1, Bình Thạnh, Gò Vấp…"],
+  ["Thứ có trong túi xách","son, chìa khoá, khăn giấy…"],
+  ["Trò chơi hồi nhỏ","ô ăn quan, nhảy dây, trốn tìm…"],
 ];
 
 const vuaType = id => VUA_CARDS.find(c => c.id === id);
@@ -1733,7 +1734,7 @@ function renderVua(){
     if(c.id === "de"){
       const [topic, ex] = VUA_TOPICS[c.topic];
       lead = true;
-      main = `<div class="vua-lbl">Gợi ý</div>
+      main = `<div class="vua-lbl">Bí ý tưởng? Thử chủ đề này</div>
         <div class="vua-topic"><span>${vuaEsc(topic)}</span><button class="vua-swap" data-act="swap" aria-label="Đổi chủ đề">↻</button></div>
         <p class="vua-ex">${vuaEsc(ex)}</p>`;
     }
