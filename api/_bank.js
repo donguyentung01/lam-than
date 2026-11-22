@@ -567,7 +567,11 @@ export const BANK = {
     "Đăng hình ngón tay đeo nhẫn lên Instagram story với caption “em đồng ý”.",
     "Tỏ tình người đối diện bạn.",
     "Gọi điện cho bố mẹ và bảo con đã có bầu.",
-    "Gửi hình selfie cho crush."
+    "Gửi hình selfie cho crush.",
+    "Kẹp đá vào nách trong vòng 1 phút.",
+    "Đến một bàn khác và hét lên: “tụi bay nói xấu gì tao đó”.",
+    "Cho mọi người xem 3 hình gần nhất trong album ảnh điện thoại.",
+    "Follow lại người yêu cũ trên Instagram."
    ]
   }
  }
