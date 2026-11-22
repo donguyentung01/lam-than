@@ -2067,7 +2067,7 @@ function paintTopics(){
 }
 function paintVuaMeta(){
   const n = tally.topics.vua || 0;
-  $("mode-vua-meta").textContent = `${VUA_CARDS.length} loại lá · ${VUA_CARDS.reduce((s, c) => s + c.n, 0)} lá` + (n ? ` · ${vi(n)} lá đã rút` : "");
+  $("mode-vua-meta").textContent = `${VUA_CARDS.reduce((s, c) => s + c.n, 0)} lá` + (n ? ` · ${vi(n)} lượt chơi` : "");   // a turn is one card drawn
 }
 function setTopics(topics){
   if(!topics) return;
