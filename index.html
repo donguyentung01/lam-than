@@ -351,6 +351,46 @@
   .count{text-align:center;font-size:12px;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
 
   /* ---------- overlays ---------- */
+  /* Chén Vua: the card's colour says what kind it is before anyone reads it */
+  #vua-front{padding:22px 20px 16px}
+  #vua-front[data-k="drink"]{background:var(--c1);color:var(--c1-ink)}
+  #vua-front[data-k="game"]{background:var(--debate);color:var(--debate-ink)}
+  #vua-front[data-k="pull"]{background:var(--c3);color:var(--c3-ink)}
+  #vua-front[data-k="cup"]{background:var(--accent);color:var(--on-accent)}
+  #vua-front[data-k="skip"],#vua-front[data-k="end"]{background:var(--surface);color:var(--text);border:1.5px dashed var(--line-strong)}
+  #vua-front[data-k="skip"]::before,#vua-front[data-k="end"]::before{display:none}
+  #vua-front.final{box-shadow:inset 0 0 0 3px currentColor}
+  .vua-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:0}
+  .vua-main svg.vua-ic{width:84px;height:84px}
+  #vua-front.final .vua-main svg.vua-ic{width:100px;height:100px}
+  .vua-name{margin:0;font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight);font-size:30px;line-height:1.05}
+  #vua-front.final .vua-name{font-size:36px}
+  .vua-say{margin:8px 0 0;font-size:14px;line-height:1.45}
+  #vua-front .f-bot{margin-top:12px}
+  #vua-front.lead .f-top{order:-3}
+  #vua-front.lead .vua-name{order:-2;margin-top:14px}
+  #vua-front.lead .vua-say{order:-1;margin-bottom:6px}
+  .vua-quote{margin:0;align-self:stretch;font-family:var(--card-font);font-weight:var(--card-weight);font-size:clamp(19px,5.4vw,24px);line-height:1.3;letter-spacing:-.01em;text-wrap:pretty}
+  .vua-ex{margin:2px 0 0;align-self:stretch;font-size:13px;font-style:italic;opacity:.8}
+  .vua-lbl{align-self:stretch;font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+  .vua-topic{align-self:stretch;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid currentColor;border-radius:12px;padding:6px 6px 6px 12px;font-weight:700;font-size:16px}
+  .vua-swap{flex:none;width:40px;height:40px;border-radius:999px;border:1px solid currentColor;display:grid;place-items:center}
+  .vua-pills{align-self:stretch;display:flex;flex-wrap:wrap;gap:6px}
+  .vua-pill{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid currentColor;font-size:14px;font-weight:600}
+  .vua-pill[aria-pressed="true"]{background:var(--c3-ink);color:var(--c3);border-color:var(--c3-ink)}
+  .vua-kinds{align-self:stretch;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .vua-kinds button{min-height:50px;border-radius:12px;font-weight:700;font-size:16px}
+  .vua-kinds .t{background:var(--truth);color:var(--truth-ink)}
+  .vua-kinds .d{background:var(--dare);color:var(--dare-ink)}
+  .vua-cups{display:inline-flex;gap:4px}
+  .vua-cups svg{width:15px;height:15px}
+  .vua-status{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted);margin:0 0 12px;font-variant-numeric:tabular-nums}
+  .vua-status .vua-cups{color:var(--accent)}
+  #s-vua .actions{grid-template-columns:1fr}
+  #s-vua .hud .back{flex:none}
+  .vua-steps{list-style:none;margin:4px 0 20px;padding:0;display:grid;gap:12px;counter-reset:s}
+  .vua-steps li{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;line-height:1.5;counter-increment:s}
+  .vua-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-weight:700;font-size:13px}
   .veil{position:fixed;inset:0;background:var(--veil);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;z-index:10}
   .sheet{width:100%;max-width:440px;max-height:calc(100% - 32px);overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:24px 22px;box-shadow:0 20px 50px var(--shadow)}
   .sheet h2{font-family:var(--display);font-style:var(--display-style);font-weight:var(--display-weight);font-size:30px;margin:6px 0 10px;color:var(--accent);line-height:1.2}
@@ -499,6 +539,11 @@
         <span class="cap"><h3>Mình chưa bao giờ…</h3><p>Ai từng làm rồi thì tự thú.</p><div class="meta" id="mode-nhb-meta"></div></span>
         <span class="go" aria-hidden="true">→</span>
       </button>
+      <button class="mode" id="mode-vua">
+        <span class="mini" data-c="2"><img alt="" id="mode-vua-art"></span>
+        <span class="cap"><h3>Chén Vua</h3><p>Rút lá, làm theo, không làm thì uống.</p><div class="meta" id="mode-vua-meta"></div></span>
+        <span class="go" aria-hidden="true">→</span>
+      </button>
     </div>
     <div class="skins-wrap">
       <div class="eyebrow">Giao diện</div>
@@ -609,9 +654,55 @@
     </div>
     <div class="count" id="tod-note"></div>
   </section>
+
+  <!-- CHÉN VUA -->
+  <section class="screen" id="s-vua" hidden>
+    <div class="hud">
+      <button class="back" id="vua-back" aria-label="Về trang chủ">←</button>
+      <div class="hud-title">Chén Vua</div>
+      <button class="back" id="vua-help" aria-label="Cách chơi">?</button>
+    </div>
+    <div class="table">
+      <div class="stack">
+        <div class="ghost g2"></div>
+        <div class="ghost g1"></div>
+        <div class="card" id="vua-card" tabindex="0" aria-live="polite">
+          <div class="inner">
+            <div class="face back-face">
+              <div class="seal"><div class="t">Chén Vua</div><div class="s">Làm Thân</div></div>
+              <div class="tap">Chạm để rút</div>
+            </div>
+            <div class="face front-face" id="vua-front">
+              <div class="f-top"><span id="vua-top">Chén Vua</span><span id="vua-tag"></span></div>
+              <div class="vua-main" id="vua-main"></div>
+              <h2 class="vua-name" id="vua-name"></h2>
+              <p class="vua-say" id="vua-say"></p>
+              <div class="f-bot"><span>Làm Thân</span><span class="n" id="vua-n"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="vua-status"><span>Chén Vua</span><span class="vua-cups" id="vua-cups"></span><span id="vua-left"></span></div>
+    <div class="actions"><button class="btn btn-gold" id="vua-next">Rút lá đầu tiên</button></div>
+  </section>
 </div>
 
 <!-- overlays -->
+<div class="veil" id="vua-rules" hidden>
+  <div class="sheet">
+    <div class="eyebrow">Chén Vua</div>
+    <h2>Cách chơi</h2>
+    <ol class="vua-steps">
+      <li><span>Đặt một ly trống ở giữa bàn. Đây là Chén Vua.</span></li>
+      <li><span>Lần lượt từng người rút một lá, đọc to và làm theo.</span></li>
+      <li><span>Không làm được hoặc từ chối thì uống.</span></li>
+      <li><span>Rút trúng lá Chén Vua: rót một ít đồ uống của bạn vào ly giữa. Ai rút lá Chén Vua thứ tư thì uống cạn ly đó.</span></li>
+    </ol>
+    <button class="btn btn-gold" id="vua-go">Bắt đầu</button>
+  </div>
+</div>
+
 <div class="veil" id="tip" hidden>
   <div class="sheet tip-sheet">
     <div class="eyebrow">Cảm ơn bạn</div>
@@ -806,6 +897,15 @@ const VG = (() => {
       ink("M32 63c8-2 16-4 22-2M54 61c0 5 0 9 2 13M34 63c6 2 12 2 18 1");
       ink("M50 60c2-6 2-12-2-17 0 0-3-1-5 0", 1.3);
     },
+    vua(){                                         // a crown over the cup in the middle of the table
+      wash("M34 18l6 7 10-11 10 11 6-7v12H34z", C.ochre, .75);
+      ink("M34 18l6 7 10-11 10 11 6-7v12H34z", 1.2);
+      wash("M30 40h40c0 14-8 22-20 22S30 54 30 40z", C.red, .55);
+      ink("M30 40h40c0 14-8 22-20 22S30 54 30 40z");
+      ink("M32 46h36", 1);
+      ink("M50 62v8M38 72h24", 1.3);
+      ink("M14 74h72", 1);
+    },
   };
 
   const cache = {};
@@ -949,7 +1049,7 @@ const deckSize = t => t.cards ? (t.n ?? t.cards.length) : ((t.nt ?? t.truths.len
 const cardCount = ts => ts.reduce((n, t) => n + deckSize(t), 0);   // the whole deck, paid or not
 const loadedCount = ts => ts.reduce((n, t) => n + (t.cards ? t.cards.length : todCards(t)), 0);
 function freshState(){
-  return { screen:"home", mode:"hoi", picked:[], tpick:[], npick:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false,
+  return { screen:"home", mode:"hoi", picked:[], tpick:[], npick:[], pile:[], card:null, flipped:false, autoFlip:false, drawn:0, total:0, round:1, adultOk:false, vua:null,
            tod:{truth:[], dare:[], card:null, drawn:0, total:0, history:[], noRecord:false} };
 }
 
@@ -965,6 +1065,8 @@ function renderHome(){                                 // the two ways to play
   $("mode-hoi-meta").textContent = `${TOPICS.length} chủ đề · ${cardCount(TOPICS)} câu hỏi`;
   $("mode-tod-meta").textContent = `${TOD.length} chủ đề · ${cardCount(TOD)} lá`;
   $("mode-nhb-art").src = VG("vui", 320, 320);
+  $("mode-vua-art").src = VG("vua", 320, 320);
+  $("mode-vua-meta").textContent = `${VUA_CARDS.length} loại lá · ${VUA_CARDS.reduce((n, c) => n + c.n, 0)} lá`;
   $("mode-nhb-meta").textContent = cardCount(NHB) ? `${NHB.length} chủ đề · ${cardCount(NHB)} câu` : `${NHB.length} chủ đề · sắp có`;
 }
 function renderDecks(){
@@ -992,6 +1094,7 @@ $("decks").addEventListener("click", e => {
 $("mode-hoi").addEventListener("click", () => { state.mode = "hoi"; show("decks"); });
 $("mode-tod").addEventListener("click", () => { state.mode = "tod"; show("decks"); });
 $("mode-nhb").addEventListener("click", () => { state.mode = "nhb"; show("decks"); });
+$("mode-vua").addEventListener("click", () => startVua());
 $("decks-back").addEventListener("click", () => show("home"));
 function startPicked(){ state.mode === "tod" ? startTod() : startGame(); }
 $("pick-go").addEventListener("click", () => {
@@ -1041,7 +1144,7 @@ function msgGate(text){ const el = $("pw-msg"); el.textContent = text; el.hidden
 function renderGate(){
   const shut = TOPICS.concat(TOD).filter(locked);
   $("pw-title").textContent = "Mở khoá tất cả";
-  $("pw-sub").textContent = `Chuyển ${money(PRICE)} là mở tất cả ${shut.length} bộ bài trong 24 giờ.`;
+  $("pw-sub").textContent = `Chuyển ${money(PRICE)} là mở tất cả ${shut.length} bộ bài và Chén Vua trong 24 giờ.`;
   const mine = $("pw-mine");
   mine.textContent = pass.code ? `Mã của bạn: ${pass.code} · chụp màn hình lại nhé` : "";
   mine.hidden = !pass.code;
@@ -1053,6 +1156,7 @@ function resumeAfterUnlock(){
   renderDecks();
   if(gateFrom === "play"){ dealRest(); drawCard(); renderPlay(); }
   else if(gateFrom === "tod"){ startTod(); }
+  else if(gateFrom === "vua"){ show("vua"); }
   else { startPicked(); }
 }
 
@@ -1184,7 +1288,7 @@ $("pw-redeem").addEventListener("click", () => {
   if(v) useCode(v.toUpperCase());
 });
 $("pw-input").addEventListener("keydown", e => { if(e.key === "Enter") $("pw-redeem").click(); });
-$("pw-close").addEventListener("click", () => { closeGate(); if(gateFrom !== "decks") show("decks"); });
+$("pw-close").addEventListener("click", () => { closeGate(); if(gateFrom !== "decks" && gateFrom !== "vua") show("decks"); });
 $("pw-retry").addEventListener("click", startOrder);
 $("pw-go").addEventListener("click", resumeAfterUnlock);
 
@@ -1466,6 +1570,229 @@ $("tod-skip").addEventListener("click", todSkip);
 $("tod-prev").addEventListener("click", todPrev);
 $("tod-back").addEventListener("click", () => show("decks"));
 
+/* ============ CHÉN VUA ============
+   A drinking game dealt from one shuffled deck of cards that say what to do, so nobody has
+   to remember what a seven means. Four of them are Chén Vua: each tops up the cup in the
+   middle, and whoever draws the fourth drinks it. The game ends when the deck runs out.
+   Two kinds of card borrow a question from the other modes, never from an 18+ deck. */
+const VUA_ICON = {
+  point: '<path d="M6 34h22"/><path d="M22 28l6 6-6 6"/><circle cx="46" cy="24" r="7"/><path d="M34 50c1-8 6-12 12-12s11 4 12 12"/>',
+  glass: '<path d="M20 14h24l-3.5 36a3 3 0 0 1-3 2.7h-11a3 3 0 0 1-3-2.7z"/><path d="M21.6 28h20.8"/><path d="M50 18c2 3 2 6 0 8"/><path d="M54 14c3.5 5 3.5 11 0 16"/>',
+  guy:   '<circle cx="32" cy="24" r="10"/><path d="M22 21c2-6 6-8 10-8s8 2 10 8"/><path d="M14 54c2-10 9-15 18-15s16 5 18 15"/>',
+  girl:  '<circle cx="32" cy="24" r="10"/><path d="M22 24c-1 8-3 12-6 14"/><path d="M42 24c1 8 3 12 6 14"/><path d="M22 22c3-2 7-6 9-9 3 4 7 7 11 9"/><path d="M14 56c2-9 9-13 18-13s16 4 18 13"/>',
+  shirt: '<path d="M4 22l7-6h4c1 3 3 4 5 4s4-1 5-4h4l7 6-4 5-3-2v23H11V25l-3 2z"/><path d="M26 30l7-6h4c1 3 3 4 5 4s4-1 5-4h4l7 6-4 5-3-2v21H33V33l-3 2z"/>',
+  clink: '<path d="M10 24l14-4 6 22a3 3 0 0 1-2 3.6l-6 1.6a3 3 0 0 1-3.6-2z"/><path d="M54 24l-14-4-6 22a3 3 0 0 0 2 3.6l6 1.6a3 3 0 0 0 3.6-2z"/><path d="M32 8v6"/><path d="M24 11l3 4"/><path d="M40 11l-3 4"/>',
+  falls: '<path d="M4 22h14l-2 24a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M25 16h14l-2 26a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z"/><path d="M46 22h14l-2 24a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z"/><path d="M5 30h12M26 26h12M47 30h12"/>',
+  chain: '<rect x="6" y="24" width="28" height="16" rx="8"/><rect x="30" y="24" width="28" height="16" rx="8"/>',
+  crown: '<path d="M20 8l4 6 4-7 4 7 4-7 4 7 4-6v10H20z"/><path d="M16 24h32c0 12-6 20-16 20S16 36 16 24z"/><path d="M32 44v8"/><path d="M22 56h20"/>',
+  crown4:'<path d="M20 8l4 6 4-7 4 7 4-7 4 7 4-6v10H20z"/><path d="M16 24h32c0 12-6 20-16 20S16 36 16 24z"/><path d="M18 28h28"/><path d="M32 44v8"/><path d="M22 56h20"/><path d="M8 20l-4-2M8 30H3M56 20l4-2M56 30h5"/>',
+  door:  '<path d="M14 56V8h26v48"/><path d="M14 8l16 6v46l-16-4"/><circle cx="25" cy="34" r="1.6" fill="currentColor"/><path d="M8 56h48"/><path d="M46 26l8 6-8 6M54 32H42"/>',
+};
+const vuaIcon = name => `<svg class="vua-ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${VUA_ICON[name]}</svg>`;
+
+/* kind: drink | game (everyone plays) | pull (a question from another mode) | cup | skip */
+const VUA_CARDS = [
+  {id:"chi",   n:4, k:"drink", icon:"point", name:"Chỉ Định",          say:"Chọn một người uống."},
+  {id:"tu",    n:2, k:"drink", icon:"glass", name:"Tự Uống",           say:"Bạn uống."},
+  {id:"anh",   n:2, k:"drink", icon:"guy",   name:"Các Anh",           say:"Con trai uống."},
+  {id:"em",    n:2, k:"drink", icon:"girl",  name:"Các Chị",           say:"Con gái uống."},
+  {id:"ao",    n:2, k:"drink", icon:"shirt", name:"Cùng Màu Áo",       say:"Ai mặc áo cùng màu với bạn thì uống."},
+  {id:"nhau",  n:2, k:"drink", icon:"clink", name:"Bạn Nhậu",          say:"Chọn một người. Từ giờ đến hết ván, bạn uống thì họ uống theo."},
+  {id:"thac",  n:2, k:"drink", icon:"falls", name:"Thác Nước",         say:"Cả bàn cùng uống."},
+  {id:"noi",   n:4, k:"game",  icon:"chain", name:"Nối Từ",            say:"Nói một từ ghép. Người tiếp theo nối bằng chữ cuối. Ai bí thì uống.", ex:"xinh đẹp → đẹp gái → gái gú…"},
+  {id:"de",    n:4, k:"game",                name:"Chủ Đề",            say:"Lần lượt kể tên một thứ thuộc chủ đề, không được trùng. Ai bí hoặc trùng thì uống."},
+  {id:"tod",   n:4, k:"pull",                name:"Thật Hay Thách",    say:"Chọn bộ, rồi chọn Thật hoặc Thách. Từ chối thì uống."},
+  {id:"nhb",   n:4, k:"pull",                name:"Mình Chưa Bao Giờ", say:"Ai đã từng làm thì uống."},
+  {id:"cup",   n:4, k:"cup",   icon:"crown", name:"Chén Vua",          say:"Rót một ít vào ly giữa bàn. Ai rút lá Chén Vua thứ tư thì uống cạn."},
+  {id:"thoat", n:2, k:"skip",  icon:"door",  name:"Thoát Nạn",         say:"Lượt này bạn không phải làm gì."},
+];
+const VUA_TOD = ["t-yeu", "t-ban"], VUA_NHB = ["n-yeu"];       // never Chuyện Ấy
+
+/* Suggestions for Chủ Đề. The drawer can take one, ask for another, or say their own. */
+const VUA_TOPICS = [
+  ["Ca sĩ Việt Nam", "Sơn Tùng M-TP, Mỹ Tâm, Đen Vâu…"],
+  ["Món ăn đường phố", "bánh tráng trộn, bột chiên, ốc…"],
+  ["Hãng trà sữa", "Phúc Long, Gong Cha, Koi Thé…"],
+  ["Quận ở Sài Gòn", "Quận 1, Bình Thạnh, Gò Vấp…"],
+  ["Tỉnh thành Việt Nam", "Huế, Đà Nẵng, Cần Thơ…"],
+  ["App trên điện thoại", "Zalo, Shopee, Grab…"],
+  ["Hãng bia", "Tiger, Heineken, Sài Gòn…"],
+  ["Phim Việt Nam", "Bố Già, Mai, Nhà Bà Nữ…"],
+  ["Trái cây", "xoài, sầu riêng, chôm chôm…"],
+  ["Món ăn ngày Tết", "bánh chưng, thịt kho, dưa hành…"],
+  ["Các loại bún", "bún bò, bún riêu, bún chả…"],
+  ["Món nhậu", "khô mực, gỏi gà, lẩu thái…"],
+  ["Thương hiệu thời trang", "Zara, Uniqlo, H&M…"],
+  ["Mạng xã hội", "Facebook, TikTok, Threads…"],
+  ["Con vật", "mèo, cá heo, chim cánh cụt…"],
+  ["Nghề nghiệp", "bác sĩ, giáo viên, kế toán…"],
+  ["Thứ có trong túi xách", "son, chìa khoá, khăn giấy…"],
+  ["Nhân vật hoạt hình", "Doraemon, Shin, Tom và Jerry…"],
+  ["Cầu thủ bóng đá", "Quang Hải, Messi, Ronaldo…"],
+  ["Hãng điện thoại", "iPhone, Samsung, Oppo…"],
+  ["Nước trên thế giới", "Nhật, Hàn, Pháp…"],
+  ["Môn thể thao", "bóng đá, cầu lông, pickleball…"],
+  ["Thứ màu đỏ", "bao lì xì, cà chua, ớt…"],
+  ["Phim hoạt hình Disney", "Frozen, Coco, Moana…"],
+  ["App hẹn hò", "Tinder, Bumble, Hinge…"],
+  ["Món có chữ “bánh”", "bánh mì, bánh xèo, bánh cuốn…"],
+  ["Thành phố trên thế giới", "Tokyo, Paris, Seoul…"],
+  ["Đồ trong bếp", "nồi, chảo, đôi đũa…"],
+  ["Thương hiệu mỹ phẩm", "Innisfree, MAC, Cocoon…"],
+  ["Câu người cũ hay nói", "“mình hợp làm bạn hơn”, “anh bận”…"],
+  ["Lý do đi trễ", "kẹt xe, ngủ quên, trời mưa…"],
+  ["Tin nhắn làm bạn sợ", "“mình nói chuyện chút nha”, “?”…"],
+  ["Nghệ sĩ K-pop", "BTS, BLACKPINK, IU…"],
+  ["Đồ trong tủ lạnh", "trứng, sữa, nước mắm…"],
+  ["Môn học ở trường", "toán, văn, thể dục…"],
+  ["Đồ hay mua trên Shopee lúc nửa đêm", "ốp điện thoại, đèn ngủ, váy…"],
+  ["Địa điểm hẹn hò", "quán cà phê, rạp phim, bờ hồ…"],
+  ["Món chè", "chè ba màu, chè khúc bạch, chè bưởi…"],
+  ["Trò chơi hồi nhỏ", "ô ăn quan, nhảy dây, trốn tìm…"],
+  ["Thứ bạn làm khi mất ngủ", "lướt TikTok, đếm cừu, nhắn tin người cũ…"],
+];
+
+const vuaType = id => VUA_CARDS.find(c => c.id === id);
+const vuaEsc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const vuaCups = (got, total = 4) => Array.from({length: total}, (_, i) =>
+  `<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10l-1.5 8h-7z" ${i < got ? 'fill="currentColor"' : 'fill="none" stroke="currentColor" stroke-width="1.2"'}/></svg>`).join("");
+
+function vuaDeal(){
+  return {deck: shuffle(VUA_CARDS.flatMap(c => Array(c.n).fill(c.id))), drawn:0, cups:0, card:null, used:[]};
+}
+/* One pass opens everything, Chén Vua included; without one, the first card is free. */
+const vuaPaid = () => Object.values(pass.until).some(u => u > Date.now());
+async function startVua(){
+  if(!pass.fetched && hasKey()) await loadPaid();
+  state.mode = "vua";
+  state.vua = vuaDeal();
+  show("vua");
+  vuaRules(true);
+}
+function vuaRules(first){
+  $("vua-go").textContent = first ? "Bắt đầu" : "Chơi tiếp";
+  $("vua-rules").hidden = false;
+  $("vua-go").focus();
+}
+
+/* A question not seen this game, or any of them once every one has been seen. */
+function vuaPull(pool){
+  const v = state.vua;
+  let fresh = pool.filter(q => !v.used.includes(q.text));
+  if(!fresh.length) fresh = pool;
+  const q = fresh[Math.floor(Math.random() * fresh.length)];
+  if(!q) return null;
+  v.used.push(q.text);
+  countCard(q.topic);                                  // a real question asked, so it counts like one
+  return q;
+}
+const vuaTodPool = (deck, kind) => TOD.filter(t => t.id === deck)
+  .flatMap(t => (kind === "dare" ? t.dares : t.truths).map(text => ({text, topic:t.id})));
+const vuaNhbPool = () => NHB.filter(t => VUA_NHB.includes(t.id)).flatMap(t => t.cards.map(text => ({text, topic:t.id})));
+
+function vuaDraw(){
+  const v = state.vua;
+  if(!v.deck.length){
+    if(v.card && v.card.id === "end"){ state.vua = vuaDeal(); return vuaDraw(); }   // a new game, no rules again
+    v.card = {id:"end"};
+    return renderVua();
+  }
+  if(v.drawn >= 1 && !vuaPaid()) return openGate("vua");
+  const card = {id: v.deck.shift()};
+  v.drawn++;
+  if(card.id === "cup") card.cup = ++v.cups;
+  if(card.id === "nhb") card.q = vuaPull(vuaNhbPool());
+  if(card.id === "de") card.topic = Math.floor(Math.random() * VUA_TOPICS.length);
+  if(card.id === "tod") card.deck = VUA_TOD.find(id => TOD.some(t => t.id === id));
+  v.card = card;
+  renderVua();
+}
+
+function renderVua(){
+  const v = state.vua, c = v.card, t = c && vuaType(c.id);
+  const face = $("vua-front"), total = v.drawn + v.deck.length;
+  $("vua-card").classList.toggle("flipped", !!c);
+  $("vua-cups").innerHTML = vuaCups(v.cups);
+  $("vua-left").textContent = v.deck.length ? `· còn ${v.deck.length} lá` : "· hết bài";
+  $("vua-next").textContent = !c ? "Rút lá đầu tiên" : c.id === "end" ? "Chơi ván mới" : v.deck.length ? "Lá tiếp →" : "Hết bài →";
+  if(!c) return;
+
+  let top = "Chén Vua", tag = "", main = "", name = "", say = "", lead = false;
+  if(c.id === "end"){
+    name = "Hết bài"; say = "Ván này xong rồi. Chơi thêm ván nữa không?";
+    main = vuaIcon("crown");
+  } else {
+    name = t.name; say = t.say;
+    if(t.icon) main = vuaIcon(c.cup === 4 ? "crown4" : t.icon);
+    if(c.id === "cup"){
+      tag = c.cup === 4 ? "Lá cuối" : `Lá thứ ${c.cup}`;
+      if(c.cup === 4){ name = "Uống cạn!"; say = "Bạn rút lá Chén Vua thứ tư. Uống hết ly giữa bàn."; }
+      main += `<span class="vua-cups">${vuaCups(c.cup)}</span>`;
+    }
+    if(c.id === "noi") main += `<p class="vua-ex" style="text-align:center">${vuaEsc(t.ex)}</p>`;
+    if(c.id === "de"){
+      const [topic, ex] = VUA_TOPICS[c.topic];
+      lead = true;
+      main = `<div class="vua-lbl">Gợi ý</div>
+        <div class="vua-topic"><span>${vuaEsc(topic)}</span><button class="vua-swap" data-act="swap" aria-label="Đổi chủ đề">↻</button></div>
+        <p class="vua-ex">${vuaEsc(ex)}</p>`;
+    }
+    if(c.id === "nhb"){
+      lead = true;
+      main = c.q ? `<p class="vua-quote">${vuaEsc(c.q.text)}</p>` : `<p class="vua-ex">Chưa có câu nào.</p>`;
+    }
+    if(c.id === "tod"){
+      if(c.q){
+        const deck = TOD.find(x => x.id === c.q.topic);
+        top = `Thật Hay Thách · ${deck ? deck.name : ""}`;
+        tag = c.kind === "dare" ? "Thách" : "Thật";
+        main = `<p class="vua-quote">${vuaEsc(c.q.text)}</p>`;
+        name = ""; say = "Từ chối thì uống.";
+      } else {
+        lead = true;
+        const decks = TOD.filter(x => VUA_TOD.includes(x.id));
+        main = `<div class="vua-pills">${decks.map(d => `<button class="vua-pill" data-act="deck" data-id="${d.id}" aria-pressed="${c.deck === d.id}">${vuaEsc(d.name)}</button>`).join("")}</div>
+          <div class="vua-kinds"><button class="t" data-act="kind" data-kind="truth">Thật</button><button class="d" data-act="kind" data-kind="dare">Thách</button></div>`;
+      }
+    }
+  }
+  face.dataset.k = c.id === "end" ? "end" : t.k;
+  face.classList.toggle("final", c.cup === 4);
+  face.classList.toggle("lead", lead);
+  $("vua-top").textContent = top;
+  $("vua-tag").textContent = tag;
+  $("vua-main").innerHTML = main;
+  $("vua-name").textContent = name; $("vua-name").hidden = !name;
+  $("vua-say").textContent = say;   $("vua-say").hidden = !say;
+  $("vua-n").textContent = c.id === "end" ? "" : `${v.drawn}/${total}`;
+}
+
+/* Taps inside the card: change the topic, pick a thật hay thách deck, then thật or thách. */
+$("vua-front").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if(!b) return;
+  e.stopPropagation();
+  const c = state.vua && state.vua.card; if(!c) return;
+  if(b.dataset.act === "swap"){
+    let i = c.topic;
+    while(VUA_TOPICS.length > 1 && i === c.topic) i = Math.floor(Math.random() * VUA_TOPICS.length);
+    c.topic = i;
+  }
+  if(b.dataset.act === "deck") c.deck = b.dataset.id;
+  if(b.dataset.act === "kind"){
+    c.kind = b.dataset.kind; c.q = vuaPull(vuaTodPool(c.deck, c.kind));
+    if(!c.q && !vuaPaid()) return openGate("vua");     // that pile has no free card
+  }
+  renderVua();
+});
+$("vua-card").addEventListener("click", () => { if(!state.vua.card) vuaDraw(); });
+$("vua-card").addEventListener("keydown", e => {
+  if((e.key === " " || e.key === "Enter") && e.target === $("vua-card")){ e.preventDefault(); vuaDraw(); }
+});
+$("vua-next").addEventListener("click", () => vuaDraw());
+$("vua-back").addEventListener("click", () => show("home"));
+$("vua-help").addEventListener("click", () => vuaRules(false));
+$("vua-go").addEventListener("click", () => { $("vua-rules").hidden = true; });
+
 /* ============ SHARED COUNTER ============ */
 /* One number for everyone: polled every few seconds against an edge-cached endpoint.
    The digits roll down like a counter wheel, each one starting a little after the one to its right. */
@@ -1590,12 +1917,13 @@ addEventListener("visibilitychange", () => { if(document.hidden) flushCount(); }
 /* ============ ROUTER ============ */
 function show(screen){
   state.screen = screen;
-  ["home","decks","play","tod"].forEach(s => $("s-"+s).hidden = s !== screen);
+  ["home","decks","play","tod","vua"].forEach(s => $("s-"+s).hidden = s !== screen);
   if(screen === "home"){ renderHome(); startTally(); }
   else if(screen === "decks"){ renderDecks(); stopTally(); }   // the deck counts keep the figures they already have
   else stopTally();
   if(screen === "play") renderPlay();
   if(screen === "tod") renderTod();
+  if(screen === "vua") renderVua();
   window.scrollTo(0, 0);
 }
 
@@ -1705,6 +2033,7 @@ function start(saved){
   state = Object.assign(freshState(), saved && saved.screen ? saved : {});
   state.picked = (state.picked || []).filter(id => TOPICS.some(t => t.id === id));
   state.npick = (state.npick || []).filter(id => NHB.some(t => t.id === id));
+  if(state.screen === "vua" && !(state.vua && state.vua.deck)) state.screen = "home";
   if(state.screen === "play" && !state.card) state.screen = "home";
   show(state.screen);
   // a pass in hand: fold the paid cards in and redraw, so the grid shows what is already open
