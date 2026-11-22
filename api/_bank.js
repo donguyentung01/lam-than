@@ -552,6 +552,23 @@ export const BANK = {
     "Kể một thói quen sau khi thân mật khiến bạn thấy ấm áp nhất.",
     "Kể lại một lần bạn từ chối dù trong lòng rất muốn đồng ý."
    ]
+  },
+  "t-ban": {
+   "truths": [
+    "Kể về người mình mới stalk gần đây nhất?",
+    "Kể một điểm mạnh của từng người trong nhóm?",
+    "Kể về ước mơ của bản thân?",
+    "Kể về thói quen kì lạ nhất của bạn?",
+    "Bạn đã bao giờ hẹn hò ai rồi hối hận chưa?",
+    "Bạn đã bao giờ crush người yêu của bạn mình chưa?"
+   ],
+   "dares": [
+    "Đi hỏi một người lạ “năm nay là năm bao nhiêu”, sau khi họ trả lời, hét toáng lên và chạy ra ngoài.",
+    "Đăng hình ngón tay đeo nhẫn lên Instagram story với caption “em đồng ý”.",
+    "Tỏ tình người đối diện bạn.",
+    "Gọi điện cho bố mẹ và bảo con đã có bầu.",
+    "Gửi hình selfie cho crush."
+   ]
   }
  }
 };
