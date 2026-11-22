@@ -1324,7 +1324,7 @@ function renderHome(){                                 // the two ways to play
   $("mode-tod-meta").textContent = `${TOD.length} chủ đề · ${cardCount(TOD)} lá`;
   $("mode-nhb-art").src = VG("vui", 320, 320);
   $("mode-vua-art").src = VG("vua", 320, 320);
-  $("mode-vua-meta").textContent = `${VUA_CARDS.length} loại lá · ${VUA_CARDS.reduce((n, c) => n + c.n, 0)} lá`;
+  paintVuaMeta();
   $("mode-nhb-meta").textContent = cardCount(NHB) ? `${NHB.length} chủ đề · ${cardCount(NHB)} câu` : `${NHB.length} chủ đề · sắp có`;
 }
 function renderDecks(){
@@ -1798,8 +1798,8 @@ const VUA_CARDS = [
   {id:"ao",    n:2, k:"drink", icon:"shirt", name:"Cùng Màu Áo",       say:"Ai mặc áo cùng màu với bạn thì uống."},
   {id:"nhau",  n:2, k:"drink", icon:"clink", name:"Bạn Nhậu",          say:"Chọn một người. Từ giờ đến hết ván, bạn uống thì họ uống theo."},
   {id:"thac",  n:2, k:"drink", icon:"falls", name:"Thác Nước",         say:"Cả bàn cùng uống."},
-  {id:"noi",   n:4, k:"game",  icon:"chain", name:"Nối Từ",            say:"Nói một từ ghép. Người tiếp theo nối bằng chữ cuối. Ai bí thì uống.", ex:"xinh đẹp → đẹp gái → gái gú…"},
-  {id:"de",    n:4, k:"game",                name:"Chủ Đề",            say:"Bạn tự chọn một chủ đề. Lần lượt mỗi người kể một thứ thuộc chủ đề đó, không trùng. Ai bí thì uống."},
+  {id:"noi",   n:4, k:"game",  icon:"chain", name:"Nối Từ",            say:"Bạn nói một từ ghép trước. Theo vòng tròn, từng người nối tiếp bằng chữ cuối của từ trước. Ai bí thì uống.", ex:"xinh đẹp → đẹp gái → gái gú…"},
+  {id:"de",    n:4, k:"game",                name:"Chủ Đề",            say:"Bạn tự chọn một chủ đề và kể trước. Theo vòng tròn, từng người kể tiếp một thứ thuộc chủ đề đó, không trùng. Ai bí thì uống."},
   {id:"tod",   n:4, k:"pull",                name:"Thật Hay Thách",    say:"Chọn bộ, rồi chọn Thật hoặc Thách. Từ chối thì uống."},
   {id:"nhb",   n:4, k:"pull",                name:"Mình Chưa Bao Giờ", say:"Ai đã từng làm thì uống."},
   {id:"cup",   n:4, k:"cup",   icon:"crown", name:"Chén Vua",          say:"Rót một ít vào ly giữa bàn. Ai rút lá Chén Vua thứ tư thì uống cạn."},
@@ -1897,6 +1897,7 @@ function vuaDraw(){
   }
   const card = {id: v.deck.shift()};
   v.drawn++;
+  countVua();
   if(card.id === "cup") card.cup = ++v.cups;
   if(card.id === "nhb") card.q = vuaPull(vuaNhbPool());
   if(card.id === "de") card.topic = Math.floor(Math.random() * VUA_TOPICS.length);
@@ -2036,11 +2037,16 @@ function paintTopics(){
     if(n) el.textContent = `${vi(n)} lượt trả lời`;
   });
 }
+function paintVuaMeta(){
+  const n = tally.topics.vua || 0;
+  $("mode-vua-meta").textContent = `${VUA_CARDS.length} loại lá · ${VUA_CARDS.reduce((s, c) => s + c.n, 0)} lá` + (n ? ` · ${vi(n)} lá đã rút` : "");
+}
 function setTopics(topics){
   if(!topics) return;
   let moved = false;
   for(const k in topics) if((topics[k] || 0) > (tally.topics[k] || 0)){ tally.topics[k] = topics[k]; moved = true; }
   if(!moved) return;
+  paintVuaMeta();
   const order = deckOrder().map(t => t.id).join(",");
   if(state.screen === "home" && order !== state.order) renderHome();   // a deck overtook another
   else paintTopics();
@@ -2080,17 +2086,27 @@ const FLUSH_AT = 10, FLUSH_IDLE = 600000;      // ten minutes: the backstop, not
 
 function flushCount(){
   clearTimeout(pending.timer); pending.timer = null;
-  if(!pending.count) return;
+  if(!pending.count && !pending.vua) return;
   const items = Object.entries(pending.topics).map(([topic, n]) => ({topic, n}));
   const loose = pending.count - items.reduce((sum, it) => sum + it.n, 0);   // cards with no topic
   if(loose > 0) items.push({n: loose});
-  pending.count = 0; pending.topics = {};
+  if(pending.vua) items.push({topic: "vua", n: pending.vua});              // its own count, not the total
+  pending.count = 0; pending.topics = {}; pending.vua = 0;
   try{
     fetch("/api/count", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({items}), keepalive:true})
       .then(r => r.json()).then(d => { if(d && d.enabled) setTally(d.total); })
       .catch(() => {});
   }catch(e){}
+}
+
+/* Every Chén Vua card drawn. It has its own counter and stays out of the headline total. */
+function countVua(){
+  if(tally.topicsSeen) setTopics({vua: (tally.topics.vua || 0) + 1});
+  pending.vua = (pending.vua || 0) + 1;
+  if(pending.vua >= FLUSH_AT) return flushCount();
+  clearTimeout(pending.timer);
+  pending.timer = setTimeout(flushCount, FLUSH_IDLE);
 }
 
 function countCard(topic){
