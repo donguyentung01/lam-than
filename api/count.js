@@ -18,6 +18,9 @@ const TOPICS = DECKS;
 const LIMIT_PER_MINUTE = 300;          // per address, so one page cannot inflate the count much
 const MAX_PER_ITEM = 20;               // a batch is a few cards of one topic, never a spike
 const MAX_PER_CALL = 60;
+// Counted on their own and never in the headline total: a Chén Vua card like "Tự Uống" is
+// played, but it is not a question answered.
+const SIDE = ["vua"];
 
 function asTopics(flat) {                // HGETALL comes back as [field, value, field, value, ...]
   const out = {};
@@ -45,12 +48,13 @@ export default async function handler(req, res) {
 
       // one flip, or a batch of them: {n, topic} and {items:[{topic, n}]} both land here
       const raw = Array.isArray(body.items) && body.items.length
-        ? body.items.slice(0, TOPICS.length + 1)
+        ? body.items.slice(0, TOPICS.length + SIDE.length + 1)
         : [{ topic: body.topic, n: body.n }];
       const items = [];
       for (const it of raw) {
         const each = Math.min(MAX_PER_ITEM, Math.max(1, Math.floor(Number(it && it.n) || 1)));
-        items.push({ topic: TOPICS.includes(it && it.topic) ? it.topic : null, n: each });
+        const t = it && it.topic;
+        items.push({ topic: TOPICS.includes(t) || SIDE.includes(t) ? t : null, n: each });
       }
       const n = Math.min(MAX_PER_CALL, items.reduce((sum, it) => sum + it.n, 0));
       const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
@@ -62,7 +66,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ enabled: true, total, counted: false });
       }
       const [total] = await pipeline(
-        ["INCRBY", KEY, String(n)],
+        ["INCRBY", KEY, String(Math.min(n, items.filter(it => !SIDE.includes(it.topic)).reduce((sum, it) => sum + it.n, 0)))],
         ...items.filter(it => it.topic).map(it => ["HINCRBY", BY_TOPIC, it.topic, String(it.n)]),
       );
       res.setHeader("Cache-Control", "no-store");
